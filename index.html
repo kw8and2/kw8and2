@@ -34,31 +34,24 @@
       <h1 class="text-lg sm:text-xl font-bold mb-3">Mounjaro KwikPen (0.6mL)</h1>
 
       <div class="flex flex-col gap-2 mb-4 text-sm sm:text-base">
-
-        <!-- خيار Pre-filled Pen (مخفي) -->
         <label class="hidden items-center gap-2 cursor-pointer">
           <input type="radio" name="product" value="pens" class="w-5 h-5">
           <span>Mounjaro Pre-filled Pen (0.5mL)</span>
         </label>
 
-        <!-- خيار KwikPen (مخفي لكن محدد تلقائيا) -->
         <label class="hidden items-center gap-2 cursor-pointer">
           <input type="radio" name="product" value="kwik" class="w-5 h-5" checked>
           <span>Mounjaro KwikPen (0.6mL)</span>
         </label>
 
-        <!-- خيار Vial (مخفي) -->
         <label class="hidden items-center gap-2 cursor-pointer">
           <input type="radio" name="product" value="vial" class="w-5 h-5">
           <span>Mounjaro Vial (0.5mL)</span>
         </label>
 
-        <!-- رابط KwikPen فقط ظاهر -->
         <a id="kwik-link" href="https://files.mealabels.gulf.lilly.com/content/mounjaro-kwikpen/lebanon/arabic_instructions_for_use.pdf" target="_blank" class="text-blue-700 font-bold underline">طريقة الاستخدام اضغط هنا</a>
-
       </div>
 
-      <!-- خيار الجرعة الذهبية -->
       <div id="golden-dose-container" class="flex items-center gap-2 cursor-pointer mt-2">
         <input type="checkbox" id="golden-dose" class="w-5 h-5">
         <label for="golden-dose" class="font-semibold text-yellow-600 text-sm sm:text-base">استخدم الجرعة الذهبية ✨</label>
@@ -66,7 +59,6 @@
     </div>
   </div>
 
-  <!-- باقي الصفحة كما هي -->
   <div class="w-full max-w-4xl bg-white p-3 sm:p-4 rounded-2xl shadow text-center">
     <h2 class="text-base sm:text-lg font-semibold mb-3">💉حدد جرعة القلم</h2>
     <div class="grid grid-cols-3 sm:grid-cols-7 gap-2 justify-center" id="dose-group-1">
@@ -92,9 +84,7 @@
     </div>
   </div>
 
-  <div id="result" class="w-full max-w-4xl bg-white p-3 sm:p-4 rounded-2xl shadow text-center text-lg sm:text-xl font-bold text-gray-800">
-    
-  </div>
+  <div id="result" class="w-full max-w-4xl bg-white p-3 sm:p-4 rounded-2xl shadow text-center text-lg sm:text-xl font-bold text-gray-800"></div>
 
   <div class="syringe-wrap" id="syringeWrap" style="display:none; margin-top:60px;">
     <img src="https://www.mediafire.com/convkey/205f/4r9jw4nsd8cy0kc9g.jpg?size_id=8" alt="Needle" class="syringe-image">
@@ -105,13 +95,20 @@
   </div>
 
   <script>
-    // إعداد تلقائي لـ KwikPen فقط
     const selectedProduct = "kwik";
     const goldenCheckbox = document.getElementById("golden-dose");
     const result = document.getElementById("result");
+    const imageContainer = document.querySelector("#image-container img");
 
-    const productValues = {
-      kwik: 0.6
+    const productValues = { kwik: 0.6 };
+
+    const doseImages = {
+      "2.5": "https://www.mediafire.com/convkey/9902/firhiuxk2po2xv09g.jpg",
+      "5": "https://www.mediafire.com/convkey/09a1/70ekytrkprdefa49g.jpg",
+      "7.5": "https://www.mediafire.com/convkey/0311/lq729u6ajkk63qi9g.jpg",
+      "10": "https://www.mediafire.com/convkey/c345/wv3xjgb4pxyrznl9g.jpg",
+      "12.5": "https://www.mediafire.com/convkey/de5d/5rz78g7h2sxp3zq9g.jpg",
+      "15": "https://www.mediafire.com/convkey/51c5/528xxqsvbniiu1w9g.jpg"
     };
 
     let dose1 = null;
@@ -132,7 +129,7 @@
         let formattedTicks = formatTicks(calc);
         let weeks = goldenCheckbox.checked ? (productValues[selectedProduct] * 5) / calc : (productValues[selectedProduct] * 4) / calc;
         let months = weeks / 4;
-        result.textContent = `✅ النتيجة: ${formattedTicks} تكة او ملي ( عدد الاشهر  ${formatNumber(months)}  ) `;
+        result.innerHTML = `✅ النتيجة: <span style="color:red">${formattedTicks}</span> تكة او ملي ( عدد الاشهر  <span style="color:purple">${formatNumber(months)}</span>  ) `;
         showSyringe(formattedTicks);
       }
     }
@@ -185,7 +182,12 @@
           buttons.forEach(b => b.classList.remove("ring-4", "ring-yellow-400"));
           btn.classList.add("ring-4", "ring-yellow-400");
           const mg = parseFloat(btn.textContent) || 0;
-          if (isDose1) dose1 = mg; else dose2 = mg;
+          if (isDose1) {
+            dose1 = mg;
+            if (doseImages[mg]) imageContainer.src = doseImages[mg];
+          } else {
+            dose2 = mg;
+          }
           calculateResult();
         });
       });
@@ -193,7 +195,12 @@
         input.addEventListener('input', () => {
           buttons.forEach(b => b.classList.remove("ring-4", "ring-yellow-400"));
           const mg = parseFloat(input.value) || 0;
-          if (isDose1) dose1 = mg; else dose2 = mg;
+          if (isDose1) {
+            dose1 = mg;
+            if (doseImages[mg]) imageContainer.src = doseImages[mg];
+          } else {
+            dose2 = mg;
+          }
           calculateResult();
         });
       }
