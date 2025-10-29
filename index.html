@@ -6,57 +6,56 @@
   <title>Mounjaro</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body {
-      transform-origin: top center;
-      zoom: reset;
+    body {transform-origin: top center;zoom: reset;}
+    .syringe-wrap {
+      width:100%;max-width:9920px;margin:40px auto 10px;padding:12px;
+      background:#fff;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.06);position:relative
     }
-    .syringe-wrap {width:100%;max-width:9920px;margin:40px auto 10px;padding:12px;background:#fff;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.06);position:relative}
-    .syringe {position:relative;height:50px;border:0px solid #222;border-radius:10px;background:linear-gradient(180deg,#fff,#f7f7f7)}
-    .syringe .fill {position:absolute;left:0;top:0;bottom:0;width:0;background:#009dff;transition:width 0.4s ease}
+    .syringe {
+      position:relative;height:50px;border-radius:10px;
+      background:linear-gradient(180deg,#fff,#f7f7f7)
+    }
+    .syringe .fill {
+      position:absolute;left:0;top:0;bottom:0;width:0;
+      background:#009dff;transition:width 0.4s ease
+    }
     .ticks {position:absolute;left:0;right:0;bottom:0;height:100%}
     .tick {position:absolute;bottom:0;width:2px;background:#222}
     .tick.big {height:25px}
     .tick.small {height:12px;opacity:0.7}
     .tick-label {position:absolute;top:4px;font-size:15px;transform:translateX(-50%);color:#111}
     .syringe-image {width:100%;max-width:720px;height:70px;margin:0 auto;display:block;object-fit:contain;position:absolute;top:-73px;left:0;right:0}
+
+    .pen-image-main {
+      width: 18rem;max-width: 20rem;height: auto;object-fit: contain;
+      border-radius: 0.5rem;box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      transition: all 0.3s ease;
+    }
+    .pen-image-small {
+      width: 6rem;height: auto;object-fit: contain;
+      border-radius: 0.5rem;transition: all 0.3s ease;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+    }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col items-center justify-start p-2 sm:p-4 gap-4">
 
-  <div class="flex flex-col md:flex-row w-full max-w-4xl gap-4 items-start">
-    <!-- الصورة يسار -->
-    <div id="image-container" class="w-full md:w-1/2 h-48 sm:h-60 flex items-center justify-center">
-      <img src="https://www.mediafire.com/convkey/9c77/ygfjtf7mnymqmz89g.jpg?size_id=7" alt="KwikPen" class="max-h-48 sm:max-h-60">
-    </div>
+  <div class="w-full text-center mt-3">
+    <h1 class="text-[#5D0096] text-xl sm:text-2xl font-bold">Mounjaro KwikPen (0.6mL)</h1>
+  </div>
 
-    <!-- خيارات يمين -->
-    <div class="w-full md:w-1/2 flex flex-col items-start bg-white p-3 sm:p-4 rounded-2xl shadow">
-      <h1 class="text-lg sm:text-xl font-bold mb-3">Mounjaro KwikPen (0.6mL)</h1>
+  <div class="w-full max-w-4xl flex justify-center mt-2">
+    <img id="pen-image" src="https://www.mediafire.com/convkey/b684/chvk7zaudkn0imxzg.jpg"
+         alt="Mounjaro Pen" class="pen-image-Middle">
+  </div>
 
-      <div class="flex flex-col gap-2 mb-4 text-sm sm:text-base">
-        <label class="hidden items-center gap-2 cursor-pointer">
-          <input type="radio" name="product" value="pens" class="w-5 h-5">
-          <span>Mounjaro Pre-filled Pen (0.5mL)</span>
-        </label>
-
-        <label class="hidden items-center gap-2 cursor-pointer">
-          <input type="radio" name="product" value="kwik" class="w-5 h-5" checked>
-          <span>Mounjaro KwikPen (0.6mL)</span>
-        </label>
-
-        <label class="hidden items-center gap-2 cursor-pointer">
-          <input type="radio" name="product" value="vial" class="w-5 h-5">
-          <span>Mounjaro Vial (0.5mL)</span>
-        </label>
-
-        <a id="kwik-link" href="https://files.mealabels.gulf.lilly.com/content/mounjaro-kwikpen/lebanon/arabic_instructions_for_use.pdf" target="_blank" class="text-blue-700 font-bold underline">طريقة الاستخدام اضغط هنا</a>
-      </div>
-
-      <div id="golden-dose-container" class="flex items-center gap-2 cursor-pointer mt-2">
-        <input type="checkbox" id="golden-dose" class="w-5 h-5">
-        <label for="golden-dose" class="font-semibold text-yellow-600 text-sm sm:text-base">استخدم الجرعة الذهبية ✨</label>
-      </div>
-    </div>
+  <div class="w-full max-w-4xl text-center mt-2">
+    <a id="kwik-link"
+       href="https://files.mealabels.gulf.lilly.com/content/mounjaro-kwikpen/lebanon/arabic_instructions_for_use.pdf"
+       target="_blank"
+       class="text-base sm:text-lg underline text-blue-700 font-extrabold">
+    اضغط هنا KwikPen طريقة استخدام
+    </a>
   </div>
 
   <div class="w-full max-w-4xl bg-white p-3 sm:p-4 rounded-2xl shadow text-center">
@@ -80,13 +79,21 @@
       <button class="dose-btn text-white font-bold py-2 px-2 sm:px-3 rounded-lg shadow" style="background:#c6007e">10 mg</button>
       <button class="dose-btn text-white font-bold py-2 px-2 sm:px-3 rounded-lg shadow" style="background:#096be2">12.5 mg</button>
       <button class="dose-btn text-white font-bold py-2 px-2 sm:px-3 rounded-lg shadow" style="background:#fc3232">15 mg</button>
-      <input id="dose-input-2" type="number" step="0.1" placeholder="او اكتب هنا" class="dose-input border border-gray-300 rounded-lg py-2 px-2 text-center text-sm sm:text-base focus:ring-2 focus:ring-blue-500">
+      <input id="dose-input-2" type="number" step="0.1" placeholder="او اكتب هنا"
+             class="dose-input border border-gray-300 rounded-lg py-2 px-2 text-center text-sm sm:text-base focus:ring-2 focus:ring-blue-500">
     </div>
   </div>
 
-  <div id="result" class="w-full max-w-4xl bg-white p-3 sm:p-4 rounded-2xl shadow text-center text-lg sm:text-xl font-bold text-gray-800"></div>
+  <div id="golden-dose-container" class="flex items-center gap-2 cursor-pointer mt-2">
+    <input type="checkbox" id="golden-dose" class="w-5 h-5">
+    <label for="golden-dose" class="font-semibold text-yellow-600 text-sm sm:text-base"> ✨استخدم الجرعة الذهبية ✨</label>
+  </div>
 
-  <div class="syringe-wrap" id="syringeWrap" style="display:none; margin-top:60px;">
+  <div id="result"
+       class="w-full max-w-4xl bg-white p-3 sm:p-4 rounded-2xl shadow text-center text-lg sm:text-xl font-bold text-gray-800"></div>
+
+  <!-- ✅ محاكي الإبرة بالشخطات الأصلية -->
+  <div class="syringe-wrap" id="syringeWrap" style="display:none;margin-top:60px;">
     <img src="https://www.mediafire.com/convkey/205f/4r9jw4nsd8cy0kc9g.jpg?size_id=8" alt="Needle" class="syringe-image">
     <div class="syringe">
       <div class="fill" id="syringeFill"></div>
@@ -95,69 +102,57 @@
   </div>
 
   <script>
-    const selectedProduct = "kwik";
     const goldenCheckbox = document.getElementById("golden-dose");
     const result = document.getElementById("result");
-    const imageContainer = document.querySelector("#image-container img");
-
-    const productValues = { kwik: 0.6 };
-
+    const imageContainer = document.getElementById("pen-image");
     const doseImages = {
-      "2.5": "https://www.mediafire.com/convkey/9902/firhiuxk2po2xv09g.jpg",
-      "5": "https://www.mediafire.com/convkey/09a1/70ekytrkprdefa49g.jpg",
-      "7.5": "https://www.mediafire.com/convkey/0311/lq729u6ajkk63qi9g.jpg",
-      "10": "https://www.mediafire.com/convkey/c345/wv3xjgb4pxyrznl9g.jpg",
-      "12.5": "https://www.mediafire.com/convkey/de5d/5rz78g7h2sxp3zq9g.jpg",
-      "15": "https://www.mediafire.com/convkey/51c5/528xxqsvbniiu1w9g.jpg"
+      "2.5":"https://www.mediafire.com/convkey/93af/mcys1igbz1lcjzb9g.jpg",
+      "5":"https://www.mediafire.com/convkey/027b/rnd8y0v9w04bnof9g.jpg",
+      "7.5":"https://www.mediafire.com/convkey/9e26/o5gtirnsiwrt2qd9g.jpg",
+      "10":"https://www.mediafire.com/convkey/c028/znwky78arwzx21k9g.jpg",
+      "12.5":"https://www.mediafire.com/convkey/f29e/l03c8mdc3qsfk1o9g.jpg",
+      "15":"https://www.mediafire.com/convkey/1902/o36f6z3yhepiinp9g.jpg"
     };
+    let dose1=null,dose2=null;
 
-    let dose1 = null;
-    let dose2 = null;
+    function formatNumber(num){return Number.isInteger(num)?num.toString():parseFloat(num.toFixed(1)).toString();}
+    function formatTicks(calc){return calc.toFixed(2).split(".")[1];}
 
-    function formatNumber(num) {
-      if (Number.isInteger(num)) return num.toString();
-      return parseFloat(num.toFixed(1)).toString();
-    }
-
-    function formatTicks(calc) {
-      return calc.toFixed(2).split(".")[1];
-    }
-
-    function calculateResult() {
-      if (dose1 && dose2) {
-        let calc = (dose2 / dose1) * productValues[selectedProduct];
-        let formattedTicks = formatTicks(calc);
-        let weeks = goldenCheckbox.checked ? (productValues[selectedProduct] * 5) / calc : (productValues[selectedProduct] * 4) / calc;
-        let months = weeks / 4;
-        result.innerHTML = `✅ النتيجة: <span style="color:red">${formattedTicks}</span> تكة او ملي ( عدد الاشهر  <span style="color:purple">${formatNumber(months)}</span>  ) `;
+    function calculateResult(){
+      if(dose1&&dose2){
+        const calc=(dose2/dose1)*0.6;
+        const formattedTicks=formatTicks(calc);
+        const weeks=goldenCheckbox.checked?(0.6*5)/calc:(0.6*4)/calc;
+        const months=weeks/4;
+        result.innerHTML=`✅ النتيجة: <span style="color:red">${formattedTicks}</span> تكة او ملي ( عدد الاشهر <span style="color:purple">${formatNumber(months)}</span> )`;
         showSyringe(formattedTicks);
       }
     }
 
-    function buildTicks() {
-      const ticks = document.getElementById('syringeTicks');
-      ticks.innerHTML = '';
-      const colors = ["#FAFAFA","#000000","#FAFAFA","#000000","#FAFAFA","#000000","#FAFAFA","#000000","#FAFAFA"];
-      let colorIndex = 0;
-      for (let u=0; u<=100; u+=10) {
-        const pos = (u/100)*100;
-        const big = document.createElement('div');
-        big.className = 'tick big';
-        big.style.left = pos+'%';
+    function buildTicks(){
+      const ticks=document.getElementById('syringeTicks');
+      ticks.innerHTML='';
+      const colors=["#FAFAFA","#000000","#FAFAFA","#000000","#FAFAFA","#000000","#FAFAFA","#000000","#FAFAFA"];
+      let colorIndex=0;
+      for(let u=0;u<=100;u+=10){
+        const pos=(u/100)*100;
+        const big=document.createElement('div');
+        big.className='tick big';
+        big.style.left=pos+'%';
         ticks.appendChild(big);
-        const label = document.createElement('div');
-        label.className = 'tick-label';
-        label.style.left = pos+'%';
-        label.textContent = u;
+        const label=document.createElement('div');
+        label.className='tick-label';
+        label.style.left=pos+'%';
+        label.textContent=u;
         ticks.appendChild(label);
-        if (u<100) {
-          for (let i=1; i<=9; i++) {
-            const p = u + (i * (10/10));
-            const small = document.createElement('div');
-            small.className = 'tick small';
-            small.style.left = (p)+'%';
-            small.style.backgroundColor = colors[colorIndex % colors.length];
-            if (small.style.backgroundColor === 'rgb(250, 250, 250)') small.style.height = '0.5px';
+        if(u<100){
+          for(let i=1;i<=9;i++){
+            const p=u+(i*(10/10));
+            const small=document.createElement('div');
+            small.className='tick small';
+            small.style.left=(p)+'%';
+            small.style.backgroundColor=colors[colorIndex%colors.length];
+            if(small.style.backgroundColor==='rgb(250, 250, 250)')small.style.height='0.5px';
             colorIndex++;
             ticks.appendChild(small);
           }
@@ -165,52 +160,47 @@
       }
     }
 
-    function showSyringe(units) {
-      const wrap = document.getElementById('syringeWrap');
-      const fill = document.getElementById('syringeFill');
-      wrap.style.display = 'block';
-      const u = Math.max(0, Math.min(100, Number(units) || 0));
-      fill.style.width = u + '%';
+    function showSyringe(units){
+      const wrap=document.getElementById('syringeWrap');
+      const fill=document.getElementById('syringeFill');
+      wrap.style.display='block';
+      fill.style.width=Math.min(100,Number(units)||0)+'%';
     }
 
-    function setupDoseGroup(groupId, isDose1) {
-      const group = document.getElementById(groupId);
-      const buttons = group.querySelectorAll('.dose-btn');
-      const input = group.querySelector('.dose-input');
-      buttons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          buttons.forEach(b => b.classList.remove("ring-4", "ring-yellow-400"));
-          btn.classList.add("ring-4", "ring-yellow-400");
-          const mg = parseFloat(btn.textContent) || 0;
-          if (isDose1) {
-            dose1 = mg;
-            if (doseImages[mg]) imageContainer.src = doseImages[mg];
-          } else {
-            dose2 = mg;
-          }
+    function setupDoseGroup(groupId,isDose1){
+      const group=document.getElementById(groupId);
+      const buttons=group.querySelectorAll('.dose-btn');
+      const input=group.querySelector('.dose-input');
+      buttons.forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          buttons.forEach(b=>b.classList.remove("ring-4","ring-yellow-400"));
+          btn.classList.add("ring-4","ring-yellow-400");
+          const mg=parseFloat(btn.textContent)||0;
+          if(isDose1){
+            dose1=mg;
+            imageContainer.src=doseImages[mg]||imageContainer.src;
+            imageContainer.className="pen-image-small";
+          }else{dose2=mg;}
           calculateResult();
         });
       });
-      if (input) {
-        input.addEventListener('input', () => {
-          buttons.forEach(b => b.classList.remove("ring-4", "ring-yellow-400"));
-          const mg = parseFloat(input.value) || 0;
-          if (isDose1) {
-            dose1 = mg;
-            if (doseImages[mg]) imageContainer.src = doseImages[mg];
-          } else {
-            dose2 = mg;
-          }
+      if(input){
+        input.addEventListener('input',()=>{
+          const mg=parseFloat(input.value)||0;
+          if(isDose1){
+            dose1=mg;
+            imageContainer.src=doseImages[mg]||imageContainer.src;
+            imageContainer.className="pen-image-small";
+          }else{dose2=mg;}
           calculateResult();
         });
       }
     }
 
-    goldenCheckbox.addEventListener('change', calculateResult);
+    goldenCheckbox.addEventListener('change',calculateResult);
     buildTicks();
-    setupDoseGroup("dose-group-1", true);
-    setupDoseGroup("dose-group-2", false);
+    setupDoseGroup("dose-group-1",true);
+    setupDoseGroup("dose-group-2",false);
   </script>
-
 </body>
 </html>
