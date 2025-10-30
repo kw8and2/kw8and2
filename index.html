@@ -1,207 +1,309 @@
-
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>Mounjaro</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {transform-origin: top center;zoom: reset;}
-    .syringe-wrap {
-      width:100%;max-width:9920px;margin:40px auto 10px;padding:12px;
-      background:#fff;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.06);position:relative
-    }
-    .syringe {
-      position:relative;height:50px;border-radius:10px;
-      background:linear-gradient(180deg,#fff,#f7f7f7)
-    }
-    .syringe .fill {
-      position:absolute;left:0;top:0;bottom:0;width:0;
-      background:#009dff;transition:width 0.4s ease
-    }
-    .ticks {position:absolute;left:0;right:0;bottom:0;height:100%}
-    .tick {position:absolute;bottom:0;width:2px;background:#222}
-    .tick.big {height:25px}
-    .tick.small {height:12px;opacity:0.7}
-    .tick-label {position:absolute;top:4px;font-size:15px;transform:translateX(-50%);color:#111}
-    .syringe-image {width:100%;max-width:720px;height:70px;margin:0 auto;display:block;object-fit:contain;position:absolute;top:-73px;left:0;right:0}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Mounjaro</title>
 
-    .pen-image-main {
-      width: 18rem;max-width: 20rem;height: auto;object-fit: contain;
-      border-radius: 0.5rem;box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      transition: all 0.3s ease;
-    }
-    .pen-image-small {
-      width: 6rem;height: auto;object-fit: contain;
-      border-radius: 0.5rem;transition: all 0.3s ease;
-      box-shadow: 0 1px 5px rgba(0,0,0,0.1);
-    }
-  </style>
+<link rel="icon" href="https://domain.glass/favicon/www.lilly.com.png" type="image/png" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+:root {
+  --font-main: 'Cairo', sans-serif;
+  --font-size-base: 16px;
+
+  --main-img-width: 50rem;
+  --main-img-height: 15rem;
+  --main-img-top: 5px;
+
+  --dose-img-width: 5rem;
+  --dose-img-height: 5rem;
+  --dose-img-gap: 0px;
+
+  --dose-input-top: 5px;
+
+  --section-dose-top: 5px;
+  --section-dose-title-margin-bottom: 5px;
+
+  --section-target-top: 5px;
+  --section-target-title-margin-bottom: 5px;
+
+  --result-font-size: 30px;
+  --result-margin-top: 10px;
+
+  --syringe-top: 40px;
+  --syringe-label-color: #009DFF;
+}
+
+body {
+  font-family: var(--font-main);
+  font-size: var(--font-size-base);
+  background: #ffffff;
+}
+
+/* الصورة الرئيسية */
+.pen-image-Middle {
+  width: var(--main-img-width);
+  height: var(--main-img-height);
+  object-fit: contain;
+  margin-top: var(--main-img-top);
+  transition: all 0.3s ease;
+}
+
+/* صور الجرعات */
+#dose-group-1, #dose-group-2 {
+  gap: var(--dose-img-gap) !important;
+}
+.dose-img {
+  width: var(--dose-img-width);
+  height: var(--dose-img-height);
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+.dose-img.active { transform: scale(1.90); }
+
+/* مربع "او اكتب هنا" */
+.dose-input {
+  width: 20rem;
+  height: 3rem;
+  border: 3px solid #ccc;
+  border-radius: 0;
+  text-align: center;
+  font-size: 1.5rem;
+  margin-top: var(--dose-input-top);
+}
+.dose-input:focus { border-color: #5D0096; box-shadow: 0 0 4px rgba(93,0,150,0.3); }
+
+/* الأقسام 💉 و 🎯 */
+.section-dose { margin-top: var(--section-dose-top); }
+.section-dose h2 { margin-bottom: var(--section-dose-title-margin-bottom); }
+
+.section-target { margin-top: var(--section-target-top); }
+.section-target h2 { margin-bottom: var(--section-target-title-margin-bottom); }
+
+/* النتيجة */
+#result {
+  margin-top: var(--result-margin-top);
+  background: #f9f9ff;
+  border: 1px solid #d0d0d0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  border-radius: 15px;
+  font-size: var(--result-font-size);
+  font-weight: 700;
+  color: #222;
+}
+
+/* محاكي الإبرة */
+.syringe-wrap {
+  width:100%;
+  margin: var(--syringe-top) auto 10px;
+  padding:12px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.06);
+  position:relative;
+  display:none;
+}
+.syringe {position:relative;height:50px;border-radius:10px;background:linear-gradient(180deg,#fff,#f7f7f7)}
+.syringe .fill{position:absolute;left:0;top:0;bottom:0;width:0;background:#009dff;transition:width 0.4s ease}
+.ticks{position:absolute;left:0;right:0;bottom:0;height:100%}
+.tick{position:absolute;bottom:0;width:2px;background:#000}
+.tick.big{height:25px}
+.tick.small{height:10px;opacity:0.7}
+.tick-label{position:absolute;top:4px;font-size:15px;transform:translateX(-50%);color:#111}
+.syringe-image{width:100%;max-width:720px;height:70px;margin:0 auto;display:block;object-fit:contain;position:absolute;top:-73px;left:0;right:0}
+
+/* عرض محاكي الإبرة */
+.syringe-option label { color: var(--syringe-label-color); font-weight: 600; }
+</style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col items-center justify-start p-2 sm:p-4 gap-4">
 
-  <div class="w-full text-center mt-3">
-    <h1 class="text-[#5D0096] text-xl sm:text-2xl font-bold">Mounjaro KwikPen (0.6mL)</h1>
+<body class="min-h-screen flex flex-col items-center justify-start p-2 sm:p-4 gap-2">
+
+<!-- 💜 العنوان -->
+<div class="w-full text-center mt-2">
+  <h1 class="text-[#5D0096] text-xl sm:text-2xl font-bold">Mounjaro KwikPen (0.6mL)</h1>
+</div>
+
+<!-- 📸 الصورة الرئيسية -->
+<div class="w-full max-w-4xl flex justify-center mt-1">
+  <img id="pen-image"
+       src="https://www.mediafire.com/convkey/0be4/34416zv2fa0gtoo9g.jpg"
+       alt="Mounjaro Pen" class="pen-image-Middle">
+</div>
+
+<!-- 🔗 الرابط -->
+<div class="w-full max-w-4xl text-center mt-1">
+  <a href="https://files.mealabels.gulf.lilly.com/content/mounjaro-kwikpen/lebanon/arabic_instructions_for_use.pdf"
+     target="_blank"
+     class="text-base sm:text-lg underline text-blue-700 font-extrabold">
+     اضغط هنا KwikPen طريقة استخدام
+  </a>
+</div>
+
+<!-- 💉 حدد جرعة القلم -->
+<div class="w-full max-w-4xl p-3 sm:p-4 rounded-2xl text-center section-dose">
+  <h2 class="text-base sm:text-lg font-semibold">💉 حدد جرعة القلم</h2>
+  <div class="grid grid-cols-3 sm:grid-cols-7 justify-center" id="dose-group-1">
+    <img src="https://www.mediafire.com/convkey/b0a1/1v91nezacgvctmx9g.jpg" class="dose-img" data-mg="2.5">
+    <img src="https://www.mediafire.com/convkey/a47f/958mgbch2zd22b39g.jpg" class="dose-img" data-mg="5">
+    <img src="https://www.mediafire.com/convkey/0a59/c2b2pl0ce013zg29g.jpg" class="dose-img" data-mg="7.5">
+    <img src="https://www.mediafire.com/convkey/cd8e/osqmq64a50uz9qh9g.jpg" class="dose-img" data-mg="10">
+    <img src="https://www.mediafire.com/convkey/8559/v8uy1ty789xfnhu9g.jpg" class="dose-img" data-mg="12.5">
+    <img src="https://www.mediafire.com/convkey/316c/de0rhp4jaxq4dr39g.jpg" class="dose-img" data-mg="15">
   </div>
+</div>
 
-  <div class="w-full max-w-4xl flex justify-center mt-2">
-    <img id="pen-image" src="https://www.mediafire.com/convkey/0be4/34416zv2fa0gtoo9g.jpg"
-         alt="Mounjaro Pen" class="pen-image-Middle">
+<!-- 🎯 حدد الجرعة المطلوبة -->
+<div class="w-full max-w-4xl p-3 sm:p-4 rounded-2xl text-center section-target">
+  <h2 class="text-base sm:text-lg font-semibold">🎯 حدد الجرعة المطلوبة</h2>
+  <div class="grid grid-cols-3 sm:grid-cols-7 justify-center" id="dose-group-2">
+    <img src="https://www.mediafire.com/convkey/b0a1/1v91nezacgvctmx9g.jpg" class="dose-img" data-mg="2.5">
+    <img src="https://www.mediafire.com/convkey/a47f/958mgbch2zd22b39g.jpg" class="dose-img" data-mg="5">
+    <img src="https://www.mediafire.com/convkey/0a59/c2b2pl0ce013zg29g.jpg" class="dose-img" data-mg="7.5">
+    <img src="https://www.mediafire.com/convkey/cd8e/osqmq64a50uz9qh9g.jpg" class="dose-img" data-mg="10">
+    <img src="https://www.mediafire.com/convkey/8559/v8uy1ty789xfnhu9g.jpg" class="dose-img" data-mg="12.5">
+    <img src="https://www.mediafire.com/convkey/316c/de0rhp4jaxq4dr39g.jpg" class="dose-img" data-mg="15">
   </div>
-
-  <div class="w-full max-w-4xl text-center mt-2">
-    <a id="kwik-link"
-       href="https://files.mealabels.gulf.lilly.com/content/mounjaro-kwikpen/lebanon/arabic_instructions_for_use.pdf"
-       target="_blank"
-       class="text-base sm:text-lg underline text-blue-700 font-extrabold">
-    اضغط هنا KwikPen طريقة استخدام
-    </a>
+  <div class="flex justify-center">
+    <input id="dose-input-2" type="text" placeholder="او اكتب الجرعة هنا" class="dose-input">
   </div>
+</div>
 
-  <div class="w-full max-w-4xl bg-white p-3 sm:p-4 rounded-2xl shadow text-center">
-    <h2 class="text-base sm:text-lg font-semibold mb-3">💉حدد جرعة القلم</h2>
-    <div class="grid grid-cols-3 sm:grid-cols-7 gap-2 justify-center" id="dose-group-1">
-      <button class="dose-btn text-white font-bold py-2 px-2 sm:px-3 rounded-lg shadow" style="background:#56585C">2.5 mg</button>
-      <button class="dose-btn text-white font-bold py-2 px-2 sm:px-3 rounded-lg shadow" style="background:#310072">5 mg</button>
-      <button class="dose-btn text-white font-bold py-2 px-2 sm:px-3 rounded-lg shadow" style="background:#007c66">7.5 mg</button>
-      <button class="dose-btn text-white font-bold py-2 px-2 sm:px-3 rounded-lg shadow" style="background:#c6007e">10 mg</button>
-      <button class="dose-btn text-white font-bold py-2 px-2 sm:px-3 rounded-lg shadow" style="background:#096be2">12.5 mg</button>
-      <button class="dose-btn text-white font-bold py-2 px-2 sm:px-3 rounded-lg shadow" style="background:#fc3232">15 mg</button>
-    </div>
+<!-- ✅ الجرعة الذهبية -->
+<div id="golden-dose-container" class="flex items-center gap-2 cursor-pointer mt-1">
+  <input type="checkbox" id="golden-dose" class="w-5 h-5">
+  <label for="golden-dose" class="font-semibold text-yellow-600 text-sm sm:text-base"> ✨ استخدم الجرعة الذهبية ✨</label>
+</div>
+
+<!-- ✅ النتيجة -->
+<div id="result" class="w-full max-w-4xl p-3 text-center font-bold"></div>
+
+<!-- ✅ عرض المحاكي -->
+<div class="flex items-center gap-2 cursor-pointer mt-1 syringe-option">
+  <input type="checkbox" id="show-syringe" class="w-5 h-5">
+  <label for="show-syringe" class="text-sm sm:text-base"> عرض محاكي الإبرة </label>
+</div>
+
+<!-- ✅ محاكي الإبرة -->
+<div class="syringe-wrap" id="syringeWrap">
+  <img src="https://www.mediafire.com/convkey/205f/4r9jw4nsd8cy0kc9g.jpg" alt="Needle" class="syringe-image">
+  <div class="syringe">
+    <div class="fill" id="syringeFill"></div>
+    <div class="ticks" id="syringeTicks"></div>
   </div>
+</div>
 
-  <div class="w-full max-w-4xl bg-white p-3 sm:p-4 rounded-2xl shadow text-center">
-    <h2 class="text-base sm:text-lg font-semibold mb-3">🎯 حدد الجرعة المطلوبة</h2>
-    <div class="grid grid-cols-3 sm:grid-cols-7 gap-2 justify-center" id="dose-group-2">
-      <button class="dose-btn text-white font-bold py-2 px-2 sm:px-3 rounded-lg shadow" style="background:#56585C">2.5 mg</button>
-      <button class="dose-btn text-white font-bold py-2 px-2 sm:px-3 rounded-lg shadow" style="background:#310072">5 mg</button>
-      <button class="dose-btn text-white font-bold py-2 px-2 sm:px-3 rounded-lg shadow" style="background:#007c66">7.5 mg</button>
-      <button class="dose-btn text-white font-bold py-2 px-2 sm:px-3 rounded-lg shadow" style="background:#c6007e">10 mg</button>
-      <button class="dose-btn text-white font-bold py-2 px-2 sm:px-3 rounded-lg shadow" style="background:#096be2">12.5 mg</button>
-      <button class="dose-btn text-white font-bold py-2 px-2 sm:px-3 rounded-lg shadow" style="background:#fc3232">15 mg</button>
-      <input id="dose-input-2" type="number" step="0.1" placeholder="او اكتب هنا"
-             class="dose-input border border-gray-300 rounded-lg py-2 px-2 text-center text-sm sm:text-base focus:ring-2 focus:ring-blue-500">
-    </div>
-  </div>
+<script>
+const goldenCheckbox=document.getElementById("golden-dose");
+const syringeWrap=document.getElementById("syringeWrap");
+const syringeToggle=document.getElementById("show-syringe");
+const result=document.getElementById("result");
+const imageContainer=document.getElementById("pen-image");
+const doseInput2=document.getElementById("dose-input-2");
 
-  <div id="golden-dose-container" class="flex items-center gap-2 cursor-pointer mt-2">
-    <input type="checkbox" id="golden-dose" class="w-5 h-5">
-    <label for="golden-dose" class="font-semibold text-yellow-600 text-sm sm:text-base"> ✨استخدم الجرعة الذهبية ✨</label>
-  </div>
+const doseImages={
+  "2.5":"https://www.mediafire.com/convkey/e9a4/4554jnrfc48qgoj9g.jpg",
+  "5":"https://www.mediafire.com/convkey/5d4f/aaoucs7i3m4j1bc9g.jpg",
+  "7.5":"https://www.mediafire.com/convkey/7522/v1sztx46b4j7wqj9g.jpg",
+  "10":"https://www.mediafire.com/convkey/c10f/3d3od054v0ziacb9g.jpg",
+  "12.5":"https://www.mediafire.com/convkey/e2a6/w1j1ro4qikm5c819g.jpg",
+  "15":"https://www.mediafire.com/convkey/a92d/iy7hjap6omd241o9g.jpg"
+};
 
-  <div id="result"
-       class="w-full max-w-4xl bg-white p-3 sm:p-4 rounded-2xl shadow text-center text-lg sm:text-xl font-bold text-gray-800"></div>
+let dose1=null,dose2=null;
 
-  <!-- ✅ محاكي الإبرة بالشخطات الأصلية -->
-  <div class="syringe-wrap" id="syringeWrap" style="display:none;margin-top:60px;">
-    <img src="https://www.mediafire.com/convkey/205f/4r9jw4nsd8cy0kc9g.jpg?size_id=8" alt="Needle" class="syringe-image">
-    <div class="syringe">
-      <div class="fill" id="syringeFill"></div>
-      <div class="ticks" id="syringeTicks"></div>
-    </div>
-  </div>
+function formatNumber(num){return Number.isInteger(num)?num.toString():parseFloat(num.toFixed(1)).toString();}
+function formatTicks(calc){return calc.toFixed(2).split(".")[1];}
 
-  <script>
-    const goldenCheckbox = document.getElementById("golden-dose");
-    const result = document.getElementById("result");
-    const imageContainer = document.getElementById("pen-image");
-    const doseImages = {
-      "2.5":"https://www.mediafire.com/convkey/e9a4/4554jnrfc48qgoj9g.jpg",
-      "5":"https://www.mediafire.com/convkey/5d4f/aaoucs7i3m4j1bc9g.jpg",
-      "7.5":"https://www.mediafire.com/convkey/7522/v1sztx46b4j7wqj9g.jpg",
-      "10":"https://www.mediafire.com/convkey/c10f/3d3od054v0ziacb9g.jpg",
-      "12.5":"https://www.mediafire.com/convkey/e2a6/w1j1ro4qikm5c819g.jpg",
-      "15":"https://www.mediafire.com/convkey/a92d/iy7hjap6omd241o9g.jpg"
-    };
-    let dose1=null,dose2=null;
+function calculateResult(){
+  if(dose1&&dose2){
+    const calc=(dose2/dose1)*0.6;
+    const formattedTicks=formatTicks(calc);
+    const weeks=goldenCheckbox.checked?(0.6*5)/calc:(0.6*4)/calc;
+    const months=weeks/4;
+    result.innerHTML=`✅ النتيجة: <u style="color:red">${formattedTicks}</u> تكة أو ملي ( عدد الأشهر <u style="color:purple">${formatNumber(months)}</u> )`;
+    if(syringeToggle.checked) showSyringe(formattedTicks);
+  } else result.innerHTML="";
+}
 
-    function formatNumber(num){return Number.isInteger(num)?num.toString():parseFloat(num.toFixed(1)).toString();}
-    function formatTicks(calc){return calc.toFixed(2).split(".")[1];}
-
-    function calculateResult(){
-      if(dose1&&dose2){
-        const calc=(dose2/dose1)*0.6;
-        const formattedTicks=formatTicks(calc);
-        const weeks=goldenCheckbox.checked?(0.6*5)/calc:(0.6*4)/calc;
-        const months=weeks/4;
-        result.innerHTML=`✅ النتيجة: <span style="color:red">${formattedTicks}</span> تكة او ملي ( عدد الاشهر <span style="color:purple">${formatNumber(months)}</span> )`;
-        showSyringe(formattedTicks);
+function buildTicks(){
+  const ticks=document.getElementById('syringeTicks');
+  ticks.innerHTML='';
+  const colors=["#FAFAFA","#000000","#FAFAFA","#000000","#FAFAFA","#000000","#FAFAFA","#000000","#FAFAFA"];
+  let colorIndex=0;
+  for(let u=0;u<=100;u+=10){
+    const pos=(u/100)*100;
+    const big=document.createElement('div');
+    big.className='tick big';
+    big.style.left=pos+'%';
+    ticks.appendChild(big);
+    const label=document.createElement('div');
+    label.className='tick-label';
+    label.style.left=pos+'%';
+    label.textContent=u;
+    ticks.appendChild(label);
+    if(u<100){
+      for(let i=1;i<=9;i++){
+        const p=u+(i*(10/10));
+        const small=document.createElement('div');
+        small.className='tick small';
+        small.style.left=(p)+'%';
+        small.style.backgroundColor=colors[colorIndex%colors.length];
+        if(small.style.backgroundColor==='rgb(250, 250, 250)')small.style.height='0.5px';
+        colorIndex++;
+        ticks.appendChild(small);
       }
     }
+  }
+}
 
-    function buildTicks(){
-      const ticks=document.getElementById('syringeTicks');
-      ticks.innerHTML='';
-      const colors=["#FAFAFA","#000000","#FAFAFA","#000000","#FAFAFA","#000000","#FAFAFA","#000000","#FAFAFA"];
-      let colorIndex=0;
-      for(let u=0;u<=100;u+=10){
-        const pos=(u/100)*100;
-        const big=document.createElement('div');
-        big.className='tick big';
-        big.style.left=pos+'%';
-        ticks.appendChild(big);
-        const label=document.createElement('div');
-        label.className='tick-label';
-        label.style.left=pos+'%';
-        label.textContent=u;
-        ticks.appendChild(label);
-        if(u<100){
-          for(let i=1;i<=9;i++){
-            const p=u+(i*(10/10));
-            const small=document.createElement('div');
-            small.className='tick small';
-            small.style.left=(p)+'%';
-            small.style.backgroundColor=colors[colorIndex%colors.length];
-            if(small.style.backgroundColor==='rgb(250, 250, 250)')small.style.height='0.5px';
-            colorIndex++;
-            ticks.appendChild(small);
-          }
-        }
-      }
-    }
+function showSyringe(units){
+  syringeWrap.style.display='block';
+  document.getElementById('syringeFill').style.width=Math.min(100,Number(units)||0)+'%';
+}
 
-    function showSyringe(units){
-      const wrap=document.getElementById('syringeWrap');
-      const fill=document.getElementById('syringeFill');
-      wrap.style.display='block';
-      fill.style.width=Math.min(100,Number(units)||0)+'%';
-    }
+function setupDoseGroup(groupId,isDose1){
+  const group=document.getElementById(groupId);
+  const imgs=group.querySelectorAll('.dose-img');
+  const input=group.querySelector('.dose-input');
+  imgs.forEach(img=>{
+    img.addEventListener('click',()=>{
+      imgs.forEach(i=>i.classList.remove('active'));
+      img.classList.add('active');
+      const mg=parseFloat(img.dataset.mg)||0;
+      if(isDose1){dose1=mg;if(doseImages[mg])imageContainer.src=doseImages[mg];}
+      else dose2=mg;
+      calculateResult();
+    });
+  });
+  if(input){
+    input.addEventListener('input',()=>{
+      const mg=parseFloat(input.value)||0;
+      if(isDose1){dose1=mg;if(doseImages[mg])imageContainer.src=doseImages[mg];}
+      else dose2=mg;
+      calculateResult();
+    });
+  }
+}
 
-    function setupDoseGroup(groupId,isDose1){
-      const group=document.getElementById(groupId);
-      const buttons=group.querySelectorAll('.dose-btn');
-      const input=group.querySelector('.dose-input');
-      buttons.forEach(btn=>{
-        btn.addEventListener('click',()=>{
-          buttons.forEach(b=>b.classList.remove("ring-4","ring-yellow-400"));
-          btn.classList.add("ring-4","ring-yellow-400");
-          const mg=parseFloat(btn.textContent)||0;
-          if(isDose1){
-            dose1=mg;
-            imageContainer.src=doseImages[mg]||imageContainer.src;
-            imageContainer.className="pen-image-small";
-          }else{dose2=mg;}
-          calculateResult();
-        });
-      });
-      if(input){
-        input.addEventListener('input',()=>{
-          const mg=parseFloat(input.value)||0;
-          if(isDose1){
-            dose1=mg;
-            imageContainer.src=doseImages[mg]||imageContainer.src;
-            imageContainer.className="pen-image-small";
-          }else{dose2=mg;}
-          calculateResult();
-        });
-      }
-    }
+doseInput2.addEventListener("input",(e)=>{
+  let v=e.target.value.replace(/[^0-9.]/g,"");
+  const p=v.split(".");
+  if(p.length>2)v=p[0]+"."+p[1];
+  if(p.length===1&&p[0].length>3)v=p[0].slice(0,3);
+  else if(p.length===2){p[0]=p[0].slice(0,3);p[1]=p[1].slice(0,3);v=p.join(".");}
+  e.target.value=v; calculateResult();
+});
 
-    goldenCheckbox.addEventListener('change',calculateResult);
-    buildTicks();
-    setupDoseGroup("dose-group-1",true);
-    setupDoseGroup("dose-group-2",false);
-  </script>
+goldenCheckbox.addEventListener('change',()=>calculateResult());
+syringeToggle.addEventListener("change",()=>{syringeWrap.style.display=syringeToggle.checked?"block":"none";calculateResult();});
+
+buildTicks();
+setupDoseGroup("dose-group-1",true);
+setupDoseGroup("dose-group-2",false);
+</script>
 </body>
 </html>
