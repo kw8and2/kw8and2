@@ -18,22 +18,19 @@
   --main-img-height: 15rem;
   --main-img-top: 5px;
 
-  --dose-img-width: 5rem;
-  --dose-img-height: 5rem;
-  --dose-img-gap: 0px;
+  --dose-img-width: 6rem;
+  --dose-img-height: 3rem;
+  --dose-img-gap: 60px;
 
   --dose-input-top: 5px;
 
   --section-dose-top: 5px;
-  --section-dose-title-margin-bottom: 5px;
-
   --section-target-top: 5px;
-  --section-target-title-margin-bottom: 5px;
 
-  --result-font-size: 30px;
+  --result-font-size: 25px; /* حجم النتيجة وسط */
   --result-margin-top: 10px;
 
-  --syringe-top: 40px;
+  --syringe-top: 60px; /* نزّل محاكي الإبرة تحت الخيار */
   --syringe-label-color: #009DFF;
 }
 
@@ -53,9 +50,7 @@ body {
 }
 
 /* صور الجرعات */
-#dose-group-1, #dose-group-2 {
-  gap: var(--dose-img-gap) !important;
-}
+#dose-group-1, #dose-group-2 { gap: var(--dose-img-gap) !important; }
 .dose-img {
   width: var(--dose-img-width);
   height: var(--dose-img-height);
@@ -67,21 +62,14 @@ body {
 /* مربع "او اكتب هنا" */
 .dose-input {
   width: 20rem;
-  height: 3rem;
-  border: 3px solid #ccc;
+  height: 2rem;
+  border: 2px solid #ccc;
   border-radius: 0;
   text-align: center;
-  font-size: 1.5rem;
+  font-size: 1rem;
   margin-top: var(--dose-input-top);
 }
 .dose-input:focus { border-color: #5D0096; box-shadow: 0 0 4px rgba(93,0,150,0.3); }
-
-/* الأقسام 💉 و 🎯 */
-.section-dose { margin-top: var(--section-dose-top); }
-.section-dose h2 { margin-bottom: var(--section-dose-title-margin-bottom); }
-
-.section-target { margin-top: var(--section-target-top); }
-.section-target h2 { margin-bottom: var(--section-target-title-margin-bottom); }
 
 /* النتيجة */
 #result {
@@ -91,7 +79,7 @@ body {
   box-shadow: 0 4px 10px rgba(0,0,0,0.08);
   border-radius: 15px;
   font-size: var(--result-font-size);
-  font-weight: 700;
+  font-weight: 600;
   color: #222;
 }
 
@@ -108,6 +96,8 @@ body {
 }
 .syringe {position:relative;height:50px;border-radius:10px;background:linear-gradient(180deg,#fff,#f7f7f7)}
 .syringe .fill{position:absolute;left:0;top:0;bottom:0;width:0;background:#009dff;transition:width 0.4s ease}
+
+/* الشخطات نفس قبل */
 .ticks{position:absolute;left:0;right:0;bottom:0;height:100%}
 .tick{position:absolute;bottom:0;width:2px;background:#000}
 .tick.big{height:25px}
@@ -122,19 +112,19 @@ body {
 
 <body class="min-h-screen flex flex-col items-center justify-start p-2 sm:p-4 gap-2">
 
-<!-- 💜 العنوان -->
+<!-- العنوان -->
 <div class="w-full text-center mt-2">
   <h1 class="text-[#5D0096] text-xl sm:text-2xl font-bold">Mounjaro KwikPen (0.6mL)</h1>
 </div>
 
-<!-- 📸 الصورة الرئيسية -->
+<!-- الصورة الرئيسية -->
 <div class="w-full max-w-4xl flex justify-center mt-1">
   <img id="pen-image"
        src="https://www.mediafire.com/convkey/0be4/34416zv2fa0gtoo9g.jpg"
        alt="Mounjaro Pen" class="pen-image-Middle">
 </div>
 
-<!-- 🔗 الرابط -->
+<!-- الرابط -->
 <div class="w-full max-w-4xl text-center mt-1">
   <a href="https://files.mealabels.gulf.lilly.com/content/mounjaro-kwikpen/lebanon/arabic_instructions_for_use.pdf"
      target="_blank"
@@ -144,9 +134,9 @@ body {
 </div>
 
 <!-- 💉 حدد جرعة القلم -->
-<div class="w-full max-w-4xl p-3 sm:p-4 rounded-2xl text-center section-dose">
+<div class="w-full max-w-4xl p-3 sm:p-4 text-center">
   <h2 class="text-base sm:text-lg font-semibold">💉 حدد جرعة القلم</h2>
-  <div class="grid grid-cols-3 sm:grid-cols-7 justify-center" id="dose-group-1">
+  <div class="flex flex-wrap justify-center items-center gap-10 sm:gap-12 mt-2" id="dose-group-1">
     <img src="https://www.mediafire.com/convkey/b0a1/1v91nezacgvctmx9g.jpg" class="dose-img" data-mg="2.5">
     <img src="https://www.mediafire.com/convkey/a47f/958mgbch2zd22b39g.jpg" class="dose-img" data-mg="5">
     <img src="https://www.mediafire.com/convkey/0a59/c2b2pl0ce013zg29g.jpg" class="dose-img" data-mg="7.5">
@@ -157,9 +147,9 @@ body {
 </div>
 
 <!-- 🎯 حدد الجرعة المطلوبة -->
-<div class="w-full max-w-4xl p-3 sm:p-4 rounded-2xl text-center section-target">
+<div class="w-full max-w-4xl p-3 sm:p-4 text-center">
   <h2 class="text-base sm:text-lg font-semibold">🎯 حدد الجرعة المطلوبة</h2>
-  <div class="grid grid-cols-3 sm:grid-cols-7 justify-center" id="dose-group-2">
+  <div class="flex flex-wrap justify-center items-center gap-10 sm:gap-12 mt-2" id="dose-group-2">
     <img src="https://www.mediafire.com/convkey/b0a1/1v91nezacgvctmx9g.jpg" class="dose-img" data-mg="2.5">
     <img src="https://www.mediafire.com/convkey/a47f/958mgbch2zd22b39g.jpg" class="dose-img" data-mg="5">
     <img src="https://www.mediafire.com/convkey/0a59/c2b2pl0ce013zg29g.jpg" class="dose-img" data-mg="7.5">
@@ -167,8 +157,8 @@ body {
     <img src="https://www.mediafire.com/convkey/8559/v8uy1ty789xfnhu9g.jpg" class="dose-img" data-mg="12.5">
     <img src="https://www.mediafire.com/convkey/316c/de0rhp4jaxq4dr39g.jpg" class="dose-img" data-mg="15">
   </div>
-  <div class="flex justify-center">
-    <input id="dose-input-2" type="text" placeholder="او اكتب الجرعة هنا" class="dose-input">
+  <div class="flex justify-center mt-2">
+    <input id="dose-input-2" type="text" placeholder="او اكتب الجرعة هنا" class="dose-input" inputmode="decimal" maxlength="5">
   </div>
 </div>
 
@@ -215,20 +205,25 @@ const doseImages={
 
 let dose1=null,dose2=null;
 
+/* تنسيق الأرقام للعرض */
 function formatNumber(num){return Number.isInteger(num)?num.toString():parseFloat(num.toFixed(1)).toString();}
 function formatTicks(calc){return calc.toFixed(2).split(".")[1];}
 
+/* الحساب وعرض النتيجة + تحريك الامتلاء */
 function calculateResult(){
-  if(dose1&&dose2){
+  if(dose1 && dose2){
     const calc=(dose2/dose1)*0.6;
-    const formattedTicks=formatTicks(calc);
+    const formattedTicks=formatTicks(calc); // جزء الأعشار (0-99) كنسبة %
     const weeks=goldenCheckbox.checked?(0.6*5)/calc:(0.6*4)/calc;
     const months=weeks/4;
     result.innerHTML=`✅ النتيجة: <u style="color:red">${formattedTicks}</u> تكة أو ملي ( عدد الأشهر <u style="color:purple">${formatNumber(months)}</u> )`;
     if(syringeToggle.checked) showSyringe(formattedTicks);
-  } else result.innerHTML="";
+  } else {
+    result.innerHTML="";
+  }
 }
 
+/* بناء الشخطات نفس قبل */
 function buildTicks(){
   const ticks=document.getElementById('syringeTicks');
   ticks.innerHTML='';
@@ -247,12 +242,12 @@ function buildTicks(){
     ticks.appendChild(label);
     if(u<100){
       for(let i=1;i<=9;i++){
-        const p=u+(i*(10/10));
+        const p=u+i; // كل 1%
         const small=document.createElement('div');
         small.className='tick small';
-        small.style.left=(p)+'%';
+        small.style.left=p+'%';
         small.style.backgroundColor=colors[colorIndex%colors.length];
-        if(small.style.backgroundColor==='rgb(250, 250, 250)')small.style.height='0.5px';
+        if(small.style.backgroundColor==='rgb(250, 250, 250)') small.style.height='0.5px';
         colorIndex++;
         ticks.appendChild(small);
       }
@@ -260,48 +255,55 @@ function buildTicks(){
   }
 }
 
+/* إظهار الامتلاء */
 function showSyringe(units){
   syringeWrap.style.display='block';
   document.getElementById('syringeFill').style.width=Math.min(100,Number(units)||0)+'%';
 }
 
+/* اختيار الجرعات من الصور */
 function setupDoseGroup(groupId,isDose1){
   const group=document.getElementById(groupId);
   const imgs=group.querySelectorAll('.dose-img');
-  const input=group.querySelector('.dose-input');
   imgs.forEach(img=>{
     img.addEventListener('click',()=>{
       imgs.forEach(i=>i.classList.remove('active'));
       img.classList.add('active');
       const mg=parseFloat(img.dataset.mg)||0;
-      if(isDose1){dose1=mg;if(doseImages[mg])imageContainer.src=doseImages[mg];}
-      else dose2=mg;
+      if(isDose1){
+        dose1=mg;
+        if(doseImages[mg]) imageContainer.src=doseImages[mg];
+      } else {
+        dose2=mg;
+      }
       calculateResult();
     });
   });
-  if(input){
-    input.addEventListener('input',()=>{
-      const mg=parseFloat(input.value)||0;
-      if(isDose1){dose1=mg;if(doseImages[mg])imageContainer.src=doseImages[mg];}
-      else dose2=mg;
-      calculateResult();
-    });
-  }
 }
 
+/* إدخال يدوي: رقمين.رقمين فقط */
 doseInput2.addEventListener("input",(e)=>{
-  let v=e.target.value.replace(/[^0-9.]/g,"");
-  const p=v.split(".");
-  if(p.length>2)v=p[0]+"."+p[1];
-  if(p.length===1&&p[0].length>3)v=p[0].slice(0,3);
-  else if(p.length===2){p[0]=p[0].slice(0,3);p[1]=p[1].slice(0,3);v=p.join(".");}
-  e.target.value=v; calculateResult();
+  let value=e.target.value.replace(/[^0-9.]/g,"");
+  if(!/^\d{0,2}(\.\d{0,2})?$/.test(value)){
+    value=value.slice(0,-1);
+  }
+  e.target.value=value;
+  dose2=parseFloat(value)||null;
+  calculateResult();
 });
 
-goldenCheckbox.addEventListener('change',()=>calculateResult());
-syringeToggle.addEventListener("change",()=>{syringeWrap.style.display=syringeToggle.checked?"block":"none";calculateResult();});
+/* تبديل الخيارات */
+goldenCheckbox.addEventListener('change',calculateResult);
+syringeToggle.addEventListener("change",()=>{
+  syringeWrap.style.display=syringeToggle.checked?"block":"none";
+  if(syringeToggle.checked){
+    buildTicks();        // تأكد من ظهور الشخطات
+    calculateResult();   // حدّث الامتلاء فورًا إن وُجدت نتيجة
+  }
+});
 
-buildTicks();
+/* تشغيل أولي */
+buildTicks();                      // ارسم الشخطات عند التحميل
 setupDoseGroup("dose-group-1",true);
 setupDoseGroup("dose-group-2",false);
 </script>
