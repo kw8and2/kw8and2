@@ -20,7 +20,7 @@
   --dose-img-height: 1rem;
   --dose-img-gap: 27px;
   --dose-input-top: 5px;
-  --result-font-size: 22px;
+  --result-font-size: 20px;
   --result-margin-top: 10px;
   --syringe-top: 60px;
   --syringe-label-color: #009DFF;
@@ -84,7 +84,7 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
     <img src="https://www.mediafire.com/convkey/316c/de0rhp4jaxq4dr39g.jpg" class="dose-img" data-mg="15">
   </div>
   <div class="flex justify-center mt-2">
-    <input id="dose-input-2" type="text" placeholder="او اكتب الجرعة هنا" class="dose-input" inputmode="decimal" maxlength="5">
+    <input id="dose-input-2" type="text" placeholder="او اكتب الجرعة المطلوبة هنا" class="dose-input" inputmode="decimal" maxlength="5">
   </div>
 </div>
 
@@ -105,14 +105,14 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
   <div class="syringe"><div class="fill" id="syringeFill"></div><div class="ticks" id="syringeTicks"></div></div>
 </div>
 
-<!-- ✅ كتلة الجسم (BMI) (الوزن المثالي) -->
+<!-- ✅ كتلة الجسم (BMI) -->
 <div class="flex items-center gap-2 cursor-pointer mt-2 syringe-option">
   <input type="checkbox" id="show-bmi" class="w-5 h-5">
   <label for="show-bmi" class="text-xs sm:text-sm font-semibold text-[#009DFF]"> كتلة الجسم (BMI) (الوزن المثالي) </label>
 </div>
 
 <div id="bmi-section" class="w-full sm:w-2/3 md:w-1/2 lg:w-1/3 p-2 mt-2 bg-white rounded-xl shadow-md hidden text-center mx-auto text-sm">
-  <div class="flex flex-col sm:flex-row justify-center items-center gap-2">
+  <div class="flex flex-row justify-center items-center gap-2">
     <input id="weight-input" type="text" placeholder="الوزن (كجم)" maxlength="5"
       class="border border-gray-300 rounded-md px-2 py-1 text-center w-24 focus:outline-none focus:ring-2 focus:ring-[#5D0096] text-sm">
     <input id="height-input" type="text" placeholder="الطول (سم)" maxlength="5"
@@ -127,39 +127,106 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
   <label for="show-pharmacies" class="text-xs sm:text-sm font-semibold text-[#009DFF]"> صيدليات بيع مونجارو (الكويت) </label>
 </div>
 
-<div id="pharmacy-section" class="w-full sm:w-2/3 md:w-1/2 lg:w-1/3 p-2 mt-2 bg-white rounded-xl shadow-md hidden text-center mx-auto text-sm">
-  <h3 class="font-bold text-base text-[#5D0096] mb-2">💊 صيدليات رسمية في الكويت</h3>
-  <div class="flex flex-col sm:flex-row justify-center items-center gap-2">
-     <a href="https://alhajerypharmacy.com/zone_e_ar/catalogsearch/result/index/?product_list_limit=24&product_list_order=name&q=Mounjaro" target="_blank"
-       class="bg-[#7e36c7] text-white px-2 py-1 rounded-lg shadow hover:bg-[#7e36c7] transition text-xs sm:text-sm">صيدلية الهاجري</a>
-     <a href="https://www.almutawaph.com.kw/ar/catalogsearch/result/?q=Mounjaro&product_list_order=wp_sortby_new&product_list_dir=desc" target="_blank"
-       class="bg-[#7e36c7] text-white px-2 py-1 rounded-lg shadow hover:bg-[#7e36c7] transition text-xs sm:text-sm">صيدلية المطوع</a>
-     <a href="https://pharmazone.com/ar/collections/vendors?q=Lilly&sort_by=created-descending" target="_blank"
-       class="bg-[#7e36c7] text-white px-2 py-1 rounded-lg shadow hover:bg-[#7e36c7] transition text-xs sm:text-sm">صيدلية فارمازون</a>
+<div id="pharmacy-section" class="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 p-4 mt-3 bg-white rounded-xl shadow-lg hidden text-center mx-auto text-sm">
+  <h3 class="font-bold text-base text-[#5D0096] mb-3">💊 صيدليات رسمية في الكويت</h3>
+  <div class="flex flex-row flex-wrap justify-center items-center gap-3">
+    <a href="https://alhajerypharmacy.com/zone_e_ar/catalogsearch/result/index/?product_list_limit=24&product_list_order=name&q=Mounjaro" target="_blank"
+       class="bg-[#7e36c7] text-white px-3 py-1.5 rounded-lg shadow hover:bg-[#6b2cb1] transition text-xs sm:text-sm">صيدلية الهاجري</a>
+    <a href="https://www.almutawaph.com.kw/ar/catalogsearch/result/?q=Mounjaro&product_list_order=wp_sortby_new&product_list_dir=desc" target="_blank"
+       class="bg-[#7e36c7] text-white px-3 py-1.5 rounded-lg shadow hover:bg-[#6b2cb1] transition text-xs sm:text-sm">صيدلية المطوع</a>
+    <a href="https://pharmazone.com/ar/collections/vendors?q=Lilly&sort_by=created-descending" target="_blank"
+       class="bg-[#7e36c7] text-white px-3 py-1.5 rounded-lg shadow hover:bg-[#6b2cb1] transition text-xs sm:text-sm">صيدلية فارمازون</a>
   </div>
 </div>
 
 <script>
-function buildTicks(){const t=document.getElementById('syringeTicks');t.innerHTML='';for(let u=0;u<=100;u+=2){const p=(u/100)*100,d=document.createElement('div');d.className=(u%10===0)?'tick big':'tick small';d.style.left=p+'%';t.appendChild(d);if(u%10===0){const l=document.createElement('div');l.className='tick-label';l.style.left=p+'%';l.textContent=u;t.appendChild(l)}}}
-const golden=document.getElementById("golden-dose"),syringe=document.getElementById("show-syringe"),syringeWrap=document.getElementById("syringeWrap"),syringeFill=document.getElementById("syringeFill"),result=document.getElementById("result"),image=document.getElementById("pen-image"),doseInput2=document.getElementById("dose-input-2"),doseImages={"2.5":"https://www.mediafire.com/convkey/e9a4/4554jnrfc48qgoj9g.jpg","5":"https://www.mediafire.com/convkey/5d4f/aaoucs7i3m4j1bc9g.jpg","7.5":"https://www.mediafire.com/convkey/7522/v1sztx46b4j7wqj9g.jpg","10":"https://www.mediafire.com/convkey/c10f/3d3od054v0ziacb9g.jpg","12.5":"https://www.mediafire.com/convkey/e2a6/w1j1ro4qikm5c819g.jpg","15":"https://www.mediafire.com/convkey/a92d/iy7hjap6omd241o9g.jpg"};
+function buildTicks(){
+  const t=document.getElementById('syringeTicks');
+  t.innerHTML='';
+  for(let u=0;u<=100;u+=2){
+    const p=(u/100)*100;
+    const d=document.createElement('div');
+    d.className=(u%10===0)?'tick big':'tick small';
+    d.style.left=p+'%';
+    t.appendChild(d);
+    if(u%10===0){
+      const l=document.createElement('div');
+      l.className='tick-label';
+      l.style.left=p+'%';
+      l.textContent=u;
+      t.appendChild(l);
+    }
+  }
+}
+
+const golden=document.getElementById("golden-dose"),
+syringe=document.getElementById("show-syringe"),
+syringeWrap=document.getElementById("syringeWrap"),
+syringeFill=document.getElementById("syringeFill"),
+result=document.getElementById("result"),
+image=document.getElementById("pen-image"),
+doseInput2=document.getElementById("dose-input-2"),
+doseImages={
+  "2.5":"https://www.mediafire.com/convkey/e9a4/4554jnrfc48qgoj9g.jpg",
+  "5":"https://www.mediafire.com/convkey/5d4f/aaoucs7i3m4j1bc9g.jpg",
+  "7.5":"https://www.mediafire.com/convkey/7522/v1sztx46b4j7wqj9g.jpg",
+  "10":"https://www.mediafire.com/convkey/c10f/3d3od054v0ziacb9g.jpg",
+  "12.5":"https://www.mediafire.com/convkey/e2a6/w1j1ro4qikm5c819g.jpg",
+  "15":"https://www.mediafire.com/convkey/a92d/iy7hjap6omd241o9g.jpg"
+};
+
 let dose1=null,dose2=null;
 function formatTicks(c){return c.toFixed(2).split(".")[1];}
 function formatNumber(n){return Number.isInteger(n)?n.toString():parseFloat(n.toFixed(1)).toString();}
-function calculateResult(){if(dose1&&dose2){const c=(dose2/dose1)*0.6,f=formatTicks(c),w=golden.checked?(0.6*5)/c:(0.6*4)/c,m=w/4;result.innerHTML=`✅ النتيجة: <u style="color:red">${f}</u> تكة أو ملي ( عدد الأشهر <u style="color:purple">${formatNumber(m)}</u> )`;if(syringe.checked)showSyringe(f);}else result.innerHTML="";}
-function showSyringe(u){syringeWrap.style.display='block';syringeFill.style.width=Math.min(100,Number(u)||0)+'%';}
-function setup(g,b){document.getElementById(g).querySelectorAll('.dose-img').forEach(i=>{i.addEventListener('click',()=>{document.getElementById(g).querySelectorAll('.dose-img').forEach(x=>x.classList.remove('active'));i.classList.add('active');const m=parseFloat(i.dataset.mg);if(b){dose1=m;if(doseImages[m])image.src=doseImages[m];}else dose2=m;calculateResult();});});}
-doseInput2.addEventListener("input",e=>{let v=e.target.value.replace(/[^0-9.]/g,"");if(!/^\d{0,2}(\.\d{0,2})?$/.test(v))v=v.slice(0,-1);e.target.value=v;dose2=parseFloat(v)||null;calculateResult();});
+function calculateResult(){
+  if(dose1&&dose2){
+    const c=(dose2/dose1)*0.6,f=formatTicks(c),w=golden.checked?(0.6*5)/c:(0.6*4)/c,m=w/4;
+    result.innerHTML=`✅ النتيجة: <u style="color:red">${f}</u> تكة أو ملي ( عدد الأشهر <u style="color:purple">${formatNumber(m)}</u> )`;
+    if(syringe.checked)showSyringe(f);
+  }else result.innerHTML="";
+}
+function showSyringe(u){
+  syringeWrap.style.display='block';
+  syringeFill.style.width=Math.min(100,Number(u)||0)+'%';
+}
+function setup(g,b){
+  document.getElementById(g).querySelectorAll('.dose-img').forEach(i=>{
+    i.addEventListener('click',()=>{
+      document.getElementById(g).querySelectorAll('.dose-img').forEach(x=>x.classList.remove('active'));
+      i.classList.add('active');
+      const m=parseFloat(i.dataset.mg);
+      if(b){dose1=m;if(doseImages[m])image.src=doseImages[m];}
+      else dose2=m;
+      calculateResult();
+    });
+  });
+}
+doseInput2.addEventListener("input",e=>{
+  let v=e.target.value.replace(/[^0-9.]/g,"");
+  if(!/^\d{0,2}(\.\d{0,2})?$/.test(v))v=v.slice(0,-1);
+  e.target.value=v;
+  dose2=parseFloat(v)||null;
+  calculateResult();
+});
 golden.addEventListener('change',calculateResult);
-syringe.addEventListener('change',()=>{syringeWrap.style.display=syringe.checked?"block":"none";if(syringe.checked){buildTicks();calculateResult();}});
+syringe.addEventListener('change',()=>{
+  syringeWrap.style.display=syringe.checked?"block":"none";
+  if(syringe.checked){buildTicks();calculateResult();}
+});
 buildTicks();setup("dose-group-1",true);setup("dose-group-2",false);
 
-function limitInputFormat(i){i.addEventListener("input",e=>{let v=e.target.value.replace(/[^0-9.]/g,"");if(!/^\d{0,3}(\.\d{0,1})?$/.test(v))v=v.slice(0,-1);e.target.value=v;});}
+function limitInputFormat(i){
+  i.addEventListener("input",e=>{
+    let v=e.target.value.replace(/[^0-9.]/g,"");
+    if(!/^\d{0,3}(\.\d{0,1})?$/.test(v))v=v.slice(0,-1);
+    e.target.value=v;
+  });
+}
 const bmiToggle=document.getElementById('show-bmi'),bmiSection=document.getElementById('bmi-section'),weightInput=document.getElementById('weight-input'),heightInput=document.getElementById('height-input'),bmiResult=document.getElementById('bmi-result');
 limitInputFormat(weightInput);limitInputFormat(heightInput);
 bmiToggle.addEventListener('change',()=>{bmiSection.style.display=bmiToggle.checked?"block":"none";if(!bmiToggle.checked)bmiResult.textContent='';});
-function calcBMI(){const w=parseFloat(weightInput.value),h=parseFloat(heightInput.value);if(w>0&&h>0){const b=w/((h/100)**2),i=22.5*((h/100)**2);let s='';if(b<18.5)s='نحافة';else if(b<25)s='طبيعي';else if(b<30)s='زيادة وزن';else s='سمنة';bmiResult.innerHTML=`🔹 الوزن المثالي <u style="color:purple">${i.toFixed(1)} كجم</u> — BMI = <u style="color:red">${b.toFixed(1)}</u> (${s})`;}else bmiResult.textContent='';}
+function calcBMI(){const w=parseFloat(weightInput.value),h=parseFloat(heightInput.value);if(w>0&&h>0){const b=w/((h/100)**2),i=22.5*((h/100)**2);let s='';if(b<18.5)s='نحافة';else if(b<25)s='طبيعي';else if(b<30)s='زيادة وزن';else s='سمنة';bmiResult.innerHTML=`🏆 الوزن المثالي <u style="color:purple">${i.toFixed(1)} كجم</u> — BMI = <u style="color:red">${b.toFixed(1)}</u> (${s})`;}else bmiResult.textContent='';}
 weightInput.addEventListener('input',calcBMI);heightInput.addEventListener('input',calcBMI);
-
 const phToggle=document.getElementById('show-pharmacies'),phSection=document.getElementById('pharmacy-section');
 phToggle.addEventListener('change',()=>{phSection.style.display=phToggle.checked?"block":"none";});
 </script>
