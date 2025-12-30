@@ -43,13 +43,24 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
 .tick-label{position:absolute;top:4px;font-size:15px;transform:translateX(-50%);color:#111}
 .syringe-image{width:100%;max-width:720px;height:70px;margin:0 auto;display:block;object-fit:contain;position:absolute;top:-73px;left:0;right:0}
 .syringe-option label{color:var(--syringe-label-color);font-weight:600;}
+
+/* ✅ تنسيق قسم تاريخ شراء القلم */
+#buy-section{display:none;}
+.buy-input{width:20rem;height:2rem;border:2px solid #ccc;border-radius:0;text-align:center;font-size:1rem;}
+.buy-input:focus{border-color:#5D0096;box-shadow:0 0 4px rgba(93,0,150,0.3);}
+#buy-result{margin-top:10px;background:#f9f9ff;border:1px solid #d0d0d0;box-shadow:0 4px 10px rgba(0,0,0,0.08);border-radius:15px;font-size:18px;font-weight:600;color:#222;padding:10px;}
+.buy-label{font-weight:700;color:#ff0000;font-size:14px;}
 </style>
 </head>
 
 <body class="min-h-screen flex flex-col items-center justify-start p-2 sm:p-4 gap-2">
 
 <div class="w-full text-center mt-2">
-  <h1 class="text-[#5D0096] text-xl sm:text-2xl font-bold">Mounjaro KwikPen (0.6mL)</h1>
+  <h1 class="text-[#5D0096] text-xl sm:text-2xl font-bold">
+    <a href="https://gulf.lilly.com/mealabels/ar/mounjaro-kwikpen" target="_blank" class="text-[#5D0096]">
+      Mounjaro KwikPen (0.6mL)
+    </a>
+  </h1>
 </div>
 
 <div class="w-full max-w-4xl flex justify-center mt-1">
@@ -95,6 +106,21 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
 
 <div id="result" class="w-full max-w-4xl p-3 text-center font-bold"></div>
 
+<!-- ✅ نقلنا خيار الشراء ليكون فوق "عرض محاكي الإبرة" -->
+<div class="flex items-center gap-2 cursor-pointer mt-2 syringe-option">
+  <input type="checkbox" id="show-buy" class="w-5 h-5">
+  <label for="show-buy" class="text-xs sm:text-sm font-semibold text-[#009DFF]"> 🗓️ متى اشتري الابره القادمه ؟ </label>
+</div>
+
+<div id="buy-section" class="w-full max-w-4xl mt-2 text-center">
+  <div class="flex flex-col items-center gap-2">
+    <div class="buy-label">تاريخ شراء الابرة الحالية ( يوم اخذ الجرعة )</div>
+    <input id="buy-date" type="date" class="buy-input">
+  </div>
+  <div id="buy-result" class="w-full max-w-4xl mx-auto"></div>
+</div>
+
+<!-- ✅ عرض محاكي الإبرة -->
 <div class="flex items-center gap-2 cursor-pointer mt-1 syringe-option">
   <input type="checkbox" id="show-syringe" class="w-5 h-5">
   <label for="show-syringe" class="text-sm sm:text-base"> عرض محاكي الإبرة </label>
@@ -175,20 +201,81 @@ doseImages={
   "15":"https://www.mediafire.com/convkey/a92d/iy7hjap6omd241o9g.jpg"
 };
 
+const buyToggle=document.getElementById('show-buy'),
+buySection=document.getElementById('buy-section'),
+buyDate=document.getElementById('buy-date'),
+buyResult=document.getElementById('buy-result');
+
 let dose1=null,dose2=null;
+let lastWeeks=null,lastMonths=null,lastTicks=null,lastDose1=null,lastDose2=null,lastGolden=false;
+
 function formatTicks(c){return c.toFixed(2).split(".")[1];}
 function formatNumber(n){return Number.isInteger(n)?n.toString():parseFloat(n.toFixed(1)).toString();}
+
+function formatDateISOToDMY(iso){
+  if(!iso) return '';
+  const [y,m,d]=iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function updateBuyPlan(){
+  if(!buyToggle.checked){ return; }
+  if(!(dose1 && dose2)) { buyResult.innerHTML=''; return; }
+
+  const start=buyDate.value;
+  if(!start){ buyResult.innerHTML=''; return; }
+  if(lastWeeks==null){ buyResult.innerHTML=''; return; }
+
+  const days = Math.round(lastWeeks * 7);
+
+  const startDateObj = new Date(start + "T00:00:00");
+  const nextDateObj  = new Date(startDateObj);
+  nextDateObj.setDate(startDateObj.getDate() + days);
+
+  const yyyy = nextDateObj.getFullYear();
+  const mm = String(nextDateObj.getMonth()+1).padStart(2,'0');
+  const dd = String(nextDateObj.getDate()).padStart(2,'0');
+  const nextISO = `${yyyy}-${mm}-${dd}`;
+
+  buyResult.innerHTML =
+    `🧾 بناءً على الإعدادات الحالية: (الأساسي <u style="color:#5D0096">${formatNumber(lastDose1)}</u> → المطلوب <u style="color:#5D0096">${formatNumber(lastDose2)}</u> ${lastGolden?'(الجرعة الذهبية ✅)':''})<br>`+
+    `📌 عدد الجرعات المتوقعة: <u style="color:green">${formatNumber(lastWeeks)}</u> جرعة (≈ <u style="color:green">${days}</u> يوم)<br>`+
+    `🗓️ تاريخ شراء الابرة الحالية ( يوم اخذ الجرعة ): <u style="color:red">${formatDateISOToDMY(start)}</u><br>`+
+    `✅ تشتري الابرة القادمه بتاريخ: <u style="color:red">${formatDateISOToDMY(nextISO)}</u>`;
+}
+
 function calculateResult(){
   if(dose1&&dose2){
-    const c=(dose2/dose1)*0.6,f=formatTicks(c),w=golden.checked?(0.6*5)/c:(0.6*4)/c,m=w/4;
-    result.innerHTML=`✅ النتيجة: <u style="color:red">${f}</u> تكة أو ملي ( عدد الأشهر <u style="color:purple">${formatNumber(m)}</u> )`;
+    const c=(dose2/dose1)*0.6,
+          f=formatTicks(c),
+          w=golden.checked?(0.6*5)/c:(0.6*4)/c,
+          m=w/4,
+          dosesCount=w;
+
+    lastWeeks=dosesCount;
+    lastMonths=m;
+    lastTicks=f;
+    lastDose1=dose1;
+    lastDose2=dose2;
+    lastGolden=golden.checked;
+
+    result.innerHTML=`✅ النتيجة: <u style="color:red">${f}</u> تكة أو يونيت ( عدد الجرعات <u style="color:green">${formatNumber(dosesCount)}</u> ) ( عدد الأشهر <u style="color:purple">${formatNumber(m)}</u> )`;
     if(syringe.checked)showSyringe(f);
-  }else result.innerHTML="";
+
+    if(buyToggle.checked) updateBuyPlan();
+  }else{
+    result.innerHTML="";
+    buyResult.innerHTML="";
+    buySection.style.display='none';
+    buyToggle.checked=false;
+  }
 }
+
 function showSyringe(u){
   syringeWrap.style.display='block';
   syringeFill.style.width=Math.min(100,Number(u)||0)+'%';
 }
+
 function setup(g,b){
   document.getElementById(g).querySelectorAll('.dose-img').forEach(i=>{
     i.addEventListener('click',()=>{
@@ -201,6 +288,7 @@ function setup(g,b){
     });
   });
 }
+
 doseInput2.addEventListener("input",e=>{
   let v=e.target.value.replace(/[^0-9.]/g,"");
   if(!/^\d{0,2}(\.\d{0,2})?$/.test(v))v=v.slice(0,-1);
@@ -208,12 +296,23 @@ doseInput2.addEventListener("input",e=>{
   dose2=parseFloat(v)||null;
   calculateResult();
 });
+
 golden.addEventListener('change',calculateResult);
+
 syringe.addEventListener('change',()=>{
   syringeWrap.style.display=syringe.checked?"block":"none";
   if(syringe.checked){buildTicks();calculateResult();}
 });
+
 buildTicks();setup("dose-group-1",true);setup("dose-group-2",false);
+
+buyDate.addEventListener('change',updateBuyPlan);
+
+buyToggle.addEventListener('change',()=>{
+  buySection.style.display = buyToggle.checked ? "block" : "none";
+  if(!buyToggle.checked){ buyResult.innerHTML=''; }
+  if(buyToggle.checked){ updateBuyPlan(); }
+});
 
 function limitInputFormat(i){
   i.addEventListener("input",e=>{
