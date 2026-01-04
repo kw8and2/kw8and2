@@ -114,7 +114,7 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
 
 <div id="buy-section" class="w-full max-w-4xl mt-2 text-center">
   <div class="flex flex-col items-center gap-2">
-    <div class="buy-label">تاريخ شراء الابرة الحالية ( يوم اخذ الجرعة )</div>
+    <div class="buy-label">ضع تاريخ شراء الابرة الحالية ( يوم اخذ اول جرعة ) </div>
     <input id="buy-date" type="date" class="buy-input">
   </div>
   <div id="buy-result" class="w-full max-w-4xl mx-auto"></div>
@@ -240,7 +240,7 @@ function updateBuyPlan(){
   buyResult.innerHTML =
     `🧾 بناءً على الإعدادات الحالية: (الأساسي <u style="color:#5D0096">${formatNumber(lastDose1)}</u> → المطلوب <u style="color:#5D0096">${formatNumber(lastDose2)}</u> ${lastGolden?'(الجرعة الذهبية ✅)':''})<br>`+
     `📌 عدد الجرعات المتوقعة: <u style="color:green">${formatNumber(lastWeeks)}</u> جرعة (≈ <u style="color:green">${days}</u> يوم)<br>`+
-    `🗓️ تاريخ شراء الابرة الحالية ( يوم اخذ الجرعة ): <u style="color:red">${formatDateISOToDMY(start)}</u><br>`+
+    `🗓️ تاريخ شراء الابرة الحالية ( يوم اخذ اول جرعة ): <u style="color:red">${formatDateISOToDMY(start)}</u><br>`+
     `✅ تشتري الابرة القادمه بتاريخ: <u style="color:red">${formatDateISOToDMY(nextISO)}</u>`;
 }
 
