@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar">
 <head>
@@ -109,13 +110,17 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
 <!-- ✅ نقلنا خيار الشراء ليكون فوق "عرض محاكي الإبرة" -->
 <div class="flex items-center gap-2 cursor-pointer mt-2 syringe-option">
   <input type="checkbox" id="show-buy" class="w-5 h-5">
-  <label for="show-buy" class="text-xs sm:text-sm font-semibold text-[#009DFF]"> 🗓️ متى اشتري الابره القادمه ؟ </label>
+  <label for="show-buy" class="text-xs sm:text-sm font-semibold text-[#009DFF]"> 🗓️ متى اشتري القلم القادم ؟ </label>
 </div>
 
 <div id="buy-section" class="w-full max-w-4xl mt-2 text-center">
   <div class="flex flex-col items-center gap-2">
-    <div class="buy-label">ضع تاريخ شراء الابرة الحالية ( يوم اخذ اول جرعة ) </div>
+    <div class="buy-label">ضع تاريخ شراء القلم الحالي ( يوم اخذ اول جرعة ) </div>
     <input id="buy-date" type="date" class="buy-input">
+
+    <!-- ✅ جديد: الجرعة كل كم يوم؟ (الافتراضي 7 أيام) -->
+    <div class="buy-label" style="color:#009DFF;">الجرعة كل كم يوم؟ (الافتراضي أسبوع 7)</div>
+    <input id="dose-every-days" type="text" class="buy-input" inputmode="numeric" maxlength="3" value="7" placeholder="مثال: 7">
   </div>
   <div id="buy-result" class="w-full max-w-4xl mx-auto"></div>
 </div>
@@ -204,7 +209,8 @@ doseImages={
 const buyToggle=document.getElementById('show-buy'),
 buySection=document.getElementById('buy-section'),
 buyDate=document.getElementById('buy-date'),
-buyResult=document.getElementById('buy-result');
+buyResult=document.getElementById('buy-result'),
+doseEveryDays=document.getElementById('dose-every-days');
 
 let dose1=null,dose2=null;
 let lastWeeks=null,lastMonths=null,lastTicks=null,lastDose1=null,lastDose2=null,lastGolden=false;
@@ -218,6 +224,41 @@ function formatDateISOToDMY(iso){
   return `${d}/${m}/${y}`;
 }
 
+/* ✅ جديد: قراءة "الجرعة كل كم يوم" مع حماية قيم خاطئة */
+function getEveryDays(){
+  let v=(doseEveryDays?.value||'').toString().replace(/[^0-9]/g,'');
+  let n=parseInt(v,10);
+  if(!n || n<=0) n=7;
+  return n;
+}
+
+/* ✅ جديد: حساب عدد مرات الشراء في 12 شهر القادمة */
+function computePurchasesInNext12Months(startISO, intervalDays){
+  const startDateObj = new Date(startISO + "T00:00:00");
+  const endDateObj = new Date(startDateObj);
+  endDateObj.setFullYear(startDateObj.getFullYear() + 1);
+
+  let purchases = 0;
+  let purchaseDatesISO = [];
+  let cur = new Date(startDateObj);
+
+  // نبدأ من تاريخ الشراء الحالي كشراء (قلم/إبرة جديدة)
+  while(cur < endDateObj){
+    purchases++;
+    const yyyy = cur.getFullYear();
+    const mm = String(cur.getMonth()+1).padStart(2,'0');
+    const dd = String(cur.getDate()).padStart(2,'0');
+    purchaseDatesISO.push(`${yyyy}-${mm}-${dd}`);
+
+    // الشراء القادم بعد "عدد الجرعات المتوقعة × intervalDays"
+    const daysToNext = Math.round((lastWeeks||0) * intervalDays);
+    if(!daysToNext || daysToNext<=0) break;
+    cur.setDate(cur.getDate() + daysToNext);
+  }
+
+  return { purchases, purchaseDatesISO };
+}
+
 function updateBuyPlan(){
   if(!buyToggle.checked){ return; }
   if(!(dose1 && dose2)) { buyResult.innerHTML=''; return; }
@@ -226,7 +267,9 @@ function updateBuyPlan(){
   if(!start){ buyResult.innerHTML=''; return; }
   if(lastWeeks==null){ buyResult.innerHTML=''; return; }
 
-  const days = Math.round(lastWeeks * 7);
+  const intervalDays = getEveryDays();
+
+  const days = Math.round(lastWeeks * intervalDays);
 
   const startDateObj = new Date(start + "T00:00:00");
   const nextDateObj  = new Date(startDateObj);
@@ -237,11 +280,16 @@ function updateBuyPlan(){
   const dd = String(nextDateObj.getDate()).padStart(2,'0');
   const nextISO = `${yyyy}-${mm}-${dd}`;
 
+  const yearly = computePurchasesInNext12Months(start, intervalDays);
+  const listDMY = yearly.purchaseDatesISO.map(formatDateISOToDMY).join(' — ');
+
   buyResult.innerHTML =
     `🧾 بناءً على الإعدادات الحالية: (الأساسي <u style="color:#5D0096">${formatNumber(lastDose1)}</u> → المطلوب <u style="color:#5D0096">${formatNumber(lastDose2)}</u> ${lastGolden?'(الجرعة الذهبية ✅)':''})<br>`+
-    `📌 عدد الجرعات المتوقعة: <u style="color:green">${formatNumber(lastWeeks)}</u> جرعة (≈ <u style="color:green">${days}</u> يوم)<br>`+
-    `🗓️ تاريخ شراء الابرة الحالية ( يوم اخذ اول جرعة ): <u style="color:red">${formatDateISOToDMY(start)}</u><br>`+
-    `✅ تشتري الابرة القادمه بتاريخ: <u style="color:red">${formatDateISOToDMY(nextISO)}</u>`;
+    `📌 عدد الجرعات : <u style="color:green">${formatNumber(lastWeeks)}</u> جرعة (كل <u style="color:green">${intervalDays}</u> يوم) = ≈ <u style="color:green">${days}</u> يوم<br>`+
+    `🗓️ تاريخ شراء القلم الحالي ( يوم اخذ اول جرعة ): <u style="color:red">${formatDateISOToDMY(start)}</u><br>`+
+    `✅ تشتري القلم القادم بتاريخ: <u style="color:red">${formatDateISOToDMY(nextISO)}</u><br>`+
+    `📦 خلال سنة تحتاج تشتري القلم <u style="color:purple">${yearly.purchases}</u> مرات<br>`+
+    `🗓️ تواريخ الشراء المتوقعة (12 شهر): <span style="color:#222">${listDMY}</span>`;
 }
 
 function calculateResult(){
@@ -307,6 +355,14 @@ syringe.addEventListener('change',()=>{
 buildTicks();setup("dose-group-1",true);setup("dose-group-2",false);
 
 buyDate.addEventListener('change',updateBuyPlan);
+
+/* ✅ جديد: أي تغيير في "كل كم يوم" يحدث تحديث مباشر */
+doseEveryDays.addEventListener('input',()=>{
+  // تنظيف الإدخال ليكون أرقام فقط
+  doseEveryDays.value = (doseEveryDays.value||'').toString().replace(/[^0-9]/g,'').slice(0,3);
+  if(doseEveryDays.value==='') doseEveryDays.value='7';
+  updateBuyPlan();
+});
 
 buyToggle.addEventListener('change',()=>{
   buySection.style.display = buyToggle.checked ? "block" : "none";
