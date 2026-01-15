@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar">
 <head>
@@ -98,11 +97,29 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
   <div class="flex justify-center mt-2">
     <input id="dose-input-2" type="text" placeholder="او اكتب الجرعة المطلوبة هنا" class="dose-input" inputmode="decimal" maxlength="5">
   </div>
+
+  <!-- ✅ رابط عرض جرعات الميكرو دوز -->
+  <div id="microdose-toggle" class="mt-2 text-center cursor-pointer">
+    <span class="text-[#5D0096] underline font-semibold text-sm sm:text-base">
+      اعرض جرعات الميكرو دوز
+    </span>
+  </div>
 </div>
 
 <div id="golden-dose-container" class="flex items-center gap-2 cursor-pointer mt-1">
   <input type="checkbox" id="golden-dose" class="w-5 h-5">
-  <label for="golden-dose" class="font-semibold text-yellow-600 text-sm sm:text-base"> ✨ استخدم الجرعة الذهبية ✨</label>
+  <label for="golden-dose" class="font-semibold text-yellow-600 text-sm sm:text-base"> استخدم الجرعة الذهبية القلم القديم 3 ملي</label>
+</div>
+
+<div id="new-golden-dose-container" class="flex items-center gap-2 cursor-pointer mt-1">
+  <input type="checkbox" id="new-golden-dose" class="w-5 h-5">
+  <label for="new-golden-dose" class="font-semibold text-orange-500 text-sm sm:text-base"> استخدم الجرعة الذهبية القلم الجديد 2.6 ملي</label>
+</div>
+
+<!-- ✅ (جديد) نص أزرق تحتهم + يفتح صورة مثل الميكرو -->
+<div id="gold-diff-toggle" class="mt-1 text-center cursor-pointer">
+  <span class="text-[#009DFF] underline font-semibold text-xs sm:text-sm">
+اعرض الفرق بين القلم الجديد و القديم  </span>
 </div>
 
 <div id="result" class="w-full max-w-4xl p-3 text-center font-bold"></div>
@@ -118,14 +135,12 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
     <div class="buy-label">ضع تاريخ شراء القلم الحالي ( يوم اخذ اول جرعة ) </div>
     <input id="buy-date" type="date" class="buy-input">
 
-    <!-- ✅ جديد: الجرعة كل كم يوم؟ (الافتراضي 7 أيام) -->
     <div class="buy-label" style="color:#009DFF;">الجرعة كل كم يوم؟ (الافتراضي أسبوع 7)</div>
     <input id="dose-every-days" type="text" class="buy-input" inputmode="numeric" maxlength="3" value="7" placeholder="مثال: 7">
   </div>
   <div id="buy-result" class="w-full max-w-4xl mx-auto"></div>
 </div>
 
-<!-- ✅ عرض محاكي الإبرة -->
 <div class="flex items-center gap-2 cursor-pointer mt-1 syringe-option">
   <input type="checkbox" id="show-syringe" class="w-5 h-5">
   <label for="show-syringe" class="text-sm sm:text-base"> عرض محاكي الإبرة </label>
@@ -136,7 +151,6 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
   <div class="syringe"><div class="fill" id="syringeFill"></div><div class="ticks" id="syringeTicks"></div></div>
 </div>
 
-<!-- ✅ كتلة الجسم (BMI) -->
 <div class="flex items-center gap-2 cursor-pointer mt-2 syringe-option">
   <input type="checkbox" id="show-bmi" class="w-5 h-5">
   <label for="show-bmi" class="text-xs sm:text-sm font-semibold text-[#009DFF]"> كتلة الجسم (BMI) (الوزن المثالي) </label>
@@ -152,7 +166,6 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
   <div id="bmi-result" class="mt-2 bg-[#f9f9ff] border border-[#d0d0d0] rounded-xl shadow p-1 font-bold text-[#222] text-sm"></div>
 </div>
 
-<!-- ✅ صيدليات بيع مونجارو (الكويت) -->
 <div class="flex items-center gap-2 cursor-pointer mt-2 syringe-option">
   <input type="checkbox" id="show-pharmacies" class="w-5 h-5">
   <label for="show-pharmacies" class="text-xs sm:text-sm font-semibold text-[#009DFF]"> صيدليات بيع مونجارو (الكويت) </label>
@@ -167,6 +180,28 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
        class="bg-[#7e36c7] text-white px-3 py-1.5 rounded-lg shadow hover:bg-[#6b2cb1] transition text-xs sm:text-sm">صيدلية المطوع</a>
     <a href="https://pharmazone.com/ar/collections/vendors?q=Lilly&sort_by=created-descending" target="_blank"
        class="bg-[#7e36c7] text-white px-3 py-1.5 rounded-lg shadow hover:bg-[#6b2cb1] transition text-xs sm:text-sm">صيدلية فارمازون</a>
+  </div>
+</div>
+
+<!-- ✅ نافذة صورة جرعات الميكرو دوز -->
+<div id="microdose-modal" class="fixed inset-0 bg-black/60 hidden z-50 flex items-center justify-center">
+  <div class="relative">
+    <img
+      src="https://www.mediafire.com/convkey/9208/innr7372gxagg5c9g.jpg"
+      alt="جرعات الميكرو دوز"
+      class="max-w-[90vw] max-h-[90vh] rounded-xl shadow-2xl bg-white"
+    >
+  </div>
+</div>
+
+<!-- ✅ (جديد) نافذة صورة الفرق بين 3ml و 2.6ml -->
+<div id="gold-diff-modal" class="fixed inset-0 bg-black/60 hidden z-50 flex items-center justify-center">
+  <div class="relative">
+    <img
+      src="https://www.mediafire.com/convkey/0165/o9f4tt4z392mmng9g.jpg?size_id=8"
+      alt="الفرق بين 3ml و 2.6ml"
+      class="max-w-[90vw] max-h-[90vh] rounded-xl shadow-2xl bg-white"
+    >
   </div>
 </div>
 
@@ -191,6 +226,7 @@ function buildTicks(){
 }
 
 const golden=document.getElementById("golden-dose"),
+newGolden=document.getElementById("new-golden-dose"),
 syringe=document.getElementById("show-syringe"),
 syringeWrap=document.getElementById("syringeWrap"),
 syringeFill=document.getElementById("syringeFill"),
@@ -213,7 +249,7 @@ buyResult=document.getElementById('buy-result'),
 doseEveryDays=document.getElementById('dose-every-days');
 
 let dose1=null,dose2=null;
-let lastWeeks=null,lastMonths=null,lastTicks=null,lastDose1=null,lastDose2=null,lastGolden=false;
+let lastWeeks=null,lastMonths=null,lastTicks=null,lastDose1=null,lastDose2=null,lastGolden=false,lastNewGolden=false;
 
 function formatTicks(c){return c.toFixed(2).split(".")[1];}
 function formatNumber(n){return Number.isInteger(n)?n.toString():parseFloat(n.toFixed(1)).toString();}
@@ -224,7 +260,6 @@ function formatDateISOToDMY(iso){
   return `${d}/${m}/${y}`;
 }
 
-/* ✅ جديد: قراءة "الجرعة كل كم يوم" مع حماية قيم خاطئة */
 function getEveryDays(){
   let v=(doseEveryDays?.value||'').toString().replace(/[^0-9]/g,'');
   let n=parseInt(v,10);
@@ -232,7 +267,6 @@ function getEveryDays(){
   return n;
 }
 
-/* ✅ جديد: حساب عدد مرات الشراء في 12 شهر القادمة */
 function computePurchasesInNext12Months(startISO, intervalDays){
   const startDateObj = new Date(startISO + "T00:00:00");
   const endDateObj = new Date(startDateObj);
@@ -242,7 +276,6 @@ function computePurchasesInNext12Months(startISO, intervalDays){
   let purchaseDatesISO = [];
   let cur = new Date(startDateObj);
 
-  // نبدأ من تاريخ الشراء الحالي كشراء (قلم/إبرة جديدة)
   while(cur < endDateObj){
     purchases++;
     const yyyy = cur.getFullYear();
@@ -250,7 +283,6 @@ function computePurchasesInNext12Months(startISO, intervalDays){
     const dd = String(cur.getDate()).padStart(2,'0');
     purchaseDatesISO.push(`${yyyy}-${mm}-${dd}`);
 
-    // الشراء القادم بعد "عدد الجرعات المتوقعة × intervalDays"
     const daysToNext = Math.round((lastWeeks||0) * intervalDays);
     if(!daysToNext || daysToNext<=0) break;
     cur.setDate(cur.getDate() + daysToNext);
@@ -268,7 +300,6 @@ function updateBuyPlan(){
   if(lastWeeks==null){ buyResult.innerHTML=''; return; }
 
   const intervalDays = getEveryDays();
-
   const days = Math.round(lastWeeks * intervalDays);
 
   const startDateObj = new Date(start + "T00:00:00");
@@ -284,7 +315,7 @@ function updateBuyPlan(){
   const listDMY = yearly.purchaseDatesISO.map(formatDateISOToDMY).join(' — ');
 
   buyResult.innerHTML =
-    `🧾 بناءً على الإعدادات الحالية: (الأساسي <u style="color:#5D0096">${formatNumber(lastDose1)}</u> → المطلوب <u style="color:#5D0096">${formatNumber(lastDose2)}</u> ${lastGolden?'(الجرعة الذهبية ✅)':''})<br>`+
+    `🧾 بناءً على الإعدادات الحالية: (الأساسي <u style="color:#5D0096">${formatNumber(lastDose1)}</u> → المطلوب <u style="color:#5D0096">${formatNumber(lastDose2)}</u> ${lastGolden?'(الجرعة الذهبية ✅)':''} ${lastNewGolden?'(الجرعة الذهبية الجديدة ✅)':''})<br>`+
     `📌 عدد الجرعات : <u style="color:green">${formatNumber(lastWeeks)}</u> جرعة (كل <u style="color:green">${intervalDays}</u> يوم) = ≈ <u style="color:green">${days}</u> يوم<br>`+
     `🗓️ تاريخ شراء القلم الحالي ( يوم اخذ اول جرعة ): <u style="color:red">${formatDateISOToDMY(start)}</u><br>`+
     `✅ تشتري القلم القادم بتاريخ: <u style="color:red">${formatDateISOToDMY(nextISO)}</u><br>`+
@@ -294,11 +325,21 @@ function updateBuyPlan(){
 
 function calculateResult(){
   if(dose1&&dose2){
-    const c=(dose2/dose1)*0.6,
-          f=formatTicks(c),
-          w=golden.checked?(0.6*5)/c:(0.6*4)/c,
-          m=w/4,
-          dosesCount=w;
+
+    const baseDoseML = 0.6;
+    const normalPenML = baseDoseML * 4; // 2.4
+
+    const extraOldGoldenML = golden.checked ? 0.6 : 0;     // 3.0
+    const extraNewGoldenML = newGolden.checked ? 0.2 : 0;  // 2.6
+
+    const totalPenML = normalPenML + extraOldGoldenML + extraNewGoldenML;
+
+    const c = (dose2/dose1) * baseDoseML;
+    const f = formatTicks(c);
+    const w = totalPenML / c;
+
+    const m = w/4;
+    const dosesCount = w;
 
     lastWeeks=dosesCount;
     lastMonths=m;
@@ -306,6 +347,7 @@ function calculateResult(){
     lastDose1=dose1;
     lastDose2=dose2;
     lastGolden=golden.checked;
+    lastNewGolden=newGolden.checked;
 
     result.innerHTML=`✅ النتيجة: <u style="color:red">${f}</u> تكة أو يونيت ( عدد الجرعات <u style="color:green">${formatNumber(dosesCount)}</u> ) ( عدد الأشهر <u style="color:purple">${formatNumber(m)}</u> )`;
     if(syringe.checked)showSyringe(f);
@@ -345,7 +387,14 @@ doseInput2.addEventListener("input",e=>{
   calculateResult();
 });
 
-golden.addEventListener('change',calculateResult);
+golden.addEventListener('change',()=>{
+  if(golden.checked) newGolden.checked=false;
+  calculateResult();
+});
+newGolden.addEventListener('change',()=>{
+  if(newGolden.checked) golden.checked=false;
+  calculateResult();
+});
 
 syringe.addEventListener('change',()=>{
   syringeWrap.style.display=syringe.checked?"block":"none";
@@ -356,9 +405,7 @@ buildTicks();setup("dose-group-1",true);setup("dose-group-2",false);
 
 buyDate.addEventListener('change',updateBuyPlan);
 
-/* ✅ جديد: أي تغيير في "كل كم يوم" يحدث تحديث مباشر */
 doseEveryDays.addEventListener('input',()=>{
-  // تنظيف الإدخال ليكون أرقام فقط
   doseEveryDays.value = (doseEveryDays.value||'').toString().replace(/[^0-9]/g,'').slice(0,3);
   if(doseEveryDays.value==='') doseEveryDays.value='7';
   updateBuyPlan();
@@ -384,6 +431,22 @@ function calcBMI(){const w=parseFloat(weightInput.value),h=parseFloat(heightInpu
 weightInput.addEventListener('input',calcBMI);heightInput.addEventListener('input',calcBMI);
 const phToggle=document.getElementById('show-pharmacies'),phSection=document.getElementById('pharmacy-section');
 phToggle.addEventListener('change',()=>{phSection.style.display=phToggle.checked?"block":"none";});
+
+/* ✅ فتح/إغلاق صورة جرعات الميكرو دوز */
+const microToggle = document.getElementById('microdose-toggle');
+const microModal  = document.getElementById('microdose-modal');
+if(microToggle && microModal){
+  microToggle.addEventListener('click', () => microModal.classList.remove('hidden'));
+  microModal.addEventListener('click', () => microModal.classList.add('hidden'));
+}
+
+/* ✅ (جديد) فتح/إغلاق صورة الفرق بين 3ml و 2.6ml */
+const goldDiffToggle = document.getElementById('gold-diff-toggle');
+const goldDiffModal  = document.getElementById('gold-diff-modal');
+if(goldDiffToggle && goldDiffModal){
+  goldDiffToggle.addEventListener('click', () => goldDiffModal.classList.remove('hidden'));
+  goldDiffModal.addEventListener('click', () => goldDiffModal.classList.add('hidden'));
+}
 </script>
 </body>
 </html>
