@@ -108,12 +108,12 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
 
 <div id="golden-dose-container" class="flex items-center gap-2 cursor-pointer mt-1">
   <input type="checkbox" id="golden-dose" class="w-5 h-5">
-  <label for="golden-dose" class="font-semibold text-yellow-600 text-sm sm:text-base"> استخدم الجرعة الذهبية القلم القديم 3 ملي</label>
+  <label for="golden-dose" class="font-semibold text-yellow-600 text-sm sm:text-base"> استخدم الجرعة الذهبية القلم القديم 3 مل</label>
 </div>
 
 <div id="new-golden-dose-container" class="flex items-center gap-2 cursor-pointer mt-1">
   <input type="checkbox" id="new-golden-dose" class="w-5 h-5">
-  <label for="new-golden-dose" class="font-semibold text-orange-500 text-sm sm:text-base"> استخدم الجرعة الذهبية القلم الجديد 2.6 ملي</label>
+  <label for="new-golden-dose" class="font-semibold text-orange-500 text-sm sm:text-base"> استخدم الجرعة الذهبية القلم الجديد 2.5 مل</label>
 </div>
 
 <!-- ✅ (جديد) نص أزرق تحتهم + يفتح صورة مثل الميكرو -->
@@ -198,8 +198,8 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
 <div id="gold-diff-modal" class="fixed inset-0 bg-black/60 hidden z-50 flex items-center justify-center">
   <div class="relative">
     <img
-      src="https://www.mediafire.com/convkey/0165/o9f4tt4z392mmng9g.jpg?size_id=8"
-      alt="الفرق بين 3ml و 2.6ml"
+      src="https://www.mediafire.com/convkey/ddb4/o9f4tt4z392mmng9g.jpg"
+      alt="الفرق بين القلم القديم و الجديد"
       class="max-w-[90vw] max-h-[90vh] rounded-xl shadow-2xl bg-white"
     >
   </div>
@@ -330,7 +330,9 @@ function calculateResult(){
     const normalPenML = baseDoseML * 4; // 2.4
 
     const extraOldGoldenML = golden.checked ? 0.6 : 0;     // 3.0
-    const extraNewGoldenML = newGolden.checked ? 0.2 : 0;  // 2.6
+
+    // ✅ تعديل الجرعة الذهبية الجديدة: نخلي المجموع 2.5mL (يعني زيادة 0.1mL فقط)
+    const extraNewGoldenML = newGolden.checked ? 0.1 : 0;  // 2.5
 
     const totalPenML = normalPenML + extraOldGoldenML + extraNewGoldenML;
 
@@ -440,7 +442,7 @@ if(microToggle && microModal){
   microModal.addEventListener('click', () => microModal.classList.add('hidden'));
 }
 
-/* ✅ (جديد) فتح/إغلاق صورة الفرق بين 3ml و 2.6ml */
+/* ✅ (جديد) فتح/إغلاق صورة الفرق بين القلم القديم و الجديد */
 const goldDiffToggle = document.getElementById('gold-diff-toggle');
 const goldDiffModal  = document.getElementById('gold-diff-modal');
 if(goldDiffToggle && goldDiffModal){
