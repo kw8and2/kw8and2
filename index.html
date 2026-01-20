@@ -9,9 +9,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 
-<!-- ✅ PDF -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <style>
 :root {
   --font-main: 'Cairo', sans-serif;
@@ -53,6 +50,27 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
 .buy-input:focus{border-color:#5D0096;box-shadow:0 0 4px rgba(93,0,150,0.3);}
 #buy-result{margin-top:10px;background:#f9f9ff;border:1px solid #d0d0d0;box-shadow:0 4px 10px rgba(0,0,0,0.08);border-radius:15px;font-size:18px;font-weight:600;color:#222;padding:10px;}
 .buy-label{font-weight:700;color:#ff0000;font-size:14px;}
+
+/* ✅ أيقونات اختيار فترة الجرعة */
+.days-chips-wrap{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:6px;}
+.day-chip{
+  border:2px solid #d0d0d0;
+  background:#fff;
+  border-radius:12px;
+  padding:6px 10px;
+  font-weight:700;
+  font-size:13px;
+  cursor:pointer;
+  transition:all .15s ease;
+  user-select:none;
+}
+.day-chip:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,0,0,0.06);}
+.day-chip.active{
+  border-color:#5D0096;
+  background:#f3e9ff;
+  color:#5D0096;
+}
+.small-hint{font-size:12px;color:#555;font-weight:600;margin-top:4px;}
 </style>
 </head>
 
@@ -125,22 +143,22 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
     <div class="buy-label">ضع تاريخ شراء القلم الحالي ( يوم اخذ اول جرعة ) </div>
     <input id="buy-date" type="date" class="buy-input">
 
-    <div class="buy-label" style="color:#009DFF;">الجرعة كل كم يوم؟ (الافتراضي أسبوع 7)</div>
+    <div class="buy-label" style="color:#009DFF;">الجرعة كل كم أسبوع ؟</div>
+
+    <div class="days-chips-wrap" id="days-chips">
+      <div class="day-chip active" data-days="7">كل 7 أيام</div>
+      <div class="day-chip" data-days="10">كل 10 أيام</div>
+      <div class="day-chip" data-days="14">كل 14 يوم</div>
+      <div class="day-chip" data-days="15">كل 15 يوم</div>
+      <div class="day-chip" data-days="16">كل 16 يوم</div>
+      <div class="day-chip" data-days="17">كل 17 يوم</div>
+    </div>
+
+    <div class="small-hint">او اكتب عدد الأيام</div>
     <input id="dose-every-days" type="text" class="buy-input" inputmode="numeric" maxlength="3" value="7" placeholder="مثال: 7">
   </div>
 
   <div id="buy-result" class="w-full max-w-4xl mx-auto"></div>
-
-  <button id="download-buy-pdf"
-    class="mt-2 px-4 py-2 rounded-lg font-bold text-white bg-[#5D0096] hover:opacity-90 transition text-sm sm:text-base">
-    📄 تحميل تقويم PDF (12 شهر) — تواريخ الشراء بالأحمر
-  </button>
-
-  <!-- ✅ (جديد) زر إضافة للتقويم (ICS) -->
-  <button id="download-buy-ics"
-    class="mt-2 px-4 py-2 rounded-lg font-bold text-white bg-[#009DFF] hover:opacity-90 transition text-sm sm:text-base">
-    📅 إضافة تواريخ الشراء لتقويم الآيفون (ICS)
-  </button>
 </div>
 
 <div class="flex items-center gap-2 cursor-pointer mt-1 syringe-option">
@@ -235,14 +253,11 @@ const buyToggle=document.getElementById('show-buy'),
 buySection=document.getElementById('buy-section'),
 buyDate=document.getElementById('buy-date'),
 buyResult=document.getElementById('buy-result'),
-doseEveryDays=document.getElementById('dose-every-days');
+doseEveryDays=document.getElementById('dose-every-days'),
+daysChipsWrap=document.getElementById('days-chips');
 
 let dose1=null,dose2=null;
 let lastWeeks=null,lastMonths=null,lastTicks=null,lastDose1=null,lastDose2=null,lastGolden=false;
-
-/* ✅ حفظ تواريخ الشراء للـ PDF و ICS */
-let lastPurchaseDatesISO = [];
-let lastBuyStartISO = '';
 
 function formatTicks(c){return c.toFixed(2).split(".")[1];}
 function formatNumber(n){return Number.isInteger(n)?n.toString():parseFloat(n.toFixed(1)).toString();}
@@ -253,11 +268,49 @@ function formatDateISOToDMY(iso){
   return `${d}/${m}/${y}`;
 }
 
+/* ✅ تحويل عدد الأيام إلى (أشهر + أيام) */
+function toMonthsDays(totalDays){
+  let d = Math.max(0, Math.round(Number(totalDays)||0));
+  const months = Math.floor(d / 30);
+  const days = d % 30;
+  return { months, days, text: `${months} شهر و ${days} يوم` };
+}
+
+/* ✅ إضافة أيام لتاريخ ISO */
+function addDaysISO(iso, add){
+  const d = new Date(iso + "T00:00:00");
+  d.setDate(d.getDate() + Math.round(Number(add)||0));
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+/* ✅ بناء تواريخ جرعات نفس القلم: 4 جرعات أو 5 للذهبية */
+function buildPenDoseDates(startISO, intervalDays, isGolden){
+  const count = isGolden ? 5 : 4;
+  const out = [];
+  for(let i=0;i<count;i++){
+    out.push(addDaysISO(startISO, i * intervalDays));
+  }
+  return out;
+}
+
+/* ✅ قراءة عدد الأيام */
 function getEveryDays(){
   let v=(doseEveryDays?.value||'').toString().replace(/[^0-9]/g,'');
   let n=parseInt(v,10);
   if(!n || n<=0) n=7;
   return n;
+}
+
+/* ✅ تفعيل/إلغاء تفعيل أيقونات الأيام */
+function setActiveChipByDays(days){
+  if(!daysChipsWrap) return;
+  daysChipsWrap.querySelectorAll('.day-chip').forEach(ch=>{
+    const d = parseInt(ch.dataset.days, 10);
+    ch.classList.toggle('active', d === Number(days));
+  });
 }
 
 function computePurchasesInNext12Months(startISO, intervalDays){
@@ -293,49 +346,32 @@ function updateBuyPlan(){
   if(lastWeeks==null){ buyResult.innerHTML=''; return; }
 
   const intervalDays = getEveryDays();
-  const days = Math.round(lastWeeks * intervalDays);
+  const daysTotal = Math.round(lastWeeks * intervalDays);
+  const md = toMonthsDays(daysTotal);
 
-  const startDateObj = new Date(start + "T00:00:00");
-  const nextDateObj  = new Date(startDateObj);
-  nextDateObj.setDate(startDateObj.getDate() + days);
-
-  const yyyy = nextDateObj.getFullYear();
-  const mm = String(nextDateObj.getMonth()+1).padStart(2,'0');
-  const dd = String(nextDateObj.getDate()).padStart(2,'0');
-  const nextISO = `${yyyy}-${mm}-${dd}`;
+  const nextISO = addDaysISO(start, daysTotal);
 
   const yearly = computePurchasesInNext12Months(start, intervalDays);
-
-  // ✅ حفظ التواريخ + تفعيل أزرار PDF / ICS
-  lastPurchaseDatesISO = yearly.purchaseDatesISO.slice();
-  lastBuyStartISO = start;
-
-  const pdfBtn = document.getElementById('download-buy-pdf');
-  const icsBtn = document.getElementById('download-buy-ics');
-  [pdfBtn, icsBtn].forEach(btn=>{
-    if(!btn) return;
-    btn.disabled = lastPurchaseDatesISO.length === 0;
-    btn.style.opacity = btn.disabled ? '0.5' : '1';
-    btn.style.cursor = btn.disabled ? 'not-allowed' : 'pointer';
-  });
-
   const listDMY = yearly.purchaseDatesISO.map(formatDateISOToDMY).join(' — ');
+
+  /* ✅ (الجديد) تواريخ جرعات نفس القلم: 4 أو 5 */
+  const penDoseDatesISO = buildPenDoseDates(start, intervalDays, lastGolden);
+  const penDoseDatesDMY = penDoseDatesISO.map(formatDateISOToDMY).join(' — ');
 
   buyResult.innerHTML =
     `🧾 بناءً على الإعدادات الحالية: (الأساسي <u style="color:#5D0096">${formatNumber(lastDose1)}</u> → المطلوب <u style="color:#5D0096">${formatNumber(lastDose2)}</u> ${lastGolden?'(الجرعة الذهبية ✅)':''})<br>`+
-    `📌 عدد الجرعات : <u style="color:green">${formatNumber(lastWeeks)}</u> جرعة (كل <u style="color:green">${intervalDays}</u> يوم) = ≈ <u style="color:green">${days}</u> يوم<br>`+
+    `📌 عدد الجرعات : <u style="color:green">${formatNumber(lastWeeks)}</u> جرعة (كل <u style="color:green">${intervalDays}</u> يوم) = ≈ <u style="color:green">${daysTotal}</u> يوم (<u style="color:purple">${md.text}</u>)<br>`+
+    `🗓️ تواريخ أخذ جرعات نفس القلم (${lastGolden ? '5 جرعات' : '4 جرعات'}): <span style="color:#222">${penDoseDatesDMY}</span><br>`+
     `🗓️ تاريخ شراء القلم الحالي ( يوم اخذ اول جرعة ): <u style="color:red">${formatDateISOToDMY(start)}</u><br>`+
     `✅ تشتري القلم القادم بتاريخ: <u style="color:red">${formatDateISOToDMY(nextISO)}</u><br>`+
     `📦 خلال سنة تحتاج تشتري القلم <u style="color:purple">${yearly.purchases}</u> مرات<br>`+
-    `🗓️ تواريخ الشراء المتوقعة (12 شهر): <span style="color:#222">${listDMY}</span>`;
+    `🗓️ تواريخ شراء القلم المتوقعة (خلال سنة): <span style="color:#222">${listDMY}</span>`;
 }
 
 function calculateResult(){
   if(dose1&&dose2){
-
     const baseDoseML = 0.6;
     const normalPenML = baseDoseML * 4; // 2.4
-
     const extraOldGoldenML = golden.checked ? 0.6 : 0; // 3.0
     const totalPenML = normalPenML + extraOldGoldenML;
 
@@ -404,16 +440,31 @@ buildTicks();setup("dose-group-1",true);setup("dose-group-2",false);
 
 buyDate.addEventListener('change',updateBuyPlan);
 
+if(daysChipsWrap){
+  daysChipsWrap.querySelectorAll('.day-chip').forEach(ch=>{
+    ch.addEventListener('click', ()=>{
+      const d = parseInt(ch.dataset.days, 10);
+      doseEveryDays.value = String(d);
+      setActiveChipByDays(d);
+      updateBuyPlan();
+    });
+  });
+}
+
 doseEveryDays.addEventListener('input',()=>{
   doseEveryDays.value = (doseEveryDays.value||'').toString().replace(/[^0-9]/g,'').slice(0,3);
   if(doseEveryDays.value==='') doseEveryDays.value='7';
+  setActiveChipByDays(parseInt(doseEveryDays.value,10));
   updateBuyPlan();
 });
 
 buyToggle.addEventListener('change',()=>{
   buySection.style.display = buyToggle.checked ? "block" : "none";
   if(!buyToggle.checked){ buyResult.innerHTML=''; }
-  if(buyToggle.checked){ updateBuyPlan(); }
+  if(buyToggle.checked){
+    setActiveChipByDays(getEveryDays());
+    updateBuyPlan();
+  }
 });
 
 function limitInputFormat(i){
@@ -431,231 +482,11 @@ weightInput.addEventListener('input',calcBMI);heightInput.addEventListener('inpu
 const phToggle=document.getElementById('show-pharmacies'),phSection=document.getElementById('pharmacy-section');
 phToggle.addEventListener('change',()=>{phSection.style.display=phToggle.checked?"block":"none";});
 
-/* ✅ فتح/إغلاق صورة جرعات الميكرو دوز */
 const microToggle = document.getElementById('microdose-toggle');
 const microModal  = document.getElementById('microdose-modal');
 if(microToggle && microModal){
   microToggle.addEventListener('click', () => microModal.classList.remove('hidden'));
   microModal.addEventListener('click', () => microModal.classList.add('hidden'));
-}
-
-/* ✅ PDF تقويم 12 شهر */
-function generateBuyCalendarPDF(startISO, purchaseDatesISO){
-  if(!startISO || !purchaseDatesISO || !purchaseDatesISO.length) return;
-
-  const { jsPDF } = window.jspdf || {};
-  if(!jsPDF){
-    alert("مكتبة PDF لم تُحمّل. تأكد أنك أضفت رابط jsPDF في <head>.");
-    return;
-  }
-
-  const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
-  const purchaseSet = new Set(purchaseDatesISO);
-  const startDate = new Date(startISO + "T00:00:00");
-
-  const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-  const weekDays = ["Sat","Sun","Mon","Tue","Wed","Thu","Fri"];
-
-  function daysInMonth(y, m){ return new Date(y, m+1, 0).getDate(); }
-  function toSatIndex(jsDay){ return (jsDay + 1) % 7; }
-
-  function drawMonth(pageIndex, year, month){
-    if(pageIndex > 0) doc.addPage();
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
-    doc.text(`${monthNames[month]} ${year}`, 148, 12, { align: "center" });
-
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.text("Red = Injection purchase day", 148, 18, { align: "center" });
-
-    const x0 = 10, y0 = 25;
-    const cellW = 40;
-    const cellH = 18;
-    const headerH = 10;
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(10);
-    doc.rect(x0, y0, cellW*7, headerH);
-
-    for(let c=0;c<7;c++){
-      doc.text(weekDays[c], x0 + c*cellW + 2, y0 + 7);
-    }
-
-    const gridY = y0 + headerH;
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(11);
-
-    for(let r=0;r<6;r++){
-      for(let c=0;c<7;c++){
-        doc.rect(x0 + c*cellW, gridY + r*cellH, cellW, cellH);
-      }
-    }
-
-    const first = new Date(year, month, 1);
-    const firstIdx = toSatIndex(first.getDay());
-    const dim = daysInMonth(year, month);
-
-    let day = 1;
-    for(let slot=0; slot<42; slot++){
-      const r = Math.floor(slot/7);
-      const c = slot%7;
-      const cellX = x0 + c*cellW;
-      const cellY = gridY + r*cellH;
-
-      if(slot >= firstIdx && day <= dim){
-        const yyyy = year;
-        const mm = String(month+1).padStart(2,'0');
-        const dd = String(day).padStart(2,'0');
-        const iso = `${yyyy}-${mm}-${dd}`;
-        const isPurchase = purchaseSet.has(iso);
-
-        if(isPurchase){
-          doc.setTextColor(255,0,0);
-          doc.setFont("helvetica", "bold");
-        }else{
-          doc.setTextColor(0,0,0);
-          doc.setFont("helvetica", "normal");
-        }
-
-        doc.text(String(day), cellX + 2, cellY + 6);
-
-        if(isPurchase){
-          doc.setTextColor(255,0,0);
-          doc.setFontSize(9);
-          doc.text("INJ", cellX + 2, cellY + 12);
-          doc.setFontSize(11);
-        }
-
-        day++;
-      }
-    }
-    doc.setTextColor(0,0,0);
-  }
-
-  for(let i=0;i<12;i++){
-    const d = new Date(startDate);
-    d.setMonth(startDate.getMonth() + i);
-    drawMonth(i, d.getFullYear(), d.getMonth());
-  }
-
-  doc.save(`Mounjaro_Buy_Calendar_${startISO}.pdf`);
-}
-
-const pdfBtn = document.getElementById('download-buy-pdf');
-if(pdfBtn){
-  pdfBtn.disabled = true;
-  pdfBtn.style.opacity = '0.5';
-  pdfBtn.style.cursor = 'not-allowed';
-  pdfBtn.addEventListener('click', ()=>{
-    if(!lastBuyStartISO || !lastPurchaseDatesISO.length){
-      alert("حدد الجرعات + تاريخ الشراء أولاً ثم جرّب مرة ثانية.");
-      return;
-    }
-    generateBuyCalendarPDF(lastBuyStartISO, lastPurchaseDatesISO);
-  });
-}
-
-/* ✅ (جديد) إنشاء ملف تقويم iPhone/Apple Calendar (ICS) */
-function icsEscape(s){
-  return String(s || '')
-    .replace(/\\/g, '\\\\')
-    .replace(/\n/g, '\\n')
-    .replace(/;/g, '\\;')
-    .replace(/,/g, '\\,');
-}
-
-function isoToICSDate(iso){
-  // YYYY-MM-DD -> YYYYMMDD
-  return iso.replaceAll('-', '');
-}
-
-function buildICS(purchaseDatesISO, options){
-  const title = options?.title || 'شراء مونجارو';
-  const desc  = options?.description || 'تذكير بشراء الإبرة/القلم حسب خطتك.';
-  const loc   = options?.location || '';
-  const allDay = options?.allDay !== false; // افتراضي All-day
-
-  const now = new Date();
-  const dtstamp =
-    now.getUTCFullYear() +
-    String(now.getUTCMonth()+1).padStart(2,'0') +
-    String(now.getUTCDate()).padStart(2,'0') + 'T' +
-    String(now.getUTCHours()).padStart(2,'0') +
-    String(now.getUTCMinutes()).padStart(2,'0') +
-    String(now.getUTCSeconds()).padStart(2,'0') + 'Z';
-
-  let lines = [];
-  lines.push('BEGIN:VCALENDAR');
-  lines.push('VERSION:2.0');
-  lines.push('PRODID:-//Mounjaro Planner//KW//AR');
-  lines.push('CALSCALE:GREGORIAN');
-  lines.push('METHOD:PUBLISH');
-
-  purchaseDatesISO.forEach((iso, idx) => {
-    const ymd = isoToICSDate(iso);
-    const uid = `mounjaro-${ymd}-${idx}@planner`;
-
-    lines.push('BEGIN:VEVENT');
-    lines.push(`UID:${uid}`);
-    lines.push(`DTSTAMP:${dtstamp}`);
-
-    if(allDay){
-      // حدث طوال اليوم
-      lines.push(`DTSTART;VALUE=DATE:${ymd}`);
-      // DTEND لليوم التالي (مطلوب لبعض التقويمات)
-      const d = new Date(iso + 'T00:00:00');
-      d.setDate(d.getDate() + 1);
-      const endISO = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-      lines.push(`DTEND;VALUE=DATE:${isoToICSDate(endISO)}`);
-    } else {
-      // وقت محدد (اختياري) — غير مفعّل افتراضيًا
-      // تقدر تطلب مني أخليه 09:00 مثلا
-    }
-
-    lines.push(`SUMMARY:${icsEscape('💉 ' + title)}`);
-    lines.push(`DESCRIPTION:${icsEscape(desc)}`);
-    if(loc) lines.push(`LOCATION:${icsEscape(loc)}`);
-
-    lines.push('END:VEVENT');
-  });
-
-  lines.push('END:VCALENDAR');
-
-  return lines.join('\r\n');
-}
-
-function downloadICSFile(filename, content){
-  const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
-
-const icsBtn = document.getElementById('download-buy-ics');
-if(icsBtn){
-  icsBtn.disabled = true;
-  icsBtn.style.opacity = '0.5';
-  icsBtn.style.cursor = 'not-allowed';
-
-  icsBtn.addEventListener('click', ()=>{
-    if(!lastPurchaseDatesISO.length){
-      alert("احسب تواريخ الشراء أولاً ثم جرّب مرة ثانية.");
-      return;
-    }
-    const ics = buildICS(lastPurchaseDatesISO, {
-      title: 'شراء الإبرة',
-      description: 'تذكير بشراء الإبرة حسب خطتك (12 شهر).',
-      allDay: true
-    });
-    downloadICSFile(`Mounjaro_Purchases_${lastBuyStartISO || 'Plan'}.ics`, ics);
-  });
 }
 </script>
 
