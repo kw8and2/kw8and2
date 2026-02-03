@@ -20,7 +20,6 @@
     min-height:100vh;
     text-align:center;
     font-size:16px;
-    font-weight:400;
   }
 
   .container{
@@ -36,19 +35,6 @@
     border-radius:16px;
   }
 
-  .box{ margin-bottom:15px; }
-
-  input[type="number"]{
-    width:100%;
-    padding:14px;
-    font-size:16px;
-    border:1px solid #ccc;
-    border-radius:12px;
-    text-align:center;
-    font-family:'Cairo',sans-serif;
-    box-sizing:border-box;
-  }
-
   .label{
     margin-bottom:6px;
     color:#555;
@@ -59,18 +45,18 @@
     flex-wrap:wrap;
     justify-content:center;
     gap:7px;
-    margin:10px 0 6px;
+    margin:10px 0 14px;
   }
 
-  .tick, .mg-input{
-    padding:6px 9px;
+  .tick, .input-mini{
+    padding:6px 12px;
     font-size:16px;
     border-radius:8px;
     border:1px solid #ddd;
     background:#fff;
     color:var(--accent);
-    box-sizing:border-box;
     font-family:'Cairo',sans-serif;
+    box-sizing:border-box;
   }
 
   .tick{
@@ -84,13 +70,13 @@
     border-color:var(--accent);
   }
 
-  .mg-input{
-    width:110px;
+  .input-mini{
+    width:60px;
     text-align:center;
     outline:none;
   }
 
-  .mg-input:focus{
+  .input-mini:focus{
     border-color:var(--accent);
     box-shadow:0 0 0 2px rgba(250,66,56,0.18);
   }
@@ -104,10 +90,7 @@
     background:#fafafa;
   }
 
-  /* ✅ القيم المتغيرة عريضة */
-  .value{
-    font-weight:700;
-  }
+  .value{ font-weight:700; }
 
   .note{
     margin-top:6px;
@@ -117,6 +100,13 @@
   .green{ color:#16a34a; }
   .yellow{ color:#ca8a04; }
   .red{ color:#dc2626; }
+
+  /* ✅ تكبير سطر الفاصل فقط */
+  .interval-line{
+    font-size:22px;   /* مميز بالحجم فقط */
+    line-height:1.35;
+    margin:6px 0;
+  }
 </style>
 </head>
 
@@ -127,44 +117,72 @@
     <img src="https://www.mediafire.com/convkey/5055/395xn3p3vcs5eg89g.jpg" alt="Mounjaro 15">
   </div>
 
-  <div class="box">
-    <div class="label">عدد أقلام بالسنة (15mg)</div>
-    <input type="number" id="pens" placeholder="مثال: 3" min="0">
+  <!-- عدد الأقلام -->
+  <div class="label">عدد أقلام بالسنة (15mg)</div>
+  <div class="ticks" id="pensIcons">
+    <input class="input-mini" type="number" id="pensInput" placeholder="عدد" min="1">
   </div>
 
+  <!-- اختيار الجرعة -->
   <div class="label">اختيار الجرعة (mg)</div>
 
   <div class="ticks">
-    <input class="mg-input" type="number" id="mgManual" placeholder="اكتب الجرعة" step="0.01" min="0">
+    <input class="input-mini" type="number" id="mgManual" placeholder="mg" step="0.01" min="0">
   </div>
 
   <div class="ticks" id="ticksContainer"></div>
 
+  <!-- النتائج -->
   <div class="result" id="output">
-    عدد التكات لكل قلم: <span class="value">—</span><br>
-    عدد الجرعات: <span class="value">—</span><br>
-    الفاصل بين الجرعات كل <span class="value">—</span> يوم<br>
-    <div class="note">الفاصل الطبيعي كل 7 أيام إلى 17 يوم</div>
+    عدد التكات: <span class="value">—</span><br>
+    مجموع عدد الجرعات: <span class="value">—</span><br>
+    <div class="interval-line">الفاصل بين الجرعات كل <span class="value">—</span> يوم</div>
+    <div class="note">الفاصل الطبيعي من 7 - 17 يوم</div>
     إجمالي التكلفة كل سنة (KWD): <span class="value">—</span>
   </div>
 
 </div>
 
 <script>
-  const pensInput = document.getElementById("pens");
+  const pensIcons = document.getElementById("pensIcons");
+  const pensInput = document.getElementById("pensInput");
   const ticksContainer = document.getElementById("ticksContainer");
   const output = document.getElementById("output");
   const mgManual = document.getElementById("mgManual");
 
   const PEN_PRICE = 103;
+  let pens = 0;
   let selectedTicks = 0;
 
+  /* أيقونات عدد الأقلام من 1 إلى 7 */
+  for (let i = 1; i <= 7; i++) {
+    const el = document.createElement("div");
+    el.className = "tick";
+    el.textContent = i;
+    el.onclick = () => {
+      document.querySelectorAll("#pensIcons .tick").forEach(t => t.classList.remove("active"));
+      el.classList.add("active");
+      pensInput.value = i;
+      pens = i;
+      calculate();
+    };
+    pensIcons.insertBefore(el, pensInput);
+  }
+
+  /* إدخال يدوي لعدد الأقلام */
+  pensInput.addEventListener("input", () => {
+    pens = Number(pensInput.value);
+    document.querySelectorAll("#pensIcons .tick").forEach(t => t.classList.remove("active"));
+    calculate();
+  });
+
+  /* أيقونات الجرعات mg */
   for (let mg = 6; mg <= 10.001; mg += 0.25) {
     const el = document.createElement("div");
     el.className = "tick";
     el.textContent = mg.toFixed(2).replace(/\.00$/, "") + "mg";
     el.onclick = () => {
-      document.querySelectorAll(".tick").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll("#ticksContainer .tick").forEach(t => t.classList.remove("active"));
       el.classList.add("active");
       mgManual.value = mg.toFixed(2).replace(/\.00$/, "");
       selectedTicks = (mg / 15) * 60;
@@ -173,9 +191,10 @@
     ticksContainer.appendChild(el);
   }
 
+  /* إدخال يدوي للجرعة */
   mgManual.addEventListener("input", () => {
     const mg = Number(mgManual.value);
-    document.querySelectorAll(".tick").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll("#ticksContainer .tick").forEach(t => t.classList.remove("active"));
     selectedTicks = mg > 0 ? (mg / 15) * 60 : 0;
     calculate();
   });
@@ -187,8 +206,6 @@
   }
 
   function calculate(){
-    const pens = Number(pensInput.value);
-
     if (pens > 0 && selectedTicks > 0) {
       const total = 240 * pens;
       const doses = total / selectedTicks;
@@ -197,25 +214,42 @@
       const totalCost = pens * PEN_PRICE;
 
       output.innerHTML = `
-        عدد التكات لكل قلم: <span class="value">${selectedTicks.toFixed(2)}</span><br>
-        عدد الجرعات: <span class="value">${doses.toFixed(2)}</span><br>
-        الفاصل بين الجرعات كل
-        <span class="value ${cls}">${interval.toFixed(2)}</span> يوم<br>
-        <div class="note">الفاصل الطبيعي كل 7 أيام إلى 17 يوم</div>
+        عدد التكات: <span class="value">${selectedTicks.toFixed(2)}</span><br>
+        مجموع عدد الجرعات: <span class="value">${doses.toFixed(2)}</span><br>
+        <div class="interval-line">
+          الفاصل بين الجرعات كل
+          <span class="value ${cls}">${interval.toFixed(2)}</span> يوم
+        </div>
+        <div class="note">الفاصل الطبيعي من 7 - 17 يوم</div>
         إجمالي التكلفة كل سنة (KWD): <span class="value">${totalCost.toFixed(2)}</span>
       `;
     } else {
       output.innerHTML = `
-        عدد التكات لكل قلم: <span class="value">—</span><br>
-        عدد الجرعات: <span class="value">—</span><br>
-        الفاصل بين الجرعات كل <span class="value">—</span> يوم<br>
-        <div class="note">الفاصل الطبيعي كل 7 أيام إلى 17 يوم</div>
+        عدد التكات: <span class="value">—</span><br>
+        مجموع عدد الجرعات: <span class="value">—</span><br>
+        <div class="interval-line">الفاصل بين الجرعات كل <span class="value">—</span> يوم</div>
+        <div class="note">الفاصل الطبيعي من 7 - 17 يوم</div>
         إجمالي التكلفة كل سنة (KWD): <span class="value">—</span>
       `;
     }
   }
 
-  pensInput.addEventListener("input", calculate);
+  /* ✅ اختيار تلقائي عند فتح الصفحة: قلم 1 + جرعة 6mg */
+  window.addEventListener("DOMContentLoaded", () => {
+    // قلم 1
+    pens = 1;
+    pensInput.value = 1;
+    const penTick1 = document.querySelectorAll("#pensIcons .tick")[0];
+    if (penTick1) penTick1.classList.add("active");
+
+    // جرعة 6mg (أول أيقونة)
+    const firstMgTick = document.querySelectorAll("#ticksContainer .tick")[0];
+    if (firstMgTick) firstMgTick.classList.add("active");
+    mgManual.value = 6;
+    selectedTicks = (6 / 15) * 60;
+
+    calculate();
+  });
 </script>
 
 </body>
