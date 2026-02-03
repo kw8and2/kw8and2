@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>حساب الجرعات</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400&display=swap" rel="stylesheet">
+
+<style>
+  :root { --accent:#fa4238; }
+
+  body{
+    margin:0;
+    font-family:'Cairo',sans-serif;
+    background:#fff;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    min-height:100vh;
+    text-align:center;
+    font-size:16px;
+    font-weight:400;
+  }
+
+  .container{
+    width:100%;
+    max-width:600px;
+    padding:20px;
+  }
+
+  .top-image img{
+    width:min(100%,560px);
+    margin:10px auto 18px;
+    display:block;
+    border-radius:16px;
+  }
+
+  .box{ margin-bottom:15px; }
+
+  input[type="number"]{
+    width:100%;
+    padding:14px;
+    font-size:16px;
+    border:1px solid #ccc;
+    border-radius:12px;
+    text-align:center;
+    font-family:'Cairo',sans-serif;
+    box-sizing:border-box;
+  }
+
+  .label{
+    margin-bottom:6px;
+    color:#555;
+  }
+
+  .ticks{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:7px;
+    margin:10px 0 6px;
+  }
+
+  .tick, .mg-input{
+    padding:6px 9px;
+    font-size:16px;
+    border-radius:8px;
+    border:1px solid #ddd;
+    background:#fff;
+    color:var(--accent);
+    box-sizing:border-box;
+    font-family:'Cairo',sans-serif;
+  }
+
+  .tick{
+    cursor:pointer;
+    user-select:none;
+  }
+
+  .tick.active{
+    background:var(--accent);
+    color:#fff;
+    border-color:var(--accent);
+  }
+
+  /* مربع الجرعة اليدوي بنفس حجم الأيقونات */
+  .mg-input{
+    width:110px;
+    text-align:center;
+    outline:none;
+  }
+  .mg-input:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 2px rgba(250,66,56,0.18);
+  }
+
+  .result{
+    margin:20px -10px 0;
+    padding:18px;
+    border:1px solid #ddd;
+    border-radius:14px;
+    line-height:1.9;
+    background:#fafafa;
+  }
+
+  .note{
+    margin-top:6px;
+    color:#dc2626;
+  }
+
+  .green{ color:#16a34a; }
+  .yellow{ color:#ca8a04; }
+  .red{ color:#dc2626; }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+  <div class="top-image">
+    <img src="https://www.mediafire.com/convkey/5055/395xn3p3vcs5eg89g.jpg" alt="Mounjaro 15">
+  </div>
+
+  <div class="box">
+    <div class="label">عدد أقلام بالسنة (15mg)</div>
+    <input type="number" id="pens" placeholder="مثال: 3 " min="0">
+  </div>
+
+  <div class="label">اختيار الجرعة (mg)</div>
+
+  <!-- ✅ مربع إدخال جرعة يدوي بنفس حجم الأيقونات -->
+  <div class="ticks">
+    <input class="mg-input" type="number" id="mgManual" placeholder="اكتب الجرعة" step="0.01" min="0">
+  </div>
+
+  <div class="ticks" id="ticksContainer"></div>
+
+  <div class="result" id="output">
+    عدد التكات: —<br>
+    عدد الجرعات: —<br>
+    الفاصل بين الجرعات كل — يوم<br>
+    <div class="note">ملاحظة: الفاصل الطبيعي من 7 أيام إلى 17 يوم</div>
+    إجمالي التكلفة كل سنة (KWD): —
+  </div>
+
+</div>
+
+<script>
+  const pensInput = document.getElementById("pens");
+  const ticksContainer = document.getElementById("ticksContainer");
+  const output = document.getElementById("output");
+  const mgManual = document.getElementById("mgManual");
+
+  const PEN_PRICE = 103;
+  let selectedTicks = 0;
+
+  // أيقونات الجرعات من 6 إلى 10 بزيادة 0.25
+  for (let mg = 6; mg <= 10.001; mg += 0.25) {
+    const el = document.createElement("div");
+    el.className = "tick";
+    el.textContent = mg.toFixed(2).replace(/\.00$/, "") + "mg";
+    el.onclick = () => {
+      document.querySelectorAll(".tick").forEach(t => t.classList.remove("active"));
+      el.classList.add("active");
+
+      mgManual.value = mg.toFixed(2).replace(/\.00$/, ""); // يعكس الاختيار في مربع الإدخال
+      selectedTicks = (mg / 15) * 60; // 15mg = 60 تكه
+      calculate();
+    };
+    ticksContainer.appendChild(el);
+  }
+
+  // إدخال يدوي للجرعة
+  mgManual.addEventListener("input", () => {
+    const mg = Number(mgManual.value);
+    document.querySelectorAll(".tick").forEach(t => t.classList.remove("active"));
+
+    if (mg > 0) {
+      selectedTicks = (mg / 15) * 60;
+    } else {
+      selectedTicks = 0;
+    }
+    calculate();
+  });
+
+  function intervalClass(value){
+    if (value < 18) return "green";   // 0 → 17.99
+    if (value < 22) return "yellow";  // 18 → 21.99
+    return "red";                     // 22+
+  }
+
+  function calculate(){
+    const pens = Number(pensInput.value);
+
+    if (pens > 0 && selectedTicks > 0) {
+      const total = 240 * pens;
+      const doses = total / selectedTicks;
+      const interval = 365 / doses;
+      const cls = intervalClass(interval);
+      const totalCost = pens * PEN_PRICE;
+
+      output.innerHTML = `
+        عدد التكات: ${selectedTicks.toFixed(2)}<br>
+        عدد الجرعات: ${doses.toFixed(2)}<br>
+        الفاصل بين الجرعات كل <span class="${cls}">${interval.toFixed(2)}</span> يوم<br>
+        <div class="note">الفاصل الطبيعي كل 7 أيام إلى 17 يوم</div>
+        إجمالي التكلفة كل سنة (KWD): ${totalCost.toFixed(2)}
+      `;
+    } else {
+      output.innerHTML = `
+        عدد التكات: —<br>
+        عدد الجرعات: —<br>
+        الفاصل بين الجرعات كل — يوم<br>
+        <div class="note">الفاصل الطبيعي كل 7 أيام إلى 17 يوم</div>
+        إجمالي التكلفة كل سنة (KWD): —
+      `;
+    }
+  }
+
+  pensInput.addEventListener("input", calculate);
+</script>
+
+</body>
+</html>
