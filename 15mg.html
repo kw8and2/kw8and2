@@ -141,7 +141,7 @@
   <div class="ticks" id="ticksContainer"></div>
 
   <div class="result" id="output">
-    عدد التكات: <span class="value">—</span><br>
+    عدد التكات لكل قلم: <span class="value">—</span><br>
     عدد الجرعات: <span class="value">—</span><br>
     الفاصل بين الجرعات كل <span class="value">—</span> يوم<br>
     <div class="note">الفاصل الطبيعي كل 7 أيام إلى 17 يوم</div>
@@ -197,7 +197,7 @@
       const totalCost = pens * PEN_PRICE;
 
       output.innerHTML = `
-        عدد التكات: <span class="value">${selectedTicks.toFixed(2)}</span><br>
+        عدد التكات لكل قلم: <span class="value">${selectedTicks.toFixed(2)}</span><br>
         عدد الجرعات: <span class="value">${doses.toFixed(2)}</span><br>
         الفاصل بين الجرعات كل
         <span class="value ${cls}">${interval.toFixed(2)}</span> يوم<br>
@@ -206,7 +206,7 @@
       `;
     } else {
       output.innerHTML = `
-        عدد التكات: <span class="value">—</span><br>
+        عدد التكات لكل قلم: <span class="value">—</span><br>
         عدد الجرعات: <span class="value">—</span><br>
         الفاصل بين الجرعات كل <span class="value">—</span> يوم<br>
         <div class="note">الفاصل الطبيعي كل 7 أيام إلى 17 يوم</div>
