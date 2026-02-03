@@ -2,550 +2,254 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Mounjaro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>حساب الجرعات</title>
 
-<link rel="icon" href="https://domain.glass/favicon/www.lilly.com.png" type="image/png" />
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
-:root {
-  --font-main: 'Cairo', sans-serif;
-  --font-size-base: 16px;
-  --main-img-width: 50rem;
-  --main-img-height: 15rem;
-  --main-img-top: 5px;
-  --dose-img-width: 2rem;
-  --dose-img-height: 1rem;
-  --dose-img-gap: 27px;
-  --dose-input-top: 5px;
-  --result-font-size: 20px;
-  --result-margin-top: 10px;
-  --syringe-top: 60px;
-  --syringe-label-color: #009DFF;
-}
-body {font-family:var(--font-main);font-size:var(--font-size-base);background:#fff;}
-.pen-image-Middle{width:var(--main-img-width);height:var(--main-img-height);object-fit:contain;margin-top:var(--main-img-top);transition:all .3s ease;}
-#dose-group-1,#dose-group-2{gap:var(--dose-img-gap)!important;}
-.dose-img{width:var(--dose-img-width);height:var(--dose-img-height);object-fit:contain;transition:transform .3s ease;cursor:pointer;}
-.dose-img.active{transform:scale(2.3);}
-.dose-input{width:20rem;height:2rem;border:2px solid #ccc;border-radius:0;text-align:center;font-size:1rem;margin-top:var(--dose-input-top);}
-.dose-input:focus{border-color:#5D0096;box-shadow:0 0 4px rgba(93,0,150,0.3);}
-#result{margin-top:var(--result-margin-top);background:#f9f9ff;border:1px solid #d0d0d0;box-shadow:0 4px 10px rgba(0,0,0,0.08);border-radius:15px;font-size:var(--result-font-size);font-weight:600;color:#222;}
+  :root { --accent:#fa4238; }
 
-.syringe-wrap{
-  width:100%;
-  margin:var(--syringe-top) auto 10px;
-  padding:12px;
-  background:#fff;
-  border-radius:12px;
-  box-shadow:0 6px 18px rgba(0,0,0,0.06);
-  position:relative;
-  display:none;
-}
-.syringe{position:relative;height:50px;border-radius:10px;background:linear-gradient(180deg,#fff,#f7f7f7)}
-.syringe .fill{position:absolute;left:0;top:0;bottom:0;width:0;background:#009dff;transition:width .4s ease}
-.ticks{position:absolute;left:0;right:0;bottom:0;height:100%}
-.tick{position:absolute;bottom:0;width:2px;background:#000}
-.tick.big{height:25px}
-.tick.small{height:10px;opacity:.7}
-.tick-label{position:absolute;top:4px;font-size:15px;transform:translateX(-50%);color:#111}
+  body{
+    margin:0;
+    font-family:'Cairo',sans-serif;
+    background:#fff;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    min-height:100vh;
+    text-align:center;
+    font-size:16px;
+  }
 
-/* ✅ إصلاح: صورة الإبرة داخل الصندوق (بدون absolute) */
-.syringe-image{
-  width:100%;
-  max-width:720px;
-  height:70px;
-  margin:0 auto 6px;
-  display:block;
-  object-fit:contain;
-  position:relative;
-  top:0;
-  left:auto;
-  right:auto;
-}
+  .container{
+    width:100%;
+    max-width:600px;
+    padding:20px;
+  }
 
-/* ✅ إصلاح: التنبيه بين الصورة والمحاكي */
-.syringe-warning{
-  text-align:center;
-  color:#ff0000;
-  font-size:12px;
-  font-weight:700;
-  margin:2px 0 8px;
-  pointer-events:none;
-}
+  .top-image img{
+    width:min(100%,560px);
+    margin:10px auto 18px;
+    display:block;
+    border-radius:16px;
+  }
 
-.syringe-option label{color:var(--syringe-label-color);font-weight:600;}
+  .label{
+    margin-bottom:6px;
+    color:#555;
+  }
 
-/* ✅ تنسيق قسم تاريخ شراء القلم */
-#buy-section{display:none;}
-.buy-input{width:20rem;height:2rem;border:2px solid #ccc;border-radius:0;text-align:center;font-size:1rem;}
-.buy-input:focus{border-color:#5D0096;box-shadow:0 0 4px rgba(93,0,150,0.3);}
-#buy-result{margin-top:10px;background:#f9f9ff;border:1px solid #d0d0d0;box-shadow:0 4px 10px rgba(0,0,0,0.08);border-radius:15px;font-size:18px;font-weight:600;color:#222;padding:10px;}
-.buy-label{font-weight:700;color:#ff0000;font-size:14px;}
+  .ticks{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:7px;
+    margin:10px 0 14px;
+  }
 
-/* ✅ أيقونات اختيار فترة الجرعة */
-.days-chips-wrap{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:6px;}
-.day-chip{
-  border:2px solid #d0d0d0;
-  background:#fff;
-  border-radius:12px;
-  padding:6px 10px;
-  font-weight:700;
-  font-size:13px;
-  cursor:pointer;
-  transition:all .15s ease;
-  user-select:none;
-}
-.day-chip:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,0,0,0.06);}
-.day-chip.active{
-  border-color:#5D0096;
-  background:#f3e9ff;
-  color:#5D0096;
-}
-.small-hint{font-size:12px;color:#555;font-weight:600;margin-top:4px;}
+  .tick, .input-mini{
+    padding:6px 12px;
+    font-size:16px;
+    border-radius:8px;
+    border:1px solid #ddd;
+    background:#fff;
+    color:var(--accent);
+    font-family:'Cairo',sans-serif;
+    box-sizing:border-box;
+  }
+
+  .tick{
+    cursor:pointer;
+    user-select:none;
+  }
+
+  .tick.active{
+    background:var(--accent);
+    color:#fff;
+    border-color:var(--accent);
+  }
+
+  .input-mini{
+    width:60px;
+    text-align:center;
+    outline:none;
+  }
+
+  .input-mini:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 2px rgba(250,66,56,0.18);
+  }
+
+  .result{
+    margin:20px -10px 0;
+    padding:18px;
+    border:1px solid #ddd;
+    border-radius:14px;
+    line-height:1.9;
+    background:#fafafa;
+  }
+
+  .value{ font-weight:700; }
+
+  .note{
+    margin-top:6px;
+    color:#dc2626;
+  }
+
+  .green{ color:#16a34a; }
+  .yellow{ color:#ca8a04; }
+  .red{ color:#dc2626; }
+
+  /* ✅ تكبير سطر الفاصل فقط */
+  .interval-line{
+    font-size:22px;   /* مميز بالحجم فقط */
+    line-height:1.35;
+    margin:6px 0;
+  }
 </style>
 </head>
 
-<body class="min-h-screen flex flex-col items-center justify-start p-2 sm:p-4 gap-2">
+<body>
+<div class="container">
 
-<div class="w-full text-center mt-2">
-  <h1 class="text-[#5D0096] text-xl sm:text-2xl font-bold">
-    <a href="https://gulf.lilly.com/mealabels/ar/mounjaro-kwikpen" target="_blank" class="text-[#5D0096]">
-      Mounjaro KwikPen (0.6mL)
-    </a>
-  </h1>
-</div>
-
-<div class="w-full max-w-4xl flex justify-center mt-1">
-  <img id="pen-image" src="https://www.mediafire.com/convkey/0be4/34416zv2fa0gtoo9g.jpg" alt="Mounjaro Pen" class="pen-image-Middle">
-</div>
-
-<div class="w-full max-w-4xl text-center mt-1">
-  <a href="https://files.mealabels.gulf.lilly.com/content/mounjaro-kwikpen/lebanon/arabic_instructions_for_use.pdf" target="_blank"
-     class="text-base sm:text-lg underline text-blue-700 font-extrabold">اضغط هنا KwikPen طريقة استخدام</a>
-</div>
-
-<div class="w-full max-w-4xl p-3 sm:p-4 text-center">
-  <h2 class="text-base sm:text-lg font-semibold">💉 حدد جرعة القلم الأساسي</h2>
-  <div class="flex flex-wrap justify-center items-center gap-10 sm:gap-12 mt-2" id="dose-group-1">
-    <img src="https://www.mediafire.com/convkey/b0a1/1v91nezacgvctmx9g.jpg" class="dose-img" data-mg="2.5">
-    <img src="https://www.mediafire.com/convkey/a47f/958mgbch2zd22b39g.jpg" class="dose-img" data-mg="5">
-    <img src="https://www.mediafire.com/convkey/0a59/c2b2pl0ce013zg29g.jpg" class="dose-img" data-mg="7.5">
-    <img src="https://www.mediafire.com/convkey/cd8e/osqmq64a50uz9qh9g.jpg" class="dose-img" data-mg="10">
-    <img src="https://www.mediafire.com/convkey/8559/v8uy1ty789xfnhu9g.jpg" class="dose-img" data-mg="12.5">
-    <img src="https://www.mediafire.com/convkey/316c/de0rhp4jaxq4dr39g.jpg" class="dose-img" data-mg="15">
-  </div>
-</div>
-
-<div class="w-full max-w-4xl p-3 sm:p-4 text-center">
-  <h2 class="text-base sm:text-lg font-semibold">🎯 حدد الجرعة المطلوبة</h2>
-  <div class="flex flex-wrap justify-center items-center gap-10 sm:gap-12 mt-2" id="dose-group-2">
-    <img src="https://www.mediafire.com/convkey/b0a1/1v91nezacgvctmx9g.jpg" class="dose-img" data-mg="2.5">
-    <img src="https://www.mediafire.com/convkey/a47f/958mgbch2zd22b39g.jpg" class="dose-img" data-mg="5">
-    <img src="https://www.mediafire.com/convkey/0a59/c2b2pl0ce013zg29g.jpg" class="dose-img" data-mg="7.5">
-    <img src="https://www.mediafire.com/convkey/cd8e/osqmq64a50uz9qh9g.jpg" class="dose-img" data-mg="10">
-    <img src="https://www.mediafire.com/convkey/8559/v8uy1ty789xfnhu9g.jpg" class="dose-img" data-mg="12.5">
-    <img src="https://www.mediafire.com/convkey/316c/de0rhp4jaxq4dr39g.jpg" class="dose-img" data-mg="15">
-  </div>
-  <div class="flex justify-center mt-2">
-    <input id="dose-input-2" type="text" placeholder="او اكتب الجرعة المطلوبة هنا" class="dose-input" inputmode="decimal" maxlength="5">
+  <div class="top-image">
+    <img src="https://www.mediafire.com/convkey/5055/395xn3p3vcs5eg89g.jpg" alt="Mounjaro 15">
   </div>
 
-  <div id="microdose-toggle" class="mt-2 text-center cursor-pointer">
-    <span class="text-[#5D0096] underline font-semibold text-sm sm:text-base">
-      اعرض جرعات الميكرو دوز
-    </span>
-  </div>
-</div>
-
-<div id="golden-dose-container" class="flex items-center gap-2 cursor-pointer mt-1">
-  <input type="checkbox" id="golden-dose" class="w-5 h-5">
-  <label for="golden-dose" class="font-semibold text-yellow-600 text-sm sm:text-base"> استخدم الجرعة الذهبية </label>
-</div>
-
-<div id="result" class="w-full max-w-4xl p-3 text-center font-bold"></div>
-
-<div class="flex items-center gap-2 cursor-pointer mt-2 syringe-option">
-  <input type="checkbox" id="show-buy" class="w-5 h-5">
-  <label for="show-buy" class="text-xs sm:text-sm font-semibold text-[#009DFF]"> 🗓️ متى اشتري القلم القادم ؟ </label>
-</div>
-
-<div id="buy-section" class="w-full max-w-4xl mt-2 text-center">
-  <div class="flex flex-col items-center gap-2">
-    <div class="buy-label">ضع تاريخ شراء القلم الحالي ( يوم اخذ اول جرعة ) </div>
-    <input id="buy-date" type="date" class="buy-input">
-
-    <div class="buy-label" style="color:#009DFF;">الجرعة كل كم أسبوع ؟</div>
-
-    <div class="days-chips-wrap" id="days-chips">
-      <div class="day-chip active" data-days="7">كل 7 أيام</div>
-      <div class="day-chip" data-days="10">كل 10 أيام</div>
-      <div class="day-chip" data-days="14">كل 14 يوم</div>
-      <div class="day-chip" data-days="15">كل 15 يوم</div>
-      <div class="day-chip" data-days="16">كل 16 يوم</div>
-      <div class="day-chip" data-days="17">كل 17 يوم</div>
-    </div>
-
-    <div class="small-hint"> </div>
-    <input id="dose-every-days" type="text" class="buy-input" inputmode="numeric" maxlength="3" placeholder="او اكتب عدد الأيام هنا">
+  <!-- عدد الأقلام -->
+  <div class="label">عدد أقلام بالسنة (15mg)</div>
+  <div class="ticks" id="pensIcons">
+    <input class="input-mini" type="number" id="pensInput" placeholder="عدد" min="1">
   </div>
 
-  <div id="buy-result" class="w-full max-w-4xl mx-auto"></div>
-</div>
+  <!-- اختيار الجرعة -->
+  <div class="label">اختيار الجرعة (mg)</div>
 
-<div class="flex items-center gap-2 cursor-pointer mt-1 syringe-option">
-  <input type="checkbox" id="show-syringe" class="w-5 h-5">
-  <label for="show-syringe" class="text-sm sm:text-base"> عرض محاكي الإبرة </label>
-</div>
-
-<div class="syringe-wrap" id="syringeWrap">
-  <!-- ✅ ترتيب صحيح: الصورة ثم التنبيه ثم المحاكي -->
-  <img src="https://www.mediafire.com/convkey/205f/4r9jw4nsd8cy0kc9g.jpg" alt="Needle" class="syringe-image">
-  <div class="syringe-warning">للنتيجة دقيقه اجعل الهاتف بالعرض</div>
-
-  <div class="syringe">
-    <div class="fill" id="syringeFill"></div>
-    <div class="ticks" id="syringeTicks"></div>
+  <div class="ticks">
+    <input class="input-mini" type="number" id="mgManual" placeholder="mg" step="0.01" min="0">
   </div>
-</div>
 
-<div class="flex items-center gap-2 cursor-pointer mt-2 syringe-option">
-  <input type="checkbox" id="show-bmi" class="w-5 h-5">
-  <label for="show-bmi" class="text-xs sm:text-sm font-semibold text-[#009DFF]"> كتلة الجسم (BMI) (الوزن المثالي) </label>
-</div>
+  <div class="ticks" id="ticksContainer"></div>
 
-<div id="bmi-section" class="w-full sm:w-2/3 md:w-1/2 lg:w-1/3 p-2 mt-2 bg-white rounded-xl shadow-md hidden text-center mx-auto text-sm">
-  <div class="flex flex-row justify-center items-center gap-2">
-    <input id="weight-input" type="text" placeholder="الوزن (كجم)" maxlength="5"
-      class="border border-gray-300 rounded-md px-2 py-1 text-center w-24 focus:outline-none focus:ring-2 focus:ring-[#5D0096] text-sm">
-    <input id="height-input" type="text" placeholder="الطول (سم)" maxlength="5"
-      class="border border-gray-300 rounded-md px-2 py-1 text-center w-24 focus:outline-none focus:ring-2 focus:ring-[#5D0096] text-sm">
+  <!-- النتائج -->
+  <div class="result" id="output">
+    عدد التكات: <span class="value">—</span><br>
+    مجموع عدد الجرعات: <span class="value">—</span><br>
+    <div class="interval-line">الفاصل بين الجرعات كل <span class="value">—</span> يوم</div>
+    <div class="note">الفاصل الطبيعي من 7 - 17 يوم</div>
+    إجمالي التكلفة كل سنة (KWD): <span class="value">—</span>
   </div>
-  <div id="bmi-result" class="mt-2 bg-[#f9f9ff] border border-[#d0d0d0] rounded-xl shadow p-1 font-bold text-[#222] text-sm"></div>
-</div>
 
-<div class="flex items-center gap-2 cursor-pointer mt-2 syringe-option">
-  <input type="checkbox" id="show-pharmacies" class="w-5 h-5">
-  <label for="show-pharmacies" class="text-xs sm:text-sm font-semibold text-[#009DFF]"> صيدليات بيع مونجارو (الكويت) </label>
-</div>
-
-<div id="pharmacy-section" class="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 p-4 mt-3 bg-white rounded-xl shadow-lg hidden text-center mx-auto text-sm">
-  <h3 class="font-bold text-base text-[#5D0096] mb-3">💊 صيدليات رسمية في الكويت</h3>
-  <div class="flex flex-row flex-wrap justify-center items-center gap-3">
-    <a href="https://alhajerypharmacy.com/zone_e_ar/catalogsearch/result/index/?product_list_limit=24&product_list_order=name&q=Mounjaro" target="_blank"
-       class="bg-[#7e36c7] text-white px-3 py-1.5 rounded-lg shadow hover:bg-[#6b2cb1] transition text-xs sm:text-sm">صيدلية الهاجري</a>
-    <a href="https://www.almutawaph.com.kw/ar/catalogsearch/result/?q=Mounjaro&product_list_order=wp_sortby_new&product_list_dir=desc" target="_blank"
-       class="bg-[#7e36c7] text-white px-3 py-1.5 rounded-lg shadow hover:bg-[#6b2cb1] transition text-xs sm:text-sm">صيدلية المطوع</a>
-    <a href="https://pharmazone.com/ar/collections/vendors?q=Lilly&sort_by=created-descending" target="_blank"
-       class="bg-[#7e36c7] text-white px-3 py-1.5 rounded-lg shadow hover:bg-[#6b2cb1] transition text-xs sm:text-sm">صيدلية فارمازون</a>
-  </div>
-</div>
-
-<div id="microdose-modal" class="fixed inset-0 bg-black/60 hidden z-50 flex items-center justify-center">
-  <div class="relative">
-    <img
-      src="https://www.mediafire.com/convkey/9208/innr7372gxagg5c9g.jpg"
-      alt="جرعات الميكرو دوز"
-      class="max-w-[90vw] max-h-[90vh] rounded-xl shadow-2xl bg-white"
-    >
-  </div>
 </div>
 
 <script>
-function buildTicks(){
-  const t=document.getElementById('syringeTicks');
-  t.innerHTML='';
-  for(let u=0;u<=100;u+=2){
-    const p=(u/100)*100;
-    const d=document.createElement('div');
-    d.className=(u%10===0)?'tick big':'tick small';
-    d.style.left=p+'%';
-    t.appendChild(d);
-    if(u%10===0){
-      const l=document.createElement('div');
-      l.className='tick-label';
-      l.style.left=p+'%';
-      l.textContent=u;
-      t.appendChild(l);
+  const pensIcons = document.getElementById("pensIcons");
+  const pensInput = document.getElementById("pensInput");
+  const ticksContainer = document.getElementById("ticksContainer");
+  const output = document.getElementById("output");
+  const mgManual = document.getElementById("mgManual");
+
+  const PEN_PRICE = 103;
+  let pens = 0;
+  let selectedTicks = 0;
+
+  /* أيقونات عدد الأقلام من 1 إلى 7 */
+  for (let i = 1; i <= 7; i++) {
+    const el = document.createElement("div");
+    el.className = "tick";
+    el.textContent = i;
+    el.onclick = () => {
+      document.querySelectorAll("#pensIcons .tick").forEach(t => t.classList.remove("active"));
+      el.classList.add("active");
+      pensInput.value = i;
+      pens = i;
+      calculate();
+    };
+    pensIcons.insertBefore(el, pensInput);
+  }
+
+  /* إدخال يدوي لعدد الأقلام */
+  pensInput.addEventListener("input", () => {
+    pens = Number(pensInput.value);
+    document.querySelectorAll("#pensIcons .tick").forEach(t => t.classList.remove("active"));
+    calculate();
+  });
+
+  /* أيقونات الجرعات mg */
+  for (let mg = 6; mg <= 10.001; mg += 0.25) {
+    const el = document.createElement("div");
+    el.className = "tick";
+    el.textContent = mg.toFixed(2).replace(/\.00$/, "") + "mg";
+    el.onclick = () => {
+      document.querySelectorAll("#ticksContainer .tick").forEach(t => t.classList.remove("active"));
+      el.classList.add("active");
+      mgManual.value = mg.toFixed(2).replace(/\.00$/, "");
+      selectedTicks = (mg / 15) * 60;
+      calculate();
+    };
+    ticksContainer.appendChild(el);
+  }
+
+  /* إدخال يدوي للجرعة */
+  mgManual.addEventListener("input", () => {
+    const mg = Number(mgManual.value);
+    document.querySelectorAll("#ticksContainer .tick").forEach(t => t.classList.remove("active"));
+    selectedTicks = mg > 0 ? (mg / 15) * 60 : 0;
+    calculate();
+  });
+
+  function intervalClass(value){
+    if (value < 18) return "green";
+    if (value < 22) return "yellow";
+    return "red";
+  }
+
+  function calculate(){
+    if (pens > 0 && selectedTicks > 0) {
+      const total = 240 * pens;
+      const doses = total / selectedTicks;
+      const interval = 365 / doses;
+      const cls = intervalClass(interval);
+      const totalCost = pens * PEN_PRICE;
+
+      output.innerHTML = `
+        عدد التكات: <span class="value">${selectedTicks.toFixed(2)}</span><br>
+        مجموع عدد الجرعات: <span class="value">${doses.toFixed(2)}</span><br>
+        <div class="interval-line">
+          الفاصل بين الجرعات كل
+          <span class="value ${cls}">${interval.toFixed(2)}</span> يوم
+        </div>
+        <div class="note">الفاصل الطبيعي من 7 - 17 يوم</div>
+        إجمالي التكلفة كل سنة (KWD): <span class="value">${totalCost.toFixed(2)}</span>
+      `;
+    } else {
+      output.innerHTML = `
+        عدد التكات: <span class="value">—</span><br>
+        مجموع عدد الجرعات: <span class="value">—</span><br>
+        <div class="interval-line">الفاصل بين الجرعات كل <span class="value">—</span> يوم</div>
+        <div class="note">الفاصل الطبيعي من 7 - 17 يوم</div>
+        إجمالي التكلفة كل سنة (KWD): <span class="value">—</span>
+      `;
     }
   }
-}
 
-const golden=document.getElementById("golden-dose"),
-syringe=document.getElementById("show-syringe"),
-syringeWrap=document.getElementById("syringeWrap"),
-syringeFill=document.getElementById("syringeFill"),
-result=document.getElementById("result"),
-image=document.getElementById("pen-image"),
-doseInput2=document.getElementById("dose-input-2"),
-doseImages={
-  "2.5":"https://www.mediafire.com/convkey/e9a4/4554jnrfc48qgoj9g.jpg",
-  "5":"https://www.mediafire.com/convkey/5d4f/aaoucs7i3m4j1bc9g.jpg",
-  "7.5":"https://www.mediafire.com/convkey/7522/v1sztx46b4j7wqj9g.jpg",
-  "10":"https://www.mediafire.com/convkey/c10f/3d3od054v0ziacb9g.jpg",
-  "12.5":"https://www.mediafire.com/convkey/e2a6/w1j1ro4qikm5c819g.jpg",
-  "15":"https://www.mediafire.com/convkey/a92d/iy7hjap6omd241o9g.jpg"
-};
+  /* ✅ اختيار تلقائي عند فتح الصفحة: قلم 1 + جرعة 6mg */
+  window.addEventListener("DOMContentLoaded", () => {
+    // قلم 1
+    pens = 1;
+    pensInput.value = 1;
+    const penTick1 = document.querySelectorAll("#pensIcons .tick")[0];
+    if (penTick1) penTick1.classList.add("active");
 
-const buyToggle=document.getElementById('show-buy'),
-buySection=document.getElementById('buy-section'),
-buyDate=document.getElementById('buy-date'),
-buyResult=document.getElementById('buy-result'),
-doseEveryDays=document.getElementById('dose-every-days'),
-daysChipsWrap=document.getElementById('days-chips');
+    // جرعة 6mg (أول أيقونة)
+    const firstMgTick = document.querySelectorAll("#ticksContainer .tick")[0];
+    if (firstMgTick) firstMgTick.classList.add("active");
+    mgManual.value = 6;
+    selectedTicks = (6 / 15) * 60;
 
-let dose1=null,dose2=null;
-let lastWeeks=null,lastMonths=null,lastTicks=null,lastDose1=null,lastDose2=null,lastGolden=false;
-
-/* ✅ يونيت = mL * 100 (إصلاح 7.5→15 = 120) */
-function formatTicksFromML(ml){
-  return Math.round((Number(ml)||0) * 100);
-}
-function formatNumber(n){return Number.isInteger(n)?n.toString():parseFloat(n.toFixed(1)).toString();}
-
-function formatDateISOToDMY(iso){
-  if(!iso) return '';
-  const [y,m,d]=iso.split('-');
-  return `${d}/${m}/${y}`;
-}
-
-/* ✅ الأشهر بالتفصيل (شهر + يوم) */
-function monthsToMonthsDays(monthsFloat){
-  const totalDays = Math.max(0, Math.round((Number(monthsFloat)||0) * 30));
-  const months = Math.floor(totalDays / 30);
-  const days = totalDays % 30;
-  return { months, days, text: `${months} شهر و ${days} يوم` };
-}
-
-/* ✅ تحويل عدد الأيام إلى (أشهر + أيام) */
-function toMonthsDays(totalDays){
-  let d = Math.max(0, Math.round(Number(totalDays)||0));
-  const months = Math.floor(d / 30);
-  const days = d % 30;
-  return { months, days, text: `${months} شهر و ${days} يوم` };
-}
-
-/* ✅ إضافة أيام لتاريخ ISO */
-function addDaysISO(iso, add){
-  const d = new Date(iso + "T00:00:00");
-  d.setDate(d.getDate() + Math.round(Number(add)||0));
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth()+1).padStart(2,'0');
-  const dd = String(d.getDate()).padStart(2,'0');
-  return `${yyyy}-${mm}-${dd}`;
-}
-
-/* ✅ بناء تواريخ جرعات نفس القلم */
-function buildPenDoseDates(startISO, intervalDays, dosesCount){
-  let count = Math.floor(Number(dosesCount) || 0);
-  if(count <= 0) return [];
-  count = Math.min(count, 60);
-  const out = [];
-  for(let i=0;i<count;i++){
-    out.push(addDaysISO(startISO, i * intervalDays));
-  }
-  return out;
-}
-
-/* ✅ قراءة عدد الأيام */
-function getEveryDays(){
-  const raw = (doseEveryDays?.value || '').toString().replace(/[^0-9]/g,'');
-  const n = parseInt(raw,10);
-  if(n && n > 0) return n;
-
-  const activeChip = daysChipsWrap?.querySelector('.day-chip.active');
-  const chipDays = activeChip ? parseInt(activeChip.dataset.days, 10) : 7;
-  return (chipDays && chipDays > 0) ? chipDays : 7;
-}
-
-/* ✅ تفعيل الشيب */
-function setActiveChipByDays(days){
-  if(!daysChipsWrap) return;
-  daysChipsWrap.querySelectorAll('.day-chip').forEach(ch=>{
-    const d = parseInt(ch.dataset.days, 10);
-    ch.classList.toggle('active', d === Number(days));
+    calculate();
   });
-}
-
-function computePurchasesInNext12Months(startISO, intervalDays){
-  const startDateObj = new Date(startISO + "T00:00:00");
-  const endDateObj = new Date(startDateObj);
-  endDateObj.setFullYear(startDateObj.getFullYear() + 1);
-
-  let purchases = 0;
-  let purchaseDatesISO = [];
-  let cur = new Date(startDateObj);
-
-  while(cur < endDateObj){
-    purchases++;
-    const yyyy = cur.getFullYear();
-    const mm = String(cur.getMonth()+1).padStart(2,'0');
-    const dd = String(cur.getDate()).padStart(2,'0');
-    purchaseDatesISO.push(`${yyyy}-${mm}-${dd}`);
-
-    const daysToNext = Math.round((lastWeeks||0) * intervalDays);
-    if(!daysToNext || daysToNext<=0) break;
-    cur.setDate(cur.getDate() + daysToNext);
-  }
-
-  return { purchases, purchaseDatesISO };
-}
-
-function updateBuyPlan(){
-  if(!buyToggle.checked){ return; }
-  if(!(dose1 && dose2)) { buyResult.innerHTML=''; return; }
-
-  const start=buyDate.value;
-  if(!start){ buyResult.innerHTML=''; return; }
-  if(lastWeeks==null){ buyResult.innerHTML=''; return; }
-
-  const intervalDays = getEveryDays();
-  const daysTotal = Math.round(lastWeeks * intervalDays);
-  const md = toMonthsDays(daysTotal);
-
-  const nextISO = addDaysISO(start, daysTotal);
-
-  const yearly = computePurchasesInNext12Months(start, intervalDays);
-  const listDMY = yearly.purchaseDatesISO.map(formatDateISOToDMY).join(' — ');
-
-  const penDoseDatesISO = buildPenDoseDates(start, intervalDays, lastWeeks);
-  const penDoseDatesDMY = penDoseDatesISO.map(formatDateISOToDMY).join(' — ');
-  const penCountText = Math.floor(Number(lastWeeks)||0);
-
-  /* ✅ ترتيب النتائج + سطر فاصل بين كل حساب */
-  buyResult.innerHTML =
-    `🧾 بناءً على الإعدادات الحالية: (الأساسي <u style="color:#5D0096">${formatNumber(lastDose1)}</u> → المطلوب <u style="color:#5D0096">${formatNumber(lastDose2)}</u> ${lastGolden?'(الجرعة الذهبية ✅)':''})<br><br>`+
-    `📌 عدد الجرعات : <u style="color:green">${formatNumber(lastWeeks)}</u> جرعات (كل <u style="color:green">${intervalDays}</u> يوم) = <u style="color:green">${daysTotal}</u> يوم (<u style="color:purple">${md.text}</u>)<br><br>`+
-    `🗓️ تواريخ أخذ جرعات نفس القلم (${penCountText} جرعات)<br><span style="color:#222">${penDoseDatesDMY}</span><br><br>`+
-    `🗓️ تاريخ شراء القلم الحالي ( يوم اخذ اول جرعة ): <u style="color:red">${formatDateISOToDMY(start)}</u><br><br>`+
-    `✅ تشتري القلم القادم بتاريخ: <u style="color:red">${formatDateISOToDMY(nextISO)}</u><br><br>`+
-    `📦 خــلال ســـنة تحـــتاج تشتــري الـقـلـم <u style="color:red">${yearly.purchases}</u> مرة/رات <br><br>`+
-    `🗓️ تواريخ شراء القلم ( خــلال ســنة )<br><span style="color:#222">${listDMY}</span>`;
-}
-
-function calculateResult(){
-  if(dose1&&dose2){
-    const baseDoseML = 0.6;
-    const normalPenML = baseDoseML * 4; // 2.4
-    const extraOldGoldenML = golden.checked ? 0.6 : 0; // 3.0
-    const totalPenML = normalPenML + extraOldGoldenML;
-
-    const c = (dose2/dose1) * baseDoseML;  // mL لكل جرعة
-    const f = formatTicksFromML(c);        // ✅ يونيت صحيح
-    const w = totalPenML / c;
-
-    const m = w/4;
-    const dosesCount = w;
-
-    lastWeeks=dosesCount;
-    lastMonths=m;
-    lastTicks=f;
-    lastDose1=dose1;
-    lastDose2=dose2;
-    lastGolden=golden.checked;
-
-    const mdMonths = monthsToMonthsDays(m);
-
-    result.innerHTML=`🗓️ النتيجة: <u style="color:red">${f}</u> تكة أو يونيت ✅ ( عدد الجرعات <u style="color:green">${formatNumber(dosesCount)}</u> 💉) <u style="color:purple">${mdMonths.text}</u> `;
-    if(syringe.checked)showSyringe(f);
-
-    if(buyToggle.checked) updateBuyPlan();
-  }else{
-    result.innerHTML="";
-    buyResult.innerHTML="";
-    buySection.style.display='none';
-    buyToggle.checked=false;
-  }
-}
-
-function showSyringe(u){
-  syringeWrap.style.display='block';
-  syringeFill.style.width=Math.min(100,Number(u)||0)+'%';
-}
-
-function setup(g,b){
-  document.getElementById(g).querySelectorAll('.dose-img').forEach(i=>{
-    i.addEventListener('click',()=>{
-      document.getElementById(g).querySelectorAll('.dose-img').forEach(x=>x.classList.remove('active'));
-      i.classList.add('active');
-      const m=parseFloat(i.dataset.mg);
-      if(b){dose1=m;if(doseImages[m])image.src=doseImages[m];}
-      else dose2=m;
-      calculateResult();
-    });
-  });
-}
-
-doseInput2.addEventListener("input",e=>{
-  let v=e.target.value.replace(/[^0-9.]/g,"");
-  if(!/^\d{0,2}(\.\d{0,2})?$/.test(v))v=v.slice(0,-1);
-  e.target.value=v;
-  dose2=parseFloat(v)||null;
-  calculateResult();
-});
-
-golden.addEventListener('change',()=>{ calculateResult(); });
-
-syringe.addEventListener('change',()=>{
-  syringeWrap.style.display=syringe.checked?"block":"none";
-  if(syringe.checked){buildTicks();calculateResult();}
-});
-
-buildTicks();setup("dose-group-1",true);setup("dose-group-2",false);
-
-buyDate.addEventListener('change',updateBuyPlan);
-
-if(daysChipsWrap){
-  daysChipsWrap.querySelectorAll('.day-chip').forEach(ch=>{
-    ch.addEventListener('click', ()=>{
-      const d = parseInt(ch.dataset.days, 10);
-      doseEveryDays.value = String(d);
-      setActiveChipByDays(d);
-      updateBuyPlan();
-    });
-  });
-}
-
-doseEveryDays.addEventListener('input',()=>{
-  doseEveryDays.value = (doseEveryDays.value||'').toString().replace(/[^0-9]/g,'').slice(0,3);
-  if(doseEveryDays.value !== ''){
-    setActiveChipByDays(parseInt(doseEveryDays.value,10));
-  }
-  updateBuyPlan();
-});
-
-buyToggle.addEventListener('change',()=>{
-  buySection.style.display = buyToggle.checked ? "block" : "none";
-  if(!buyToggle.checked){ buyResult.innerHTML=''; }
-  if(buyToggle.checked){
-    setActiveChipByDays(getEveryDays());
-    updateBuyPlan();
-  }
-});
-
-function limitInputFormat(i){
-  i.addEventListener("input",e=>{
-    let v=e.target.value.replace(/[^0-9.]/g,"");
-    if(!/^\d{0,3}(\.\d{0,1})?$/.test(v))v=v.slice(0,-1);
-    e.target.value=v;
-  });
-}
-const bmiToggle=document.getElementById('show-bmi'),bmiSection=document.getElementById('bmi-section'),weightInput=document.getElementById('weight-input'),heightInput=document.getElementById('height-input'),bmiResult=document.getElementById('bmi-result');
-limitInputFormat(weightInput);limitInputFormat(heightInput);
-bmiToggle.addEventListener('change',()=>{bmiSection.style.display=bmiToggle.checked?"block":"none";if(!bmiToggle.checked)bmiResult.textContent='';});
-function calcBMI(){const w=parseFloat(weightInput.value),h=parseFloat(heightInput.value);if(w>0&&h>0){const b=w/((h/100)**2),i=22.5*((h/100)**2);let s='';if(b<18.5)s='نحافة';else if(b<25)s='طبيعي';else if(b<30)s='زيادة وزن';else s='سمنة';bmiResult.innerHTML=`🏆 الوزن المثالي <u style="color:purple">${i.toFixed(1)} كجم</u> — BMI = <u style="color:red">${b.toFixed(1)}</u> (${s})`;}else bmiResult.textContent='';}
-weightInput.addEventListener('input',calcBMI);heightInput.addEventListener('input',calcBMI);
-const phToggle=document.getElementById('show-pharmacies'),phSection=document.getElementById('pharmacy-section');
-phToggle.addEventListener('change',()=>{phSection.style.display=phToggle.checked?"block":"none";});
-
-const microToggle = document.getElementById('microdose-toggle');
-const microModal  = document.getElementById('microdose-modal');
-if(microToggle && microModal){
-  microToggle.addEventListener('click', () => microModal.classList.remove('hidden'));
-  microModal.addEventListener('click', () => microModal.classList.add('hidden'));
-}
 </script>
 
 </body>
