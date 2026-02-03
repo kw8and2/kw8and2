@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>حساب الجرعات</title>
+<title>15mg</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
   :root { --accent:#fa4238; }
@@ -84,12 +84,12 @@
     border-color:var(--accent);
   }
 
-  /* مربع الجرعة اليدوي بنفس حجم الأيقونات */
   .mg-input{
     width:110px;
     text-align:center;
     outline:none;
   }
+
   .mg-input:focus{
     border-color:var(--accent);
     box-shadow:0 0 0 2px rgba(250,66,56,0.18);
@@ -102,6 +102,11 @@
     border-radius:14px;
     line-height:1.9;
     background:#fafafa;
+  }
+
+  /* ✅ القيم المتغيرة عريضة */
+  .value{
+    font-weight:700;
   }
 
   .note{
@@ -124,12 +129,11 @@
 
   <div class="box">
     <div class="label">عدد أقلام بالسنة (15mg)</div>
-    <input type="number" id="pens" placeholder="مثال: 3 " min="0">
+    <input type="number" id="pens" placeholder="مثال: 3" min="0">
   </div>
 
   <div class="label">اختيار الجرعة (mg)</div>
 
-  <!-- ✅ مربع إدخال جرعة يدوي بنفس حجم الأيقونات -->
   <div class="ticks">
     <input class="mg-input" type="number" id="mgManual" placeholder="اكتب الجرعة" step="0.01" min="0">
   </div>
@@ -137,11 +141,11 @@
   <div class="ticks" id="ticksContainer"></div>
 
   <div class="result" id="output">
-    عدد التكات: —<br>
-    عدد الجرعات: —<br>
-    الفاصل بين الجرعات كل — يوم<br>
-    <div class="note">ملاحظة: الفاصل الطبيعي من 7 أيام إلى 17 يوم</div>
-    إجمالي التكلفة كل سنة (KWD): —
+    عدد التكات: <span class="value">—</span><br>
+    عدد الجرعات: <span class="value">—</span><br>
+    الفاصل بين الجرعات كل <span class="value">—</span> يوم<br>
+    <div class="note">الفاصل الطبيعي كل 7 أيام إلى 17 يوم</div>
+    إجمالي التكلفة كل سنة (KWD): <span class="value">—</span>
   </div>
 
 </div>
@@ -155,7 +159,6 @@
   const PEN_PRICE = 103;
   let selectedTicks = 0;
 
-  // أيقونات الجرعات من 6 إلى 10 بزيادة 0.25
   for (let mg = 6; mg <= 10.001; mg += 0.25) {
     const el = document.createElement("div");
     el.className = "tick";
@@ -163,31 +166,24 @@
     el.onclick = () => {
       document.querySelectorAll(".tick").forEach(t => t.classList.remove("active"));
       el.classList.add("active");
-
-      mgManual.value = mg.toFixed(2).replace(/\.00$/, ""); // يعكس الاختيار في مربع الإدخال
-      selectedTicks = (mg / 15) * 60; // 15mg = 60 تكه
+      mgManual.value = mg.toFixed(2).replace(/\.00$/, "");
+      selectedTicks = (mg / 15) * 60;
       calculate();
     };
     ticksContainer.appendChild(el);
   }
 
-  // إدخال يدوي للجرعة
   mgManual.addEventListener("input", () => {
     const mg = Number(mgManual.value);
     document.querySelectorAll(".tick").forEach(t => t.classList.remove("active"));
-
-    if (mg > 0) {
-      selectedTicks = (mg / 15) * 60;
-    } else {
-      selectedTicks = 0;
-    }
+    selectedTicks = mg > 0 ? (mg / 15) * 60 : 0;
     calculate();
   });
 
   function intervalClass(value){
-    if (value < 18) return "green";   // 0 → 17.99
-    if (value < 22) return "yellow";  // 18 → 21.99
-    return "red";                     // 22+
+    if (value < 18) return "green";
+    if (value < 22) return "yellow";
+    return "red";
   }
 
   function calculate(){
@@ -201,19 +197,20 @@
       const totalCost = pens * PEN_PRICE;
 
       output.innerHTML = `
-        عدد التكات: ${selectedTicks.toFixed(2)}<br>
-        عدد الجرعات: ${doses.toFixed(2)}<br>
-        الفاصل بين الجرعات كل <span class="${cls}">${interval.toFixed(2)}</span> يوم<br>
+        عدد التكات: <span class="value">${selectedTicks.toFixed(2)}</span><br>
+        عدد الجرعات: <span class="value">${doses.toFixed(2)}</span><br>
+        الفاصل بين الجرعات كل
+        <span class="value ${cls}">${interval.toFixed(2)}</span> يوم<br>
         <div class="note">الفاصل الطبيعي كل 7 أيام إلى 17 يوم</div>
-        إجمالي التكلفة كل سنة (KWD): ${totalCost.toFixed(2)}
+        إجمالي التكلفة كل سنة (KWD): <span class="value">${totalCost.toFixed(2)}</span>
       `;
     } else {
       output.innerHTML = `
-        عدد التكات: —<br>
-        عدد الجرعات: —<br>
-        الفاصل بين الجرعات كل — يوم<br>
+        عدد التكات: <span class="value">—</span><br>
+        عدد الجرعات: <span class="value">—</span><br>
+        الفاصل بين الجرعات كل <span class="value">—</span> يوم<br>
         <div class="note">الفاصل الطبيعي كل 7 أيام إلى 17 يوم</div>
-        إجمالي التكلفة كل سنة (KWD): —
+        إجمالي التكلفة كل سنة (KWD): <span class="value">—</span>
       `;
     }
   }
