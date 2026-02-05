@@ -11,6 +11,10 @@
   :root { 
     --accent:#fa4238;
     --ticks-color:#cb007b;
+    --green:#16a34a;
+    --yellow:#ca8a04;
+    --red:#dc2626;
+    --black:#111827;
   }
 
   body{
@@ -65,13 +69,13 @@
   .tick{
     cursor:pointer;
     user-select:none;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
   }
 
-  .tick.active{
-    background:var(--accent);
-    color:#fff;
-    border-color:var(--accent);
-  }
+  .tick.active{ color:#fff; }
+  .tick.active.green{ background:var(--green); border-color:var(--green); }
+  .tick.active.yellow{ background:var(--yellow); border-color:var(--yellow); }
+  .tick.active.red{ background:var(--red); border-color:var(--red); }
 
   .input-mini{
     width:80px;
@@ -112,13 +116,14 @@
 
   .ticks-value{ color:var(--ticks-color); }
 
-  .green{ color:#16a34a; }
-  .yellow{ color:#ca8a04; }
-  .red{ color:#dc2626; }
+  .green{ color:var(--green); }
+  .yellow{ color:var(--yellow); }
+  .red{ color:var(--red); }
+  .black{ color:var(--black); }
 
   .note{
     margin-top:6px;
-    color:#dc2626;
+    color:var(--red);
     font-weight:700;
     text-decoration: underline;
   }
@@ -191,14 +196,13 @@
   let pens = 0;
   let selectedTicks = 0;
 
-  // ✅ عرض الفاصل بمنزلة عشرية واحدة
   function formatInterval(v){
-    return v.toFixed(1); // مثال: 17.7431 → 17.7
+    return v.toFixed(1);
   }
 
   function intervalClass(v){
     if (v >= 7 && v < 18) return "green";
-    if ((v >= 5 && v < 7) || (v >= 18 && v <= 21)) return "yellow";
+    if (v >= 18 && v <= 21) return "yellow";
     return "red";
   }
 
@@ -208,87 +212,177 @@
     return "red";
   }
 
-  /* أيقونات الأقلام */
-  for(let i=1;i<=7;i++){
-    const el=document.createElement("div");
-    el.className="tick";
-    el.textContent=i;
-    el.onclick=()=>{
-      document.querySelectorAll("#pensIcons .tick").forEach(t=>t.classList.remove("active"));
-      el.classList.add("active");
-      pens=i;
-      pensInput.value=i;
+  // ✅ لون مجموع الجرعات: إذا .00 أخضر، غيرها أسود
+  function dosesColorClass(doses){
+    const s = doses.toFixed(2);
+    return s.endsWith(".00") ? "green" : "black";
+  }
+
+  function clearActiveColor(el){
+    el.classList.remove("green","yellow","red");
+  }
+
+  function setActiveWithColor(el, cls){
+    el.classList.add("active");
+    clearActiveColor(el);
+    el.classList.add(cls);
+  }
+
+  function ticksPerPen(){
+    return goldenDose.checked ? 300 : 240;
+  }
+
+  function intervalForMg(mg){
+    if (!(pens > 0) || !(mg > 0)) return null;
+    const st = (mg / 15) * 60;
+    const totalTicks = ticksPerPen() * pens;
+    const doses = totalTicks / st;
+    return 365 / doses;
+  }
+
+  /* أيقونات الأقلام 1–7 */
+  for (let i = 1; i <= 7; i++) {
+    const el = document.createElement("div");
+    el.className = "tick";
+    el.textContent = i;
+
+    el.onclick = () => {
+      document.querySelectorAll("#pensIcons .tick").forEach(t => {
+        t.classList.remove("active");
+        clearActiveColor(t);
+      });
+
+      pens = i;
+      pensInput.value = i;
+
+      setActiveWithColor(el, pensClass(i));
+
       calculate();
+      refreshDoseActiveColor();
     };
+
     pensIcons.appendChild(el);
   }
 
-  pensInput.addEventListener("input",()=>{
-    pens=Number(pensInput.value);
-    document.querySelectorAll("#pensIcons .tick").forEach(t=>t.classList.remove("active"));
+  pensInput.addEventListener("input", () => {
+    pens = Number(pensInput.value);
+    document.querySelectorAll("#pensIcons .tick").forEach(t => {
+      t.classList.remove("active");
+      clearActiveColor(t);
+    });
     calculate();
+    refreshDoseActiveColor();
   });
 
   /* أيقونات الجرعات */
-  for(let mg=MG_MIN;mg<=MG_MAX+0.001;mg+=0.25){
-    const el=document.createElement("div");
-    el.className="tick";
-    el.textContent=mg.toFixed(2).replace(/\.00$/,"")+"mg";
-    el.onclick=()=>{
-      document.querySelectorAll("#ticksContainer .tick").forEach(t=>t.classList.remove("active"));
-      el.classList.add("active");
-      mgManual.value=mg.toFixed(2).replace(/\.00$/,"");
-      selectedTicks=(mg/15)*60;
+  for (let mg = MG_MIN; mg <= MG_MAX + 0.001; mg += 0.25) {
+    const el = document.createElement("div");
+    el.className = "tick";
+    el.textContent = mg.toFixed(2).replace(/\.00$/, "") + "mg";
+    el.dataset.mg = mg.toFixed(2);
+
+    el.onclick = () => {
+      document.querySelectorAll("#ticksContainer .tick").forEach(t => {
+        t.classList.remove("active");
+        clearActiveColor(t);
+      });
+
+      mgManual.value = mg.toFixed(2).replace(/\.00$/, "");
+      selectedTicks = (mg / 15) * 60;
+
+      const interval = intervalForMg(mg);
+      const cls = interval != null ? intervalClass(interval) : "red";
+      setActiveWithColor(el, cls);
+
       calculate();
     };
+
     ticksContainer.appendChild(el);
   }
 
-  mgManual.addEventListener("input",()=>{
-    const mg=Number(mgManual.value);
-    selectedTicks=mg>0?(mg/15)*60:0;
-    document.querySelectorAll("#ticksContainer .tick").forEach(t=>t.classList.remove("active"));
+  mgManual.addEventListener("input", () => {
+    const mg = Number(mgManual.value);
+    selectedTicks = mg > 0 ? (mg / 15) * 60 : 0;
+
+    document.querySelectorAll("#ticksContainer .tick").forEach(t => {
+      t.classList.remove("active");
+      clearActiveColor(t);
+    });
+
     calculate();
   });
 
-  goldenDose.addEventListener("change",calculate);
+  goldenDose.addEventListener("change", () => {
+    calculate();
+    refreshDoseActiveColor();
+  });
+
+  function refreshDoseActiveColor(){
+    const activeDose = document.querySelector("#ticksContainer .tick.active");
+    if (!activeDose) return;
+
+    const mg = Number(activeDose.dataset.mg);
+    const interval = intervalForMg(mg);
+    const cls = interval != null ? intervalClass(interval) : "red";
+
+    clearActiveColor(activeDose);
+    activeDose.classList.add(cls);
+  }
 
   function calculate(){
-    const ticksPerPen = goldenDose.checked ? 300 : 240;
+    if (pens > 0 && selectedTicks > 0) {
+      const totalTicks = ticksPerPen() * pens;
+      const doses = totalTicks / selectedTicks;
+      const interval = 365 / doses;
 
-    if(pens>0 && selectedTicks>0){
-      const totalTicks=ticksPerPen*pens;
-      const doses=totalTicks/selectedTicks;
-      const interval=365/doses;
-      const cls=intervalClass(interval);
-      const cost=pens*PEN_PRICE;
-      const pCls=pensClass(pens);
+      const iCls = intervalClass(interval);
+      const pCls = pensClass(pens);
+      const dCls = dosesColorClass(doses);
 
-      output.innerHTML=`
+      const cost = pens * PEN_PRICE;
+
+      output.innerHTML = `
         عدد الأقلام في السنة:
         <span class="value ${pCls}">${pens}</span><br>
         عدد التكات:
         <span class="value ticks-value">${selectedTicks.toFixed(2)}</span><br>
         مجموع عدد الجرعات:
-        <span class="value green">${doses.toFixed(2)}</span><br>
+        <span class="value ${dCls}">${doses.toFixed(2)}</span><br>
         <div class="interval-line">
           الفاصل بين الجرعات كل
-          <span class="value ${cls}">${formatInterval(interval)}</span> يوم
+          <span class="value ${iCls}">${formatInterval(interval)}</span> يوم
         </div>
         <div class="note">فاصل الجرعة المناسب لتثبيت الوزن من 7 - 17 يوم</div>
         إجمالي تكلفة الاقلام كل سنة (KWD): <span class="value">${cost.toFixed(2)}</span>
       `;
+    } else {
+      output.innerHTML = `
+        عدد الأقلام في السنة: <span class="value">—</span><br>
+        عدد التكات: <span class="value">—</span><br>
+        مجموع عدد الجرعات: <span class="value">—</span><br>
+        <div class="interval-line">
+          الفاصل بين الجرعات كل <span class="value">—</span> يوم
+        </div>
+        <div class="note">فاصل الجرعة المناسب لتثبيت الوزن من 7 - 17 يوم</div>
+        إجمالي تكلفة الاقلام كل سنة (KWD): <span class="value">—</span>
+      `;
     }
   }
 
-  window.addEventListener("DOMContentLoaded",()=>{
-    pens=1;
-    pensInput.value=1;
-    document.querySelectorAll("#pensIcons .tick")[0].classList.add("active");
+  window.addEventListener("DOMContentLoaded", () => {
+    pens = 1;
+    pensInput.value = 1;
+    const firstPen = document.querySelectorAll("#pensIcons .tick")[0];
+    if (firstPen) setActiveWithColor(firstPen, pensClass(1));
 
-    mgManual.value="6";
-    document.querySelectorAll("#ticksContainer .tick")[0].classList.add("active");
-    selectedTicks=(6/15)*60;
+    mgManual.value = "6";
+    selectedTicks = (6 / 15) * 60;
+    const firstDose = document.querySelectorAll("#ticksContainer .tick")[0];
+    if (firstDose) {
+      const interval = intervalForMg(6);
+      const cls = interval != null ? intervalClass(interval) : "red";
+      setActiveWithColor(firstDose, cls);
+    }
 
     calculate();
   });
