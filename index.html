@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="ar">
 <head>
@@ -107,6 +108,81 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
   color:#5D0096;
 }
 .small-hint{font-size:12px;color:#555;font-weight:600;margin-top:4px;}
+
+
+/* ✅ حاسبة المتبقي من القلم - مستقلة */
+.remaining-box{
+  width:100%;
+  max-width:56rem;
+  margin:8px auto 0;
+  padding:12px;
+  background:#fff;
+  border:1px solid #d0d0d0;
+  border-radius:15px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.08);
+  text-align:center;
+}
+.remaining-title{
+  color:#009DFF;
+  font-weight:700;
+  font-size:14px;
+  margin-bottom:8px;
+}
+.remaining-row{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  margin-top:8px;
+}
+.remaining-select,.remaining-count{
+  height:2rem;
+  border:2px solid #ccc;
+  border-radius:0;
+  text-align:center;
+  font-size:14px;
+  background:#fff;
+}
+.remaining-select{width:9rem;}
+.remaining-count{width:7rem;}
+.remaining-select:focus,.remaining-count:focus{
+  border-color:#5D0096;
+  box-shadow:0 0 4px rgba(93,0,150,0.3);
+  outline:none;
+}
+.remaining-btn{
+  background:#7e36c7;
+  color:#fff;
+  padding:6px 12px;
+  border-radius:10px;
+  font-weight:700;
+  font-size:13px;
+  box-shadow:0 3px 8px rgba(0,0,0,0.08);
+}
+.remaining-btn:hover{background:#6b2cb1;}
+.remaining-remove{
+  background:#fa4238;
+  color:#fff;
+  width:30px;
+  height:30px;
+  border-radius:10px;
+  font-weight:700;
+}
+#remaining-result{
+  margin-top:10px;
+  background:#f9f9ff;
+  border:1px solid #d0d0d0;
+  border-radius:15px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.08);
+  padding:10px;
+  font-size:14px;
+  font-weight:700;
+  color:#222;
+  line-height:2;
+}
+.remaining-note{font-size:12px;color:#555;font-weight:600;margin-top:6px;}
+
 </style>
 </head>
 
@@ -210,6 +286,49 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
 <div class="flex items-center gap-2 cursor-pointer mt-1 syringe-option">
   <input type="checkbox" id="show-syringe" class="w-5 h-5">
   <label for="show-syringe" class="text-sm sm:text-base"> عرض محاكي الإبرة </label>
+</div>
+
+<!-- ✅ زر إظهار حاسبة المتبقي -->
+<div class="flex items-center gap-2 cursor-pointer mt-2 syringe-option">
+  <input type="checkbox" id="show-remaining" class="w-5 h-5">
+  <label for="show-remaining" class="text-xs sm:text-sm font-semibold text-[#009DFF]"> 🧪 حاسبة المتبقي من القلم </label>
+</div>
+
+<!-- ✅ حاسبة المتبقي من القلم - مستقلة بالكامل -->
+<div id="remaining-section" class="remaining-box" style="display:none;">
+  <div class="remaining-title">🧪 حاسبة المتبقي من القلم</div>
+
+  <div class="remaining-row">
+    <label class="font-bold text-sm text-[#5D0096]">تركيز القلم</label>
+    <select id="remaining-pen-mg" class="remaining-select">
+      <option value="2.5">2.5 mg</option>
+      <option value="5">5 mg</option>
+      <option value="7.5">7.5 mg</option>
+      <option value="10">10 mg</option>
+      <option value="12.5">12.5 mg</option>
+      <option value="15" selected>15 mg</option>
+    </select>
+  </div>
+
+  <div class="remaining-row">
+    <input type="checkbox" id="remaining-golden" class="w-5 h-5">
+    <label for="remaining-golden" class="font-semibold text-yellow-600 text-sm sm:text-base">استخدم الجرعة الذهبية في حساب حجم القلم</label>
+  </div>
+
+  <div class="remaining-note">
+    بدون الجرعة الذهبية = 2.4 mL = 240 يونيت — مع الجرعة الذهبية = 3.0 mL = 300 يونيت
+  </div>
+
+  <div class="remaining-title mt-3" style="color:#5D0096;">أضف الجرعات التي تم استخدامها من نفس القلم</div>
+
+  <div id="remaining-used-list"></div>
+
+  <div class="remaining-row">
+    <button type="button" id="remaining-add-row" class="remaining-btn">+ إضافة جرعة مستخدمة</button>
+    <button type="button" id="remaining-reset" class="remaining-btn" style="background:#555;">تصفير</button>
+  </div>
+
+  <div id="remaining-result"></div>
 </div>
 
 <div class="syringe-wrap" id="syringeWrap">
@@ -536,6 +655,140 @@ buyToggle.addEventListener('change',()=>{
     updateBuyPlan();
   }
 });
+
+
+/* ✅ حاسبة المتبقي من القلم - مستقلة عن حساب الجرعات العلوي */
+const remainingPenMg = document.getElementById('remaining-pen-mg');
+const remainingGolden = document.getElementById('remaining-golden');
+const remainingUsedList = document.getElementById('remaining-used-list');
+const remainingAddRow = document.getElementById('remaining-add-row');
+const remainingReset = document.getElementById('remaining-reset');
+const remainingResult = document.getElementById('remaining-result');
+
+function remainingFormat(n, decimals=1){
+  const num = Number(n) || 0;
+  return Number.isInteger(num) ? String(num) : num.toFixed(decimals).replace(/\.0+$/,'').replace(/(\.\d*?)0+$/,'$1');
+}
+
+function createRemainingRow(doseValue='2.5', countValue=''){
+  if(!remainingUsedList) return;
+
+  const row = document.createElement('div');
+  row.className = 'remaining-row remaining-used-row';
+
+  row.innerHTML = `
+    <select class="remaining-select remaining-dose">
+      <option value="2.5" ${doseValue==='2.5'?'selected':''}>2.5 mg</option>
+      <option value="5" ${doseValue==='5'?'selected':''}>5 mg</option>
+      <option value="7.5" ${doseValue==='7.5'?'selected':''}>7.5 mg</option>
+      <option value="10" ${doseValue==='10'?'selected':''}>10 mg</option>
+      <option value="12.5" ${doseValue==='12.5'?'selected':''}>12.5 mg</option>
+      <option value="15" ${doseValue==='15'?'selected':''}>15 mg</option>
+    </select>
+    <input type="text" inputmode="numeric" maxlength="3" class="remaining-count" placeholder="عدد المرات" value="${countValue}">
+    <button type="button" class="remaining-remove">×</button>
+  `;
+
+  remainingUsedList.appendChild(row);
+
+  row.querySelector('.remaining-dose').addEventListener('change', updateRemainingCalculator);
+  row.querySelector('.remaining-count').addEventListener('input', (e)=>{
+    e.target.value = (e.target.value || '').replace(/[^0-9]/g,'').slice(0,3);
+    updateRemainingCalculator();
+  });
+  row.querySelector('.remaining-remove').addEventListener('click', ()=>{
+    row.remove();
+    updateRemainingCalculator();
+  });
+
+  updateRemainingCalculator();
+}
+
+function updateRemainingCalculator(){
+  if(!remainingPenMg || !remainingGolden || !remainingUsedList || !remainingResult) return;
+
+  const penMg = parseFloat(remainingPenMg.value) || 15;
+  const totalUnits = remainingGolden.checked ? 300 : 240;
+  const totalML = remainingGolden.checked ? 3.0 : 2.4;
+
+  let usedUnits = 0;
+  let usedDetails = [];
+
+  remainingUsedList.querySelectorAll('.remaining-used-row').forEach(row=>{
+    const doseMg = parseFloat(row.querySelector('.remaining-dose')?.value || '0');
+    const count = parseInt(row.querySelector('.remaining-count')?.value || '0', 10) || 0;
+    if(doseMg > 0 && count > 0){
+      const unitsPerDose = Math.round((doseMg / penMg) * 60);
+      const rowUnits = unitsPerDose * count;
+      usedUnits += rowUnits;
+      usedDetails.push(`${remainingFormat(doseMg)} mg × ${count} = ${rowUnits} تكة`);
+    }
+  });
+
+  usedUnits = Math.round(usedUnits);
+
+  const remainingUnitsRaw = totalUnits - usedUnits;
+  const exceeded = remainingUnitsRaw < 0;
+  const remainingUnits = Math.max(0, remainingUnitsRaw);
+  const exceededUnits = Math.abs(Math.min(0, remainingUnitsRaw));
+
+  const remainingML = remainingUnits / 100;
+  const exceededML = exceededUnits / 100;
+  const usedML = usedUnits / 100;
+  const remainingPercent = totalUnits > 0 ? (remainingUnits / totalUnits) * 100 : 0;
+
+  const totalUses = Array.from(remainingUsedList.querySelectorAll('.remaining-count'))
+    .reduce((sum, el) => sum + (parseInt(el.value, 10) || 0), 0);
+
+  const penSizeLabel = remainingGolden.checked
+    ? `🟡 حجم القلم مع الجرعة الذهبية: <u style="color:#5D0096">3.0 mL</u> = <u style="color:#5D0096">300 تكة / يونيت</u>`
+    : `⚪ حجم القلم بدون الجرعة الذهبية: <u style="color:#5D0096">2.4 mL</u> = <u style="color:#5D0096">240 تكة / يونيت</u>`;
+
+  remainingResult.innerHTML =
+    `${penSizeLabel}<br>` +
+    `💉 تركيز القلم: <u style="color:#5D0096">${remainingFormat(penMg)} mg</u><br><br>` +
+
+    (usedDetails.length
+      ? `🧾 الجرعات المستخدمة:<br><span style="color:#222">${usedDetails.join('<br>')}</span><br><br>`
+      : `🧾 الجرعات المستخدمة:<br><span style="color:#555">لم يتم إدخال جرعات بعد</span><br><br>`
+    ) +
+
+    `🔢 عدد مرات الاستخدام: <u style="color:#5D0096">${totalUses}</u> مرة<br><br>` +
+
+    `📤 مجموع التكات: <u style="color:red">${usedUnits}</u> تكة / يونيت<br>` +
+    `💧 مجموع السائل المستخدم: <u style="color:red">${remainingFormat(usedML,2)}</u> mL<br><br>` +
+
+    (exceeded
+      ? `❌ <span style="color:red">تم تجاوز القلم</span><br>` +
+        `⚠️ مقدار التجاوز: <u style="color:red">${Math.round(exceededUnits)}</u> تكة / يونيت<br>` +
+        `💧 مقدار التجاوز بالسائل: <u style="color:red">${remainingFormat(exceededML,2)}</u> mL`
+      : `✅ المتبقي: <u style="color:green">${Math.round(remainingUnits)}</u> تكة / يونيت<br>` +
+        `💧 المتبقي بالسائل: <u style="color:green">${remainingFormat(remainingML,2)}</u> mL<br>` +
+        `📊 نسبة المتبقي: <u style="color:#009DFF">${remainingFormat(remainingPercent,1)}%</u>`
+    );
+}
+
+const showRemainingToggle = document.getElementById('show-remaining');
+const remainingSectionBox = document.getElementById('remaining-section');
+
+if(showRemainingToggle && remainingSectionBox){
+  showRemainingToggle.addEventListener('change',()=>{
+    remainingSectionBox.style.display = showRemainingToggle.checked ? 'block' : 'none';
+  });
+}
+
+if(remainingPenMg && remainingGolden && remainingAddRow && remainingReset){
+  remainingPenMg.addEventListener('change', updateRemainingCalculator);
+  remainingGolden.addEventListener('change', updateRemainingCalculator);
+  remainingAddRow.addEventListener('click', ()=>createRemainingRow());
+  remainingReset.addEventListener('click', ()=>{
+    remainingUsedList.innerHTML = '';
+    createRemainingRow('2.5','');
+    updateRemainingCalculator();
+  });
+  createRemainingRow('2.5','');
+  updateRemainingCalculator();
+}
 
 function limitInputFormat(i){
   i.addEventListener("input",e=>{
