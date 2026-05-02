@@ -10,11 +10,220 @@
 
 <style>
 body {font-family:'Cairo',sans-serif;background:#fff;}
+
+.btn{
+  border:2px solid #ddd;
+  border-radius:14px;
+  padding:10px;
+  font-weight:800;
+  transition:.2s;
+  background:#fff;
+}
+
+.btn.active{transform:scale(1.06);}
+
+.btn.dose-2_5.active{background:#eeeeef;border-color:#54565a;color:#54565a;}
+.btn.dose-5.active{background:#eeeaf3;border-color:#3d2b57;color:#3d2b57;}
+.btn.dose-7_5.active{background:#e4f5f2;border-color:#007f6f;color:#007f6f;}
+.btn.dose-10.active{background:#fde8f4;border-color:#cb007b;color:#cb007b;}
+.btn.dose-12_5.active{background:#e6f2fb;border-color:#0075cf;color:#0075cf;}
+.btn.dose-15.active{background:#fdecea;border-color:#fa4238;color:#fa4238;}
+
+#result{
+  margin-top:12px;
+  background:#f9f9ff;
+  border:1px solid #ddd;
+  border-radius:15px;
+  font-size:20px;
+  font-weight:700;
+  padding:12px;
+  direction:rtl;
+  text-align:right;
+  line-height:2;
+}
+
+#pen-title{
+  font-size:20px;
+  margin-top:4px;
+  margin-bottom:0;
+  font-weight:900;
+  direction:ltr;
+}
+
+#pen-info{
+  margin-top:-2px;
+  padding:6px 12px;
+  border-radius:10px;
+  font-weight:800;
+  font-size:14px;
+  color:#fff;
+  direction:ltr;
+  white-space:nowrap;
+  display:inline-block;
+}
 </style>
 </head>
 
-<body>
-<h1>ClickHalf</h1>
-<p>تم حفظ الصفحة بنجاح.</p>
+<body class="p-4 flex flex-col items-center gap-3">
+
+<a href="https://gulf.lilly.com/mealabels/ar/mounjaro-kwikpen" target="_blank">
+  <h1 class="text-3xl font-extrabold text-[#5D0096] cursor-pointer hover:underline">
+    ClickHalf
+  </h1>
+</a>
+
+<div onclick="openInfo()" class="text-blue-600 text-sm font-bold cursor-pointer underline">
+  ما هو ClickHalf ؟
+</div>
+
+<div id="info-modal" class="fixed inset-0 hidden items-center justify-center bg-black/40 z-50">
+  <div id="info-box"
+       class="bg-white rounded-2xl p-4 max-w-sm mx-4 text-center shadow-lg text-xs leading-6 text-black">
+    نظام يحدد القلم الأنسب لكل جرعة، بحيث يتم تقسيم كمية الدواء بشكل صحيح، ولا يقل التقسيم عن
+    <b>30 تكة (نصف القلم من 60 تكة)</b>،
+    <br>
+    ويتجنب استخدام قلم بتركيز عالٍ لجرعة صغيرة، لأن ذلك قد يؤدي إلى قِصر مدة مفعول الجرعة لدى البعض.
+  </div>
+</div>
+
+<img id="pen-image"
+     src="https://www.mediafire.com/convkey/5d4f/aaoucs7i3m4j1bc9g.jpg"
+     class="w-[130px] mt-2">
+
+<div id="pen-title">5 mg قلم</div>
+<div id="pen-info">20 mg/2.4 ( 8.33 mg/mL )</div>
+
+<div class="text-center">
+  <h2 class="font-bold mb-2">🎯 اختر الجرعة المطلوبة</h2>
+
+  <div class="flex flex-wrap gap-2 justify-center">
+    <button class="btn dose-2_5 active" data-dose="2.5">2.5</button>
+    <button class="btn dose-5" data-dose="5">5</button>
+    <button class="btn dose-7_5" data-dose="7.5">7.5</button>
+    <button class="btn dose-10" data-dose="10">10</button>
+    <button class="btn dose-12_5" data-dose="12.5">12.5</button>
+    <button class="btn dose-15" data-dose="15">15</button>
+  </div>
+</div>
+
+<div id="result"></div>
+
+<div class="mt-6 text-center">
+  <a href="https://mjq8.netlify.app/" target="_blank"
+     class="text-blue-600 text-sm font-bold underline">
+    التقسيم العادي اضغط هنا
+  </a>
+</div>
+
+<script>
+let dose = 2.5;
+
+function openInfo(){
+  const modal = document.getElementById("info-modal");
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+}
+
+function closeInfo(){
+  const modal = document.getElementById("info-modal");
+  modal.classList.add("hidden");
+  modal.classList.remove("flex");
+}
+
+document.getElementById("info-modal").addEventListener("click", function(e){
+  if(e.target.id === "info-modal"){
+    closeInfo();
+  }
+});
+
+window.addEventListener("scroll", closeInfo);
+
+function getAutoPen(d){
+  if(d === 2.5) return 5;
+  if(d === 5) return 10;
+  return 15;
+}
+
+const penImages = {
+  5: "https://www.mediafire.com/convkey/5d4f/aaoucs7i3m4j1bc9g.jpg",
+  10: "https://www.mediafire.com/convkey/c10f/3d3od054v0ziacb9g.jpg",
+  15: "https://www.mediafire.com/convkey/a92d/iy7hjap6omd241o9g.jpg"
+};
+
+const penInfo = {
+  5: "20 mg/2.4 ( 8.33 mg/mL )",
+  10: "40 mg/2.4 ( 16.7 mg/mL )",
+  15: "60 mg/2.4 ( 25 mg/mL )"
+};
+
+const penColors = {
+  5: "#3d2b57",
+  10: "#cb007b",
+  15: "#fa4238"
+};
+
+const doseColors = {
+  2.5: "#54565a",
+  5: "#3d2b57",
+  7.5: "#007f6f",
+  10: "#cb007b",
+  12.5: "#0075cf",
+  15: "#fa4238"
+};
+
+function format(n){
+  return Number.isInteger(n) ? n : parseFloat(n.toFixed(2)).toString();
+}
+
+function monthsDaysFromClicks(clicks){
+  const totalClicks = 300;
+  const dosesCount = clicks > 0 ? totalClicks / clicks : 0;
+  const totalDays = Math.round(dosesCount * 7);
+  const months = Math.floor(totalDays / 30);
+  const days = totalDays % 30;
+  return `${months} شهر و ${days} يوم`;
+}
+
+function calc(){
+  if(!dose) return;
+
+  const pen = getAutoPen(dose);
+  const ml = (dose / pen) * 0.6;
+  const clicks = Math.round(ml * 100);
+  const durationText = monthsDaysFromClicks(clicks);
+
+  document.getElementById("pen-image").src = penImages[pen];
+
+  const title = document.getElementById("pen-title");
+  title.innerHTML = `<span dir="ltr">${pen} mg</span> قلم`;
+  title.style.color = penColors[pen];
+
+  const info = document.getElementById("pen-info");
+  info.textContent = penInfo[pen];
+  info.style.background = penColors[pen];
+
+  const doseColor = doseColors[dose];
+  const penColor = penColors[pen];
+
+  document.getElementById("result").innerHTML =
+    `<div>💉 الجرعة المطلوبة: <span dir="ltr" style="color:${doseColor};font-weight:800">${format(dose)} mg</span></div>
+     <div>💉 القلم الأساسي: <span dir="ltr" style="color:${penColor};font-weight:800">${pen} mg</span></div>
+     <div>🔢 التكات: <span dir="ltr" style="color:${doseColor};font-weight:800;border-bottom:2px solid ${doseColor};padding-bottom:1px;display:inline-block">${clicks}</span></div>
+     <div>⏳ المدة: <span style="color:${doseColor};font-weight:800">${durationText}</span></div>`;
+}
+
+document.querySelectorAll("[data-dose]").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll("[data-dose]").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+
+    dose = Number(b.dataset.dose);
+    calc();
+  };
+});
+
+calc();
+</script>
+
 </body>
 </html>
