@@ -2,6 +2,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="ar">
 <head>
@@ -251,12 +252,12 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
 
 <div id="golden-dose-container" class="flex items-center gap-2 cursor-pointer mt-1">
   <input type="checkbox" id="golden-dose" class="w-5 h-5">
-  <label for="golden-dose" class="font-semibold text-yellow-600 text-sm sm:text-base">  الجرعة الذهبية القديمة (60 كليك) </label>
+  <label for="golden-dose" class="font-semibold text-yellow-600 text-sm sm:text-base">  الجرعة الذهبية القديمة (60 يونيت) </label>
 </div>
 
 <div id="golden-dose-new-container" class="flex items-center gap-2 cursor-pointer mt-1">
   <input type="checkbox" id="golden-dose-new" class="w-5 h-5">
-  <label for="golden-dose-new" class="font-semibold text-yellow-600 text-sm sm:text-base"> الجرعة الذهبية الجديد (30 كليك) </label>
+  <label for="golden-dose-new" class="font-semibold text-yellow-600 text-sm sm:text-base"> الجرعة الذهبية الجديد (30 يونيت) </label>
 </div>
 
 <div id="result" class="w-full max-w-4xl p-3 text-center font-bold"></div>
@@ -318,12 +319,12 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
 
   <div class="remaining-row">
     <input type="checkbox" id="remaining-golden" class="w-5 h-5">
-    <label for="remaining-golden" class="font-semibold text-yellow-600 text-sm sm:text-base">استخدم الجرعة الذهبية (60 كليك) في حساب حجم القلم</label>
+    <label for="remaining-golden" class="font-semibold text-yellow-600 text-sm sm:text-base">استخدم الجرعة الذهبية (60 يونيت) في حساب حجم القلم</label>
   </div>
 
   <div class="remaining-row">
     <input type="checkbox" id="remaining-golden-new" class="w-5 h-5">
-    <label for="remaining-golden-new" class="font-semibold text-yellow-600 text-sm sm:text-base">الجرعة الذهبية الجديد (30 كليك) في حساب حجم القلم</label>
+    <label for="remaining-golden-new" class="font-semibold text-yellow-600 text-sm sm:text-base">الجرعة الذهبية الجديد (30 يونيت) في حساب حجم القلم</label>
   </div>
 
   <div class="remaining-note">
@@ -380,8 +381,10 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
        class="bg-[#7e36c7] text-white px-3 py-1.5 rounded-lg shadow hover:bg-[#6b2cb1] transition text-xs sm:text-sm">صيدلية الهاجري</a>
     <a href="https://www.almutawaph.com.kw/ar/catalogsearch/result/?q=Mounjaro&product_list_order=wp_sortby_new&product_list_dir=desc" target="_blank"
        class="bg-[#7e36c7] text-white px-3 py-1.5 rounded-lg shadow hover:bg-[#6b2cb1] transition text-xs sm:text-sm">صيدلية المطوع</a>
-    <a href="https://pharmazone.com/ar/collections/vendors?q=Lilly&sort_by=created-descending" target="_blank"
+    <a href="https://pharmazone.com/ar/collections/vendors?q=Lilly&sort_by=created-descending&filter.p.m.custom.treatment=Weight+control" target="_blank"
        class="bg-[#7e36c7] text-white px-3 py-1.5 rounded-lg shadow hover:bg-[#6b2cb1] transition text-xs sm:text-sm">صيدلية فارمازون</a>
+    <a href="https://www.oscarintkw.com/collections/mounjaro" target="_blank"
+       class="bg-[#7e36c7] text-white px-3 py-1.5 rounded-lg shadow hover:bg-[#6b2cb1] transition text-xs sm:text-sm">متجر Oscar</a>
   </div>
 </div>
 
@@ -559,7 +562,7 @@ function updateBuyPlan(){
 
   /* ✅ ترتيب النتائج + سطر فاصل بين كل حساب */
   buyResult.innerHTML =
-    `🧾 بناءً على الإعدادات الحالية: (الأساسي <u style="color:#5D0096">${formatNumber(lastDose1)}</u> → المطلوب <u style="color:#5D0096">${formatNumber(lastDose2)}</u> ${lastGolden==='old60'?'(الجرعة الذهبية 60 كليك ✅)':(lastGolden==='new30'?'(الجرعة الذهبية الجديد 30 كليك ✅)':'')})<br><br>`+
+    `🧾 بناءً على الإعدادات الحالية: (الأساسي <u style="color:#5D0096">${formatNumber(lastDose1)}</u> → المطلوب <u style="color:#5D0096">${formatNumber(lastDose2)}</u> ${lastGolden==='old60'?'(الجرعة الذهبية 60 يونيت ✅)':(lastGolden==='new30'?'(الجرعة الذهبية الجديد 30 يونيت ✅)':'')})<br><br>`+
     `📌 عدد الجرعات : <u style="color:green">${formatNumber(lastWeeks)}</u> جرعات (كل <u style="color:green">${intervalDays}</u> يوم) = <u style="color:green">${daysTotal}</u> يوم (<u style="color:purple">${md.text}</u>)<br><br>`+
     `🗓️ تواريخ أخذ جرعات نفس القلم (${penCountText} جرعات)<br><span style="color:#222">${penDoseDatesDMY}</span><br><br>`+
     `🗓️ تاريخ شراء القلم الحالي ( يوم اخذ اول جرعة ): <u style="color:red">${formatDateISOToDMY(start)}</u><br><br>`+
@@ -575,9 +578,9 @@ function calculateResult(){
 
     let extraGoldenML = 0;
     if(golden.checked){
-      extraGoldenML = 0.6; // الجرعة الذهبية القديمة = 60 كليك
+      extraGoldenML = 0.6; // الجرعة الذهبية القديمة = 60 يونيت
     }else if(goldenNew.checked){
-      extraGoldenML = 0.3; // الجرعة الذهبية الجديدة = 30 كليك
+      extraGoldenML = 0.3; // الجرعة الذهبية الجديدة = 30 يونيت
     }
 
     const totalPenML = normalPenML + extraGoldenML;
@@ -769,9 +772,9 @@ function updateRemainingCalculator(){
     .reduce((sum, el) => sum + (parseInt(el.value, 10) || 0), 0);
 
   const penSizeLabel = remainingGolden.checked
-    ? `🟡 حجم القلم مع الجرعة الذهبية (60 كليك): <u style="color:#5D0096">3.0 mL</u> = <u style="color:#5D0096">300 تكة / يونيت</u>`
+    ? `🟡 حجم القلم مع الجرعة الذهبية (60 يونيت): <u style="color:#5D0096">3.0 mL</u> = <u style="color:#5D0096">300 تكة / يونيت</u>`
     : (remainingGoldenNew.checked
-      ? `🟡 حجم القلم مع الجرعة الذهبية الجديد (30 كليك): <u style="color:#5D0096">2.7 mL</u> = <u style="color:#5D0096">270 تكة / يونيت</u>`
+      ? `🟡 حجم القلم مع الجرعة الذهبية الجديد (30 يونيت): <u style="color:#5D0096">2.7 mL</u> = <u style="color:#5D0096">270 تكة / يونيت</u>`
       : `⚪ حجم القلم بدون الجرعة الذهبية: <u style="color:#5D0096">2.4 mL</u> = <u style="color:#5D0096">240 تكة / يونيت</u>`);
 
   remainingResult.innerHTML =
