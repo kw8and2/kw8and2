@@ -3,6 +3,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="ar">
 <head>
@@ -255,9 +256,27 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
   <label for="golden-dose" class="font-semibold text-yellow-600 text-sm sm:text-base">  الجرعة الذهبية القديمة (60 يونيت) </label>
 </div>
 
-<div id="golden-dose-new-container" class="flex items-center gap-2 cursor-pointer mt-1">
-  <input type="checkbox" id="golden-dose-new" class="w-5 h-5">
-  <label for="golden-dose-new" class="font-semibold text-yellow-600 text-sm sm:text-base"> الجرعة الذهبية الجديد (30 يونيت) </label>
+<div id="golden-dose-new-container" class="flex flex-col items-center gap-1 mt-1">
+  <div class="font-semibold text-yellow-600 text-sm sm:text-base mb-1">
+    الجرعة الذهبية الجديدة
+  </div>
+
+  <div class="flex flex-wrap justify-center items-center gap-4">
+    <div class="flex items-center gap-2 cursor-pointer">
+      <input type="radio" name="golden-new" id="golden-20" class="w-5 h-5">
+      <label for="golden-20" class="font-semibold text-yellow-600 text-sm sm:text-base">20 يونيت</label>
+    </div>
+
+    <div class="flex items-center gap-2 cursor-pointer">
+      <input type="radio" name="golden-new" id="golden-25" class="w-5 h-5">
+      <label for="golden-25" class="font-semibold text-yellow-600 text-sm sm:text-base">25 يونيت</label>
+    </div>
+
+    <div class="flex items-center gap-2 cursor-pointer">
+      <input type="radio" name="golden-new" id="golden-30" class="w-5 h-5">
+      <label for="golden-30" class="font-semibold text-yellow-600 text-sm sm:text-base">30 يونيت</label>
+    </div>
+  </div>
 </div>
 
 <div id="result" class="w-full max-w-4xl p-3 text-center font-bold"></div>
@@ -419,7 +438,9 @@ function buildTicks(){
 }
 
 const golden=document.getElementById("golden-dose"),
-goldenNew=document.getElementById("golden-dose-new"),
+golden20=document.getElementById("golden-20"),
+golden25=document.getElementById("golden-25"),
+golden30=document.getElementById("golden-30"),
 syringe=document.getElementById("show-syringe"),
 syringeWrap=document.getElementById("syringeWrap"),
 syringeFill=document.getElementById("syringeFill"),
@@ -444,6 +465,21 @@ daysChipsWrap=document.getElementById('days-chips');
 
 let dose1=null,dose2=null;
 let lastWeeks=null,lastMonths=null,lastTicks=null,lastDose1=null,lastDose2=null,lastGolden=false;
+
+function getGoldenNewUnits(){
+  if(golden20.checked) return 20;
+  if(golden25.checked) return 25;
+  if(golden30.checked) return 30;
+  return 0;
+}
+
+function getGoldenStatusText(status){
+  if(status === 'old60') return '(الجرعة الذهبية 60 يونيت ✅)';
+  if(status === 'new20') return '(الجرعة الذهبية الجديدة 20 يونيت ✅)';
+  if(status === 'new25') return '(الجرعة الذهبية الجديدة 25 يونيت ✅)';
+  if(status === 'new30') return '(الجرعة الذهبية الجديدة 30 يونيت ✅)';
+  return '';
+}
 
 /* ✅ يونيت = mL * 100 (إصلاح 7.5→15 = 120) */
 function formatTicksFromML(ml){
@@ -562,7 +598,7 @@ function updateBuyPlan(){
 
   /* ✅ ترتيب النتائج + سطر فاصل بين كل حساب */
   buyResult.innerHTML =
-    `🧾 بناءً على الإعدادات الحالية: (الأساسي <u style="color:#5D0096">${formatNumber(lastDose1)}</u> → المطلوب <u style="color:#5D0096">${formatNumber(lastDose2)}</u> ${lastGolden==='old60'?'(الجرعة الذهبية 60 يونيت ✅)':(lastGolden==='new30'?'(الجرعة الذهبية الجديد 30 يونيت ✅)':'')})<br><br>`+
+    `🧾 بناءً على الإعدادات الحالية: (الأساسي <u style="color:#5D0096">${formatNumber(lastDose1)}</u> → المطلوب <u style="color:#5D0096">${formatNumber(lastDose2)}</u> ${getGoldenStatusText(lastGolden)})<br><br>`+
     `📌 عدد الجرعات : <u style="color:green">${formatNumber(lastWeeks)}</u> جرعات (كل <u style="color:green">${intervalDays}</u> يوم) = <u style="color:green">${daysTotal}</u> يوم (<u style="color:purple">${md.text}</u>)<br><br>`+
     `🗓️ تواريخ أخذ جرعات نفس القلم (${penCountText} جرعات)<br><span style="color:#222">${penDoseDatesDMY}</span><br><br>`+
     `🗓️ تاريخ شراء القلم الحالي ( يوم اخذ اول جرعة ): <u style="color:red">${formatDateISOToDMY(start)}</u><br><br>`+
@@ -577,10 +613,12 @@ function calculateResult(){
     const normalPenML = baseDoseML * 4; // 2.4
 
     let extraGoldenML = 0;
+    let goldenNewUnits = getGoldenNewUnits();
+
     if(golden.checked){
       extraGoldenML = 0.6; // الجرعة الذهبية القديمة = 60 يونيت
-    }else if(goldenNew.checked){
-      extraGoldenML = 0.3; // الجرعة الذهبية الجديدة = 30 يونيت
+    }else if(goldenNewUnits > 0){
+      extraGoldenML = goldenNewUnits / 100; // 20/25/30 يونيت = 0.20/0.25/0.30 mL
     }
 
     const totalPenML = normalPenML + extraGoldenML;
@@ -597,11 +635,23 @@ function calculateResult(){
     lastTicks=f;
     lastDose1=dose1;
     lastDose2=dose2;
-    lastGolden = golden.checked ? 'old60' : (goldenNew.checked ? 'new30' : false);
+    if(golden.checked){
+      lastGolden = 'old60';
+    }else if(goldenNewUnits === 20){
+      lastGolden = 'new20';
+    }else if(goldenNewUnits === 25){
+      lastGolden = 'new25';
+    }else if(goldenNewUnits === 30){
+      lastGolden = 'new30';
+    }else{
+      lastGolden = false;
+    }
 
-    const mdMonths = monthsToMonthsDays(m);
+    const intervalDays = getEveryDays();
+    const durationDays = Math.round(dosesCount * intervalDays);
+    const duration = toMonthsDays(durationDays);
 
-    result.innerHTML=`️ النتيجة: <u style="color:red">${f}</u> تكة أو يونيت ✅ ( عدد الجرعات <u style="color:green">${formatNumber(dosesCount)}</u> 💉)  `;
+    result.innerHTML=`️ النتيجة: <u style="color:red">${f}</u> تكة أو يونيت ✅ ( عدد الجرعات <u style="color:green">${formatNumber(dosesCount)}</u> 💉) (المدة <u style="color:#5D0096">${duration.text}</u> 📅)`;
     if(syringe.checked)showSyringe(f);
 
     if(buyToggle.checked) updateBuyPlan();
@@ -640,13 +690,21 @@ doseInput2.addEventListener("input",e=>{
 });
 
 golden.addEventListener('change',()=>{
-  if(golden.checked && goldenNew) goldenNew.checked = false;
+  if(golden.checked){
+    golden20.checked = false;
+    golden25.checked = false;
+    golden30.checked = false;
+  }
   calculateResult();
 });
 
-goldenNew.addEventListener('change',()=>{
-  if(goldenNew.checked) golden.checked = false;
-  calculateResult();
+[golden20, golden25, golden30].forEach(r=>{
+  r.addEventListener('change',()=>{
+    if(r.checked){
+      golden.checked = false;
+    }
+    calculateResult();
+  });
 });
 
 syringe.addEventListener('change',()=>{
