@@ -169,9 +169,24 @@ function calculateResult(){
     const durationText = toMonthsDays(durationDays);
 
     result.innerHTML =
-      `️ النتيجة: <u style="color:red">${units}</u> تكة أو يونيت ✅<br>` +
-      `عدد الجرعات: <u style="color:green">${formatNumber(dosesCount)}</u> 💉<br>` +
-      `المدة: <u style="color:#5D0096">${durationText}</u> 📅`;
+      `️<div style="display:flex;align-items:center;justify-content:center;gap:6px;direction:rtl;">
+          <span>النتيجة:</span>
+          <u style="color:red">${units}</u>
+          <span>تكة أو يونيت</span>
+          <span>✅</span>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:center;gap:6px;direction:rtl;">
+          <span>عدد الجرعات:</span>
+          <u style="color:green">${formatNumber(dosesCount)}</u>
+          <span>💉</span>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:center;gap:6px;direction:rtl;">
+          <span>المدة:</span>
+          <u style="color:#5D0096">${durationText}</u>
+          <span>📅</span>
+        </div>`;
   } else {
     result.innerHTML = "";
   }
