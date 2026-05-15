@@ -4,6 +4,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="ar">
 <head>
@@ -276,6 +277,21 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
       <input type="radio" name="golden-new" id="golden-30" class="w-5 h-5">
       <label for="golden-30" class="font-semibold text-yellow-600 text-sm sm:text-base">30 يونيت</label>
     </div>
+
+    <div class="flex items-center gap-2 cursor-pointer">
+      <input type="radio" name="golden-new" id="golden-35" class="w-5 h-5">
+      <label for="golden-35" class="font-semibold text-yellow-600 text-sm sm:text-base">35 يونيت</label>
+    </div>
+
+    <div class="flex items-center gap-2 cursor-pointer">
+      <input type="radio" name="golden-new" id="golden-40" class="w-5 h-5">
+      <label for="golden-40" class="font-semibold text-yellow-600 text-sm sm:text-base">40 يونيت</label>
+    </div>
+
+    <div class="flex items-center gap-2 cursor-pointer">
+      <input type="radio" name="golden-new" id="golden-45" class="w-5 h-5">
+      <label for="golden-45" class="font-semibold text-yellow-600 text-sm sm:text-base">45 يونيت</label>
+    </div>
   </div>
 </div>
 
@@ -441,6 +457,9 @@ const golden=document.getElementById("golden-dose"),
 golden20=document.getElementById("golden-20"),
 golden25=document.getElementById("golden-25"),
 golden30=document.getElementById("golden-30"),
+golden35=document.getElementById("golden-35"),
+golden40=document.getElementById("golden-40"),
+golden45=document.getElementById("golden-45"),
 syringe=document.getElementById("show-syringe"),
 syringeWrap=document.getElementById("syringeWrap"),
 syringeFill=document.getElementById("syringeFill"),
@@ -470,6 +489,9 @@ function getGoldenNewUnits(){
   if(golden20.checked) return 20;
   if(golden25.checked) return 25;
   if(golden30.checked) return 30;
+  if(golden35.checked) return 35;
+  if(golden40.checked) return 40;
+  if(golden45.checked) return 45;
   return 0;
 }
 
@@ -478,6 +500,9 @@ function getGoldenStatusText(status){
   if(status === 'new20') return '(الجرعة الذهبية الجديدة 20 يونيت ✅)';
   if(status === 'new25') return '(الجرعة الذهبية الجديدة 25 يونيت ✅)';
   if(status === 'new30') return '(الجرعة الذهبية الجديدة 30 يونيت ✅)';
+  if(status === 'new35') return '(الجرعة الذهبية الجديدة 35 يونيت ✅)';
+  if(status === 'new40') return '(الجرعة الذهبية الجديدة 40 يونيت ✅)';
+  if(status === 'new45') return '(الجرعة الذهبية الجديدة 45 يونيت ✅)';
   return '';
 }
 
@@ -643,6 +668,12 @@ function calculateResult(){
       lastGolden = 'new25';
     }else if(goldenNewUnits === 30){
       lastGolden = 'new30';
+    }else if(goldenNewUnits === 35){
+      lastGolden = 'new35';
+    }else if(goldenNewUnits === 40){
+      lastGolden = 'new40';
+    }else if(goldenNewUnits === 45){
+      lastGolden = 'new45';
     }else{
       lastGolden = false;
     }
@@ -698,7 +729,7 @@ golden.addEventListener('change',()=>{
   calculateResult();
 });
 
-[golden20, golden25, golden30].forEach(r=>{
+[golden20, golden25, golden30, golden35, golden40, golden45].forEach(r=>{
   r.addEventListener('change',()=>{
     if(r.checked){
       golden.checked = false;
