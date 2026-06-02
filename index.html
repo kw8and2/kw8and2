@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="ar">
 <head>
@@ -307,6 +300,10 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
     <div class="buy-label">ضع تاريخ شراء القلم الحالي ( يوم اخذ اول جرعة ) </div>
     <input id="buy-date" type="date" class="buy-input">
 
+    <div class="buy-label" style="color:#009DFF;">تاريخ الراتب (اختياري)</div>
+    <input id="salary-day" type="text" class="buy-input" inputmode="numeric" maxlength="2" placeholder="مثال: 22">
+    <div class="small-hint">إذا تاريخ الشراء القادم قبل يوم الراتب، يحسبه على راتب الشهر السابق</div>
+
     <div class="buy-label" style="color:#009DFF;">الجرعة كل كم أسبوع ؟</div>
 
     <div class="days-chips-wrap" id="days-chips">
@@ -479,6 +476,7 @@ const buyToggle=document.getElementById('show-buy'),
 buySection=document.getElementById('buy-section'),
 buyDate=document.getElementById('buy-date'),
 buyResult=document.getElementById('buy-result'),
+salaryDay=document.getElementById('salary-day'),
 doseEveryDays=document.getElementById('dose-every-days'),
 daysChipsWrap=document.getElementById('days-chips');
 
@@ -538,6 +536,42 @@ function toMonthsDays(totalDays){
 function addDaysISO(iso, add){
   const d = new Date(iso + "T00:00:00");
   d.setDate(d.getDate() + Math.round(Number(add)||0));
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+/* ✅ قراءة يوم الراتب الاختياري */
+function getSalaryDay(){
+  const raw = (salaryDay?.value || '').toString().replace(/[^0-9]/g,'');
+  const n = parseInt(raw,10);
+  if(n >= 1 && n <= 31) return n;
+  return null;
+}
+
+/* ✅ آخر راتب قبل أو بنفس تاريخ الحاجة للشراء */
+function getSalaryPurchaseISO(needISO){
+  const salary = getSalaryDay();
+  if(!salary) return needISO;
+
+  const need = new Date(needISO + "T00:00:00");
+  let y = need.getFullYear();
+  let m = need.getMonth(); // 0-11
+  const needDay = need.getDate();
+
+  if(needDay < salary){
+    m -= 1;
+    if(m < 0){
+      m = 11;
+      y -= 1;
+    }
+  }
+
+  const lastDayOfMonth = new Date(y, m + 1, 0).getDate();
+  const safeSalaryDay = Math.min(salary, lastDayOfMonth);
+  const d = new Date(y, m, safeSalaryDay);
+
   const yyyy = d.getFullYear();
   const mm = String(d.getMonth()+1).padStart(2,'0');
   const dd = String(d.getDate()).padStart(2,'0');
@@ -613,9 +647,11 @@ function updateBuyPlan(){
   const md = toMonthsDays(daysTotal);
 
   const nextISO = addDaysISO(start, daysTotal);
+  const buyNextISO = getSalaryPurchaseISO(nextISO);
 
   const yearly = computePurchasesInNext12Months(start, intervalDays);
-  const listDMY = yearly.purchaseDatesISO.map(formatDateISOToDMY).join(' — ');
+  const adjustedPurchaseDatesISO = yearly.purchaseDatesISO.map(getSalaryPurchaseISO);
+  const listDMY = adjustedPurchaseDatesISO.map(formatDateISOToDMY).join(' — ');
 
   const penDoseDatesISO = buildPenDoseDates(start, intervalDays, lastWeeks);
   const penDoseDatesDMY = penDoseDatesISO.map(formatDateISOToDMY).join(' — ');
@@ -627,9 +663,13 @@ function updateBuyPlan(){
     `📌 عدد الجرعات : <u style="color:green">${formatNumber(lastWeeks)}</u> جرعات (كل <u style="color:green">${intervalDays}</u> يوم) = <u style="color:green">${daysTotal}</u> يوم (<u style="color:purple">${md.text}</u>)<br><br>`+
     `🗓️ تواريخ أخذ جرعات نفس القلم (${penCountText} جرعات)<br><span style="color:#222">${penDoseDatesDMY}</span><br><br>`+
     `🗓️ تاريخ شراء القلم الحالي ( يوم اخذ اول جرعة ): <u style="color:red">${formatDateISOToDMY(start)}</u><br><br>`+
-    `✅ تشتري القلم القادم بتاريخ: <u style="color:red">${formatDateISOToDMY(nextISO)}</u><br><br>`+
+    `✅ تاريخ احتياج القلم القادم: <u style="color:red">${formatDateISOToDMY(nextISO)}</u><br>`+
+    (getSalaryDay()
+      ? `💵 تاريخ الشراء حسب الراتب: <u style="color:green">${formatDateISOToDMY(buyNextISO)}</u> (راتب يوم <u style="color:green">${getSalaryDay()}</u>)<br><br>`
+      : `💵 تاريخ الشراء حسب الراتب: <span style="color:#555">لم يتم إدخال تاريخ راتب</span><br><br>`
+    )+
     `📦 خــلال ســـنة تحـــتاج تشتــري الـقـلـم <u style="color:red">${yearly.purchases}</u> مرة/رات <br><br>`+
-    `🗓️ تواريخ شراء القلم ( خــلال ســنة )<br><span style="color:#222">${listDMY}</span>`;
+    `🗓️ تواريخ شراء القلم حسب الراتب ( خــلال ســنة )<br><span style="color:#222">${listDMY}</span>`;
 }
 
 function calculateResult(){
@@ -746,6 +786,15 @@ syringe.addEventListener('change',()=>{
 buildTicks();setup("dose-group-1",true);setup("dose-group-2",false);
 
 buyDate.addEventListener('change',updateBuyPlan);
+
+if(salaryDay){
+  salaryDay.addEventListener('input',()=>{
+    salaryDay.value = (salaryDay.value || '').toString().replace(/[^0-9]/g,'').slice(0,2);
+    const n = parseInt(salaryDay.value,10);
+    if(n > 31) salaryDay.value = '31';
+    updateBuyPlan();
+  });
+}
 
 if(daysChipsWrap){
   daysChipsWrap.querySelectorAll('.day-chip').forEach(ch=>{
