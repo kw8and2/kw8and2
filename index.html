@@ -302,7 +302,7 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
 
     <div class="buy-label" style="color:#009DFF;">تاريخ الراتب (اختياري)</div>
     <input id="salary-day" type="text" class="buy-input" inputmode="numeric" maxlength="2" placeholder="مثال: 22">
-    <div class="small-hint">إذا تاريخ الشراء القادم قبل يوم الراتب، يحسبه على راتب الشهر السابق</div>
+    <div class="small-hint">إذا تاريخ الشراء قريب من الراتب 4 أيام (مثل 19-22 إذا الراتب 22) لا يغيره</div>
 
     <div class="buy-label" style="color:#009DFF;">الجرعة كل كم أسبوع ؟</div>
 
@@ -550,7 +550,9 @@ function getSalaryDay(){
   return null;
 }
 
-/* ✅ آخر راتب قبل أو بنفس تاريخ الحاجة للشراء */
+/* ✅ تاريخ الشراء حسب الراتب
+   إذا تاريخ الحاجة قبل الراتب وبعيد عنه: يرجعه لراتب الشهر السابق
+   إذا قريب من الراتب 4 أيام كتقويم شامل مثل 19/20/21/22 عند راتب 22: لا يغير التاريخ */
 function getSalaryPurchaseISO(needISO){
   const salary = getSalaryDay();
   if(!salary) return needISO;
@@ -560,12 +562,16 @@ function getSalaryPurchaseISO(needISO){
   let m = need.getMonth(); // 0-11
   const needDay = need.getDate();
 
-  if(needDay < salary){
+  const keepSameDateFromDay = Math.max(1, salary - 3); // مثال راتب 22: 19،20،21،22 لا تتغير
+
+  if(needDay < keepSameDateFromDay){
     m -= 1;
     if(m < 0){
       m = 11;
       y -= 1;
     }
+  }else{
+    return needISO;
   }
 
   const lastDayOfMonth = new Date(y, m + 1, 0).getDate();
