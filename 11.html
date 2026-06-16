@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Mounjaro KwikPen</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+body{
+  font-family:'Cairo',sans-serif;
+  background:#fff;
+  color:#222;
+}
+.box{
+  width:100%;
+  max-width:760px;
+  background:#fff;
+  border:1px solid #ddd;
+  border-radius:16px;
+  box-shadow:0 4px 12px rgba(0,0,0,.06);
+  padding:12px;
+}
+.title{color:#5D0096;font-weight:800;}
+.row{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+.chip{
+  border:2px solid #d0d0d0;
+  background:#fff;
+  border-radius:12px;
+  padding:7px 11px;
+  font-weight:800;
+  font-size:13px;
+  cursor:pointer;
+  user-select:none;
+  transition:.15s;
+}
+.chip:hover{transform:translateY(-1px);box-shadow:0 3px 8px rgba(0,0,0,.06);}
+.chip.active{
+  border-color:#5D0096;
+  background:#f3e9ff;
+  color:#5D0096;
+}
+.input{
+  width:160px;
+  height:35px;
+  border:2px solid #ccc;
+  border-radius:10px;
+  text-align:center;
+  font-weight:700;
+  outline:none;
+}
+.input:focus{border-color:#5D0096;box-shadow:0 0 4px rgba(93,0,150,.25);}
+.label{
+  font-size:13px;
+  font-weight:800;
+  color:#009DFF;
+}
+.result{
+  width:100%;
+  max-width:760px;
+  background:#f9f9ff;
+  border:1px solid #d0d0d0;
+  box-shadow:0 4px 10px rgba(0,0,0,.07);
+  border-radius:16px;
+  padding:12px;
+  font-size:17px;
+  font-weight:800;
+  line-height:2;
+  text-align:center;
+}
+.small-hint{font-size:12px;color:#555;font-weight:700;}
+.compact-row{gap:6px;}
+.compact-row .chip{padding:6px 10px;min-width:42px;}
+.mini-input{width:90px;}
+.date-input{width:150px;}
+.status-box{
+  margin:12px 0;
+  padding:14px;
+  border-radius:16px;
+  font-size:28px;
+  font-weight:900;
+  line-height:1.7;
+  text-align:center;
+}
+.status-good{
+  border:4px solid #009900;
+  background:#f0fff0;
+  color:#009900;
+}
+.status-bad{
+  border:4px solid #ff0000;
+  background:#fff0f0;
+  color:#ff0000;
+}
+@media(max-width:480px){.status-box{font-size:16px;padding:8px 9px;}}
+
+.main-grid{
+  width:100%;
+  max-width:1400px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  align-items:start;
+}
+.left-panel,.right-panel{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.left-panel .box,.right-panel .box,.left-panel .result,.right-panel .result{
+  max-width:none;
+}
+@media(max-width:900px){
+  .main-grid{grid-template-columns:1fr;}
+}
+
+</style>
+</head>
+
+<body class="min-h-screen flex flex-col items-center p-2 sm:p-4 gap-3">
+
+<h1 class="title text-xl sm:text-2xl text-center">
+  <a href="https://gulf.lilly.com/mealabels/ar/mounjaro-kwikpen" target="_blank">
+    Mounjaro KwikPen 0.6mL
+  </a>
+</h1>
+
+<div class="row text-center text-xs sm:text-sm font-extrabold">
+  <a href="https://files.mealabels.gulf.lilly.com/content/mounjaro-kwikpen/kuwait/arabic_instructions_for_use.pdf" target="_blank" class="underline text-blue-700">
+    طريقة استخدام KwikPen
+  </a>
+  <span>|</span>
+  <a href="https://files.mealabels.gulf.lilly.com/content/mounjaro-kwikpen/kuwait/english_physician_information_english-arabic_patient_information.pdf" target="_blank" class="underline text-blue-700">
+    معلومات المريض 2026/3/20
+  </a>
+</div>
+
+<div class="main-grid">
+<div class="right-panel">
+
+<div class="box text-center">
+  <div class="title mb-2">💉 جرعة القلم الأساسي</div>
+  <div class="row" id="dose-group-1">
+    <button class="chip" data-mg="2.5">2.5</button>
+    <button class="chip" data-mg="5">5</button>
+    <button class="chip" data-mg="7.5">7.5</button>
+    <button class="chip" data-mg="10">10</button>
+    <button class="chip" data-mg="12.5">12.5</button>
+    <button class="chip active" data-mg="15">15</button>
+  </div>
+</div>
+
+<div class="box text-center">
+  <div class="title mb-2">🎯 الجرعة المطلوبة</div>
+  <div class="row" id="dose-group-2">
+    <button class="chip" data-mg="2.5">2.5</button>
+    <button class="chip" data-mg="5">5</button>
+    <button class="chip" data-mg="7.5">7.5</button>
+    <button class="chip" data-mg="10">10</button>
+    <button class="chip active" data-mg="12.5">12.5</button>
+    <button class="chip" data-mg="15">15</button>
+    <input id="dose-input-2" type="text" class="input" inputmode="decimal" maxlength="5" placeholder="جرعة يدوية">
+  </div>
+</div>
+
+<div class="box text-center">
+  <div class="title mb-2">🟡 الجرعة الذهبية</div>
+  <div class="row" id="golden-group">
+    <button class="chip" data-golden="0">بدون</button>
+    <button class="chip" data-golden="20">20</button>
+    <button class="chip" data-golden="25">25</button>
+    <button class="chip active" data-golden="30">30</button>
+    <button class="chip" data-golden="35">35</button>
+    <button class="chip" data-golden="40">40</button>
+    <button class="chip" data-golden="60">60</button>
+  </div>
+</div>
+
+<div id="result" class="result"></div>
+
+</div>
+
+<div class="left-panel">
+
+<div id="buy-section" class="box text-center">
+  <div class="title mb-2">🗓️ متى اشتري القلم القادم ؟</div>
+
+  <div class="row">
+    <div>
+      <div class="label">تاريخ شراء القلم الحالي / أول جرعة</div>
+      <input id="buy-date" type="date" class="input date-input">
+    </div>
+
+    <div>
+      <div class="label">تاريخ الراتب اختياري</div>
+      <input id="salary-day" type="text" class="input mini-input" inputmode="numeric" maxlength="2" placeholder="22" value="22">
+    </div>
+  </div>
+
+  <div class="label mt-3">الجرعة كل كم يوم ؟</div>
+  <div class="row mt-1 compact-row" id="days-chips">
+    <button class="chip" data-days="7">7</button>
+    <button class="chip" data-days="8">8</button>
+    <button class="chip" data-days="9">9</button>
+    <button class="chip" data-days="10">10</button>
+    <button class="chip active" data-days="11">11</button>
+    <button class="chip" data-days="12">12</button>
+    <button class="chip" data-days="13">13</button>
+    <button class="chip" data-days="14">14</button>
+  </div>
+
+  <div id="buy-result" class="result mt-3 mx-auto"></div>
+</div>
+
+</div>
+</div>
+
+<script>
+const result=document.getElementById("result");
+const doseInput2=document.getElementById("dose-input-2");
+
+const buyDate=document.getElementById('buy-date');
+const buyResult=document.getElementById('buy-result');
+const salaryDay=document.getElementById('salary-day');
+const doseEveryDays=document.getElementById('dose-every-days');
+const daysChipsWrap=document.getElementById('days-chips');
+
+let dose1=15;
+let dose2=12.5;
+let goldenUnits=30;
+
+let lastWeeks=null,lastDose1=null,lastDose2=null,lastGolden=0;
+
+function formatNumber(n){
+  n = Number(n)||0;
+  return Number.isInteger(n) ? String(n) : parseFloat(n.toFixed(2)).toString();
+}
+
+function formatTicksFromML(ml){
+  return Math.round((Number(ml)||0) * 100);
+}
+
+function formatDateISOToDMY(iso){
+  if(!iso) return '';
+  const [y,m,d]=iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function addDaysISO(iso, add){
+  const d = new Date(iso + "T00:00:00");
+  d.setDate(d.getDate() + Math.round(Number(add)||0));
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function toMonthsDays(totalDays){
+  let d = Math.max(0, Math.round(Number(totalDays)||0));
+  const months = Math.floor(d / 30);
+  const days = d % 30;
+  return { months, days, text: `${months} شهر و ${days} يوم` };
+}
+
+function getSalaryDay(){
+  const raw = (salaryDay.value || '').replace(/[^0-9]/g,'');
+  const n = parseInt(raw,10);
+  if(n >= 1 && n <= 31) return n;
+  return null;
+}
+
+function getSalaryPurchaseISO(needISO){
+  const salary = getSalaryDay();
+  if(!salary) return needISO;
+
+  const need = new Date(needISO + "T00:00:00");
+  let y = need.getFullYear();
+  let m = need.getMonth();
+  const needDay = need.getDate();
+
+  const keepSameDateFromDay = Math.max(1, salary - 3);
+
+  if(needDay < keepSameDateFromDay){
+    m -= 1;
+    if(m < 0){ m = 11; y -= 1; }
+  }else{
+    return needISO;
+  }
+
+  const lastDayOfMonth = new Date(y, m + 1, 0).getDate();
+  const safeSalaryDay = Math.min(salary, lastDayOfMonth);
+  const d = new Date(y, m, safeSalaryDay);
+
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function buildPenDoseDates(startISO, intervalDays, dosesCount){
+  let count = Math.floor(Number(dosesCount) || 0);
+  if(count <= 0) return [];
+  count = Math.min(count, 60);
+  const out = [];
+  for(let i=0;i<count;i++) out.push(addDaysISO(startISO, i * intervalDays));
+  return out;
+}
+
+function getEveryDays(){
+  const raw = doseEveryDays ? (doseEveryDays.value || '').replace(/[^0-9]/g,'') : '';
+  const n = parseInt(raw,10);
+  if(n && n > 0) return n;
+
+  const activeChip = daysChipsWrap.querySelector('.chip.active');
+  const chipDays = activeChip ? parseInt(activeChip.dataset.days, 10) : 11;
+  return (chipDays && chipDays > 0) ? chipDays : 11;
+}
+
+function setActiveChipByDays(days){
+  daysChipsWrap.querySelectorAll('.chip[data-days]').forEach(ch=>{
+    const d = parseInt(ch.dataset.days, 10);
+    ch.classList.toggle('active', d === Number(days));
+  });
+}
+
+function computePurchasesInNext12Months(startISO, intervalDays){
+  const startDateObj = new Date(startISO + "T00:00:00");
+  const endDateObj = new Date(startDateObj);
+  endDateObj.setFullYear(startDateObj.getFullYear() + 1);
+
+  let purchases = 0;
+  let purchaseDatesISO = [];
+  let cur = new Date(startDateObj);
+
+  while(cur < endDateObj){
+    purchases++;
+    purchaseDatesISO.push(`${cur.getFullYear()}-${String(cur.getMonth()+1).padStart(2,'0')}-${String(cur.getDate()).padStart(2,'0')}`);
+
+    const daysToNext = Math.round((lastWeeks||0) * intervalDays);
+    if(!daysToNext || daysToNext<=0) break;
+    cur.setDate(cur.getDate() + daysToNext);
+  }
+  return { purchases, purchaseDatesISO };
+}
+
+function goldenText(){
+  if(!lastGolden) return 'بدون جرعة ذهبية';
+  return `جرعة ذهبية ${lastGolden} يونيت`;
+}
+
+function updateBuyPlan(){
+  if(!(dose1 && dose2)) { buyResult.innerHTML=''; return; }
+  const start=buyDate.value;
+  if(!start){ buyResult.innerHTML='اختر تاريخ شراء القلم الحالي عشان يطلع الحساب.'; return; }
+  if(lastWeeks==null){ buyResult.innerHTML=''; return; }
+
+  const intervalDays = getEveryDays();
+  const daysTotal = Math.round(lastWeeks * intervalDays);
+  const md = toMonthsDays(daysTotal);
+
+  const nextISO = addDaysISO(start, daysTotal);
+  const buyNextISO = getSalaryPurchaseISO(nextISO);
+
+  const yearly = computePurchasesInNext12Months(start, intervalDays);
+  const adjustedPurchaseDatesISO = yearly.purchaseDatesISO.map(getSalaryPurchaseISO);
+  const listDMY = adjustedPurchaseDatesISO.map(formatDateISOToDMY).join(' — ');
+
+  const penDoseDatesISO = buildPenDoseDates(start, intervalDays, lastWeeks);
+  const penDoseDatesDMY = penDoseDatesISO.map(formatDateISOToDMY).join(' — ');
+
+  const durationStatusBox = daysTotal >= 61
+    ? `<div class="status-box status-good">✅ القلم يكفي 61 يوم أو أكثر<br>المدة الحالية ${daysTotal} يوم</div>`
+    : `<div class="status-box status-bad">⚠️ القلم لا يكفي 61 يوم<br>المدة الحالية ${daysTotal} يوم فقط</div>`;
+
+  const durationColor = daysTotal >= 61 ? 'green' : 'red';
+
+  buyResult.innerHTML =
+    durationStatusBox +
+    `🧾 الأساسي <u style="color:#5D0096">${formatNumber(lastDose1)}</u> → المطلوب <u style="color:#5D0096">${formatNumber(lastDose2)}</u> (${goldenText()})<br>`+
+    `📌 عدد الجرعات: <u style="color:green">${formatNumber(lastWeeks)}</u> جرعات × كل <u style="color:green">${intervalDays}</u> يوم = <u style="color:${durationColor}">${daysTotal}</u> يوم (${md.text})<br><br>`+
+    `🗓️ تواريخ جرعات نفس القلم:<br><span style="color:#222">${penDoseDatesDMY}</span><br><br>`+
+    `✅ تاريخ احتياج القلم القادم: <u style="color:red">${formatDateISOToDMY(nextISO)}</u><br>`+
+    (getSalaryDay()
+      ? `💵 تاريخ الشراء حسب الراتب: <u style="color:green">${formatDateISOToDMY(buyNextISO)}</u> (راتب يوم ${getSalaryDay()})<br><br>`
+      : `💵 تاريخ الشراء حسب الراتب: <span style="color:#555">لم يتم إدخال تاريخ راتب</span><br><br>`
+    )+
+    `📦 خلال سنة تحتاج تشتري القلم <u style="color:red">${yearly.purchases}</u> مرة<br><br>`+
+    `🗓️ تواريخ شراء القلم خلال سنة:<br><span style="color:#222">${listDMY}</span>`;
+}
+
+function calculateResult(){
+  if(dose1 && dose2){
+    const baseDoseML = 0.6;
+    const normalPenML = baseDoseML * 4;
+    const extraGoldenML = goldenUnits / 100;
+    const totalPenML = normalPenML + extraGoldenML;
+
+    const mlPerDose = (dose2/dose1) * baseDoseML;
+    const ticks = formatTicksFromML(mlPerDose);
+    const dosesCount = totalPenML / mlPerDose;
+
+    lastWeeks=dosesCount;
+    lastDose1=dose1;
+    lastDose2=dose2;
+    lastGolden=goldenUnits;
+
+    const intervalDays = getEveryDays();
+    const durationDays = Math.round(dosesCount * intervalDays);
+    const duration = toMonthsDays(durationDays);
+
+    result.innerHTML =
+      `النتيجة: <u style="color:red">${ticks}</u> تكة / يونيت ✅<br>`+
+      `عدد الجرعات: <u style="color:green">${formatNumber(dosesCount)}</u> 💉 — المدة: <u style="color:#5D0096">${duration.text}</u> 📅`;
+
+    updateBuyPlan();
+  }else{
+    result.innerHTML="";
+    buyResult.innerHTML="";
+  }
+}
+
+function setupDoseGroup(groupId, isBase){
+  document.getElementById(groupId).querySelectorAll('.chip[data-mg]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.getElementById(groupId).querySelectorAll('.chip[data-mg]').forEach(x=>x.classList.remove('active'));
+      btn.classList.add('active');
+      const m=parseFloat(btn.dataset.mg);
+      if(isBase) dose1=m;
+      else {
+        dose2=m;
+        doseInput2.value='';
+      }
+      calculateResult();
+    });
+  });
+}
+
+doseInput2.addEventListener("input",e=>{
+  let v=e.target.value.replace(/[^0-9.]/g,"");
+  if(!/^\d{0,2}(\.\d{0,2})?$/.test(v)) v=v.slice(0,-1);
+  e.target.value=v;
+  dose2=parseFloat(v)||null;
+  document.getElementById('dose-group-2').querySelectorAll('.chip[data-mg]').forEach(x=>x.classList.remove('active'));
+  calculateResult();
+});
+
+document.getElementById('golden-group').querySelectorAll('.chip[data-golden]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.getElementById('golden-group').querySelectorAll('.chip[data-golden]').forEach(x=>x.classList.remove('active'));
+    btn.classList.add('active');
+    goldenUnits=parseInt(btn.dataset.golden,10)||0;
+    calculateResult();
+  });
+});
+
+buyDate.addEventListener('change',updateBuyPlan);
+
+salaryDay.addEventListener('input',()=>{
+  salaryDay.value = (salaryDay.value || '').replace(/[^0-9]/g,'').slice(0,2);
+  const n = parseInt(salaryDay.value,10);
+  if(n > 31) salaryDay.value = '31';
+  updateBuyPlan();
+});
+
+daysChipsWrap.querySelectorAll('.chip[data-days]').forEach(ch=>{
+  ch.addEventListener('click', ()=>{
+    const d = parseInt(ch.dataset.days, 10);
+    if(doseEveryDays) doseEveryDays.value = String(d);
+    setActiveChipByDays(d);
+    calculateResult();
+  });
+});
+
+if(doseEveryDays){
+  doseEveryDays.addEventListener('input',()=>{
+    doseEveryDays.value = (doseEveryDays.value||'').replace(/[^0-9]/g,'').slice(0,3);
+    if(doseEveryDays.value !== '') setActiveChipByDays(parseInt(doseEveryDays.value,10));
+    calculateResult();
+  });
+}
+
+
+function setDefaultBuyDate(){
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth();
+  const d = new Date(y, m, 22);
+  buyDate.value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-22`;
+}
+setDefaultBuyDate();
+setActiveChipByDays(11);
+setupDoseGroup("dose-group-1",true);
+setupDoseGroup("dose-group-2",false);
+calculateResult();
+</script>
+
+</body>
+</html>
