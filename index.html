@@ -67,7 +67,7 @@
   }
   .input-grid{
     display:grid;
-    grid-template-columns:1.5fr .7fr auto;
+    grid-template-columns:1.5fr .7fr;
     gap:9px;
     align-items:end;
   }
@@ -138,6 +138,16 @@
   }
   .entry-title{font-size:17px;font-weight:900}
   .entry-sub{font-size:13px;color:var(--muted);margin-top:4px;font-weight:700}
+  .picked-note{
+    display:inline-block;
+    margin-top:6px;
+    padding:5px 9px;
+    border-radius:999px;
+    background:#ecfeff;
+    color:#0f766e;
+    font-size:11px;
+    font-weight:900;
+  }
   .delete{
     background:var(--danger-bg);
     color:var(--danger);
@@ -222,6 +232,24 @@
     font-weight:900;
     margin-bottom:6px;
   }
+  .date.clickable{
+    cursor:pointer;
+    display:inline-block;
+    padding:6px 10px;
+    border-radius:10px;
+    background:#ffffff;
+    border:1px solid #d8b4fe;
+    color:#6d28d9;
+    user-select:none;
+    transition:.15s ease;
+  }
+  .date.clickable:hover{
+    background:#faf5ff;
+    border-color:#a78bfa;
+  }
+  .date.clickable:active{
+    transform:scale(.98);
+  }
   .month{
     font-size:13px;
     color:#374151;
@@ -270,7 +298,6 @@
           <label for="penCount">عدد الأقلام</label>
           <input id="penCount" type="number" min="1" max="20" step="1" value="3">
         </div>
-        <button id="addBtn">إضافة</button>
       </div>
 
       <div class="mini">
@@ -282,7 +309,7 @@
     </div>
 
     <div id="history">
-      <div class="empty" id="emptyState">أضف تاريخ</div>
+      <div class="empty" id="emptyState">اختر تاريخًا</div>
     </div>
   </div>
 </div>
@@ -324,6 +351,13 @@ function fmt(date){
   return `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
 }
 
+function inputDateValue(date){
+  const y = date.getFullYear();
+  const m = String(date.getMonth()+1).padStart(2,"0");
+  const d = String(date.getDate()).padStart(2,"0");
+  return `${y}-${m}-${d}`;
+}
+
 function monthName(date){
   return `${arabicMonths[date.getMonth()]} ${date.getFullYear()}`;
 }
@@ -332,7 +366,7 @@ function daysBetween(a,b){
   return Math.round((b-a)/(1000*60*60*24));
 }
 
-function buildEntry(value, pens){
+function buildEntry(value, pens, pickedLabel = ''){
   const start = parseLocalDate(value);
   const totalUnits = pens * 270; // 2.7 ml = 270 units per pen
 
@@ -349,6 +383,7 @@ function buildEntry(value, pens){
   headText.innerHTML = `
     <div class="entry-title">${fmt(start)}</div>
     <div class="entry-sub">${pens} قلم · ${totalUnits} يونيت</div>
+    ${pickedLabel ? `<div class="picked-note">مختار من نتيجة ${pickedLabel}</div>` : ``}
   `;
 
   const del = document.createElement("button");
@@ -405,9 +440,33 @@ function buildEntry(value, pens){
     box.innerHTML = `
       <div class="dose">${c.units} يونيت = ${c.mg} mg</div>
       <div class="weeks">${weeks.toFixed(2).replace(/\.00$/,"")} أسبوع</div>
-      <div class="date">${fmt(end)}</div>
+      <div class="date clickable" title="اضغط على التاريخ لإضافته كنتيجة جديدة">${fmt(end)}</div>
       <div class="status ${statusClass}">${statusText}</div>
     `;
+
+    const resultDate = box.querySelector(".date.clickable");
+    resultDate.addEventListener("click", () => {
+      const penInput = document.getElementById("penCount");
+      const nextPens = Math.max(1, parseInt(penInput.value || String(pens), 10));
+
+      const history = document.getElementById("history");
+      const nextEntry = buildEntry(
+        inputDateValue(end),
+        nextPens,
+        `${c.units} يونيت = ${c.mg} mg`
+      );
+
+      const firstEntry = history.querySelector(".entry");
+      if(firstEntry){
+        history.insertBefore(nextEntry, firstEntry);
+      } else {
+        history.appendChild(nextEntry);
+      }
+
+      updateEmpty();
+      nextEntry.scrollIntoView({behavior:"smooth", block:"start"});
+    });
+
     grid.appendChild(box);
   });
 
@@ -428,20 +487,17 @@ function updateEmpty(){
     empty = document.createElement("div");
     empty.id = "emptyState";
     empty.className = "empty";
-    empty.textContent = "أضف تاريخ";
+    empty.textContent = "اختر تاريخًا";
     history.appendChild(empty);
   }
 }
 
-document.getElementById("addBtn").addEventListener("click", () => {
+function addSelectedDate(){
   const dateInput = document.getElementById("purchaseDate");
   const penInput = document.getElementById("penCount");
   const pens = Math.max(1, parseInt(penInput.value || "3", 10));
 
-  if(!dateInput.value){
-    dateInput.focus();
-    return;
-  }
+  if(!dateInput.value) return;
 
   const history = document.getElementById("history");
   const entry = buildEntry(dateInput.value, pens);
@@ -455,8 +511,9 @@ document.getElementById("addBtn").addEventListener("click", () => {
 
   updateEmpty();
   dateInput.value = "";
-  dateInput.focus();
-});
+}
+
+document.getElementById("purchaseDate").addEventListener("change", addSelectedDate);
 </script>
 </body>
 </html>
