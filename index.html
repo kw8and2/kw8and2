@@ -406,7 +406,6 @@ function buildEntry(value, pens){
       <div class="dose">${c.units} يونيت = ${c.mg} mg</div>
       <div class="weeks">${weeks.toFixed(2).replace(/\.00$/,"")} أسبوع</div>
       <div class="date">${fmt(end)}</div>
-      <div class="month">الشراء التالي: <b>${monthName(addMonthsSafe(new Date(end.getFullYear(), end.getMonth(), 1, 12), 1))}</b></div>
       <div class="status ${statusClass}">${statusText}</div>
     `;
     grid.appendChild(box);
