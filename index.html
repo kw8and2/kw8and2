@@ -101,6 +101,38 @@
     color:#fff;
     background:linear-gradient(135deg,var(--primary),var(--primary2));
   }
+  .add-row{
+    margin-top:10px;
+    display:flex;
+    gap:8px;
+  }
+  .add-row button{
+    width:100%;
+  }
+  .same-day-alert{
+    margin:0 0 12px;
+    border:1px solid #f59e0b;
+    background:#fffbeb;
+    color:#92400e;
+    border-radius:13px;
+    padding:10px 12px;
+    font-size:12px;
+    font-weight:900;
+    line-height:1.7;
+  }
+  .salary-mini-alert{
+    display:inline-block;
+    margin-top:6px;
+    padding:3px 7px;
+    border:1px solid #fecaca;
+    background:#fef2f2;
+    color:#991b1b;
+    border-radius:999px;
+    font-size:10px;
+    font-weight:900;
+    line-height:1.2;
+    white-space:nowrap;
+  }
   .mini{
     margin-top:9px;
     display:flex;
@@ -300,11 +332,16 @@
         </div>
       </div>
 
+      <div class="add-row">
+        <button id="addDateBtn" type="button">إضافة النتيجة</button>
+      </div>
+
       <div class="mini">
         <div class="chip">50 = 12.5 mg</div>
         <div class="chip">45 = 11.25 mg</div>
         <div class="chip">40 = 10 mg</div>
         <div class="chip">تابي: 4 دفعات</div>
+        <div class="chip">الراتب: يوم 22 من كل شهر</div>
       </div>
     </div>
 
@@ -325,6 +362,9 @@ const configs = [
   {units:45, mg:11.25},
   {units:40, mg:10}
 ];
+
+// تاريخ الراتب الثابت في هذه الصفحة: يوم 22 من كل شهر.
+const SALARY_DAY = 22;
 
 function parseLocalDate(value){
   const [y,m,d] = value.split("-").map(Number);
@@ -366,7 +406,23 @@ function daysBetween(a,b){
   return Math.round((b-a)/(1000*60*60*24));
 }
 
-function buildEntry(value, pens, pickedLabel = ''){
+function sameYearMonth(a,b){
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth();
+}
+
+function salaryOn22(year, monthIndex){
+  return new Date(year, monthIndex, SALARY_DAY, 12, 0, 0);
+}
+
+function previousMonthSalary(date){
+  return salaryOn22(date.getFullYear(), date.getMonth() - 1);
+}
+
+function nextMonthSalaryAfter(date){
+  return salaryOn22(date.getFullYear(), date.getMonth() + 1);
+}
+
+function buildEntry(value, pens, pickedLabel = '', sameDayMatches = []){
   const start = parseLocalDate(value);
   const totalUnits = pens * 270; // 2.7 ml = 270 units per pen
 
@@ -375,6 +431,8 @@ function buildEntry(value, pens, pickedLabel = ''){
 
   const entry = document.createElement("div");
   entry.className = "entry";
+  entry.dataset.purchaseDate = inputDateValue(start);
+  entry.dataset.finalInstallment = inputDateValue(finalInstallment);
 
   const head = document.createElement("div");
   head.className = "entry-head";
@@ -404,6 +462,34 @@ function buildEntry(value, pens, pickedLabel = ''){
     addMonthsSafe(start, 3)
   ];
 
+  // جميع أشهر دفعات تابي النشطة: دفعات هذا الشراء + دفعات المشتريات السابقة الظاهرة.
+  // نستخدمها لتنبيه المستخدم إذا كان شراء القلم التالي سيقع في شهر توجد فيه دفعة تابي.
+  const activeTabbyPaymentDates = [...paymentDates];
+  const allTabbyFinalDates = [finalInstallment];
+  document.querySelectorAll("#history .entry").forEach(existingEntry => {
+    const purchase = existingEntry.dataset.purchaseDate;
+    if(purchase){
+      const purchaseDate = parseLocalDate(purchase);
+      for(let i = 0; i < 4; i++){
+        activeTabbyPaymentDates.push(addMonthsSafe(purchaseDate, i));
+      }
+    }
+
+    const existingFinal = existingEntry.dataset.finalInstallment;
+    if(existingFinal){
+      allTabbyFinalDates.push(parseLocalDate(existingFinal));
+    }
+  });
+
+  const sameDayAlert = document.createElement("div");
+  sameDayAlert.className = "same-day-alert";
+  if(sameDayMatches.length){
+    const origins = sameDayMatches.map(d => fmt(parseLocalDate(d))).join("، ");
+    sameDayAlert.innerHTML = `⚠️ تنبيه: تاريخ شراء هذا القلم <strong>${fmt(start)}</strong> يوافق تاريخ دفعة تابي الأخيرة لشراء سابق بتاريخ ${origins}.`;
+  } else {
+    sameDayAlert.style.display = "none";
+  }
+
   const tabby = document.createElement("div");
   tabby.className = "tabby";
   tabby.innerHTML = `
@@ -422,8 +508,12 @@ function buildEntry(value, pens, pickedLabel = ''){
   grid.className = "grid";
 
   configs.forEach(c => {
-    const weeks = totalUnits / c.units;
-    const end = addDays(start, Math.round(weeks * 7));
+    // نحسب فقط الجرعات الأسبوعية الكاملة التي يمكن سحبها من الأقلام.
+    // تاريخ النتيجة هو موعد الجرعة التالية التي لن تكفي لها الكمية المتبقية.
+    const exactDoses = totalUnits / c.units;
+    const fullDoses = Math.floor(exactDoses);
+    const remainingUnits = totalUnits - (fullDoses * c.units);
+    const end = addDays(start, fullDoses * 7);
     const diff = daysBetween(finalInstallment, end);
 
     let statusText, statusClass;
@@ -435,25 +525,62 @@ function buildEntry(value, pens, pickedLabel = ''){
       statusClass = "warn";
     }
 
+    // قاعدة الراتب:
+    // إذا كان موعد الحاجة للقلم يوم 17 أو قبله، يكون الشراء المقترح من راتب 22 للشهر السابق.
+    // إذا أغلقت كل دفعات تابي، ووصل/طاف راتب 22 للشهر التالي بعد آخر دفعة، لا نظهر أي تنبيه شراء.
+    const latestTabbyFinal = allTabbyFinalDates.reduce((latest, d) => d > latest ? d : latest, allTabbyFinalDates[0]);
+    const salaryAfterLastTabby = nextMonthSalaryAfter(latestTabbyFinal);
+    const allTabbyClosed = allTabbyFinalDates.every(d => end > d);
+    const tabbyFullyClearedAndNextSalaryPassed = allTabbyClosed && end >= salaryAfterLastTabby;
+
+    let suggestedPurchaseDate = null;
+    let salaryMiniAlert = ``;
+
+    if(!tabbyFullyClearedAndNextSalaryPassed && end.getDate() <= 17){
+      suggestedPurchaseDate = previousMonthSalary(end);
+      salaryMiniAlert = `<div class="salary-mini-alert">⚠️ اشترِ ${fmt(suggestedPurchaseDate)}</div>`;
+    }
+
+    // تنبيه تابي يُحسب على شهر الشراء المقترح إن وُجد، وإلا على شهر موعد القلم نفسه.
+    const monthToCheck = suggestedPurchaseDate || end;
+    const hasTabbyPaymentSameMonth = !tabbyFullyClearedAndNextSalaryPassed &&
+      activeTabbyPaymentDates.some(d => sameYearMonth(d, monthToCheck));
+    const tabbyMonthMiniAlert = hasTabbyPaymentSameMonth
+      ? `<div class="salary-mini-alert">⚠️ شهر فيه دفعة تابي</div>`
+      : ``;
+
     const box = document.createElement("div");
     box.className = "result";
     box.innerHTML = `
       <div class="dose">${c.units} يونيت = ${c.mg} mg</div>
-      <div class="weeks">${weeks.toFixed(2).replace(/\.00$/,"")} أسبوع</div>
-      <div class="date clickable" title="اضغط على التاريخ لإضافته كنتيجة جديدة">${fmt(end)}</div>
+      <div class="weeks">${fullDoses} جرعة كاملة${remainingUnits > 0 ? ` · متبقي ${remainingUnits} يونيت` : ``}</div>
+      <div class="date clickable" title="موعد الجرعة التالية التي تحتاج قلمًا جديدًا — اضغط لإضافة النتائج الجديدة تلقائيًا">${fmt(end)}</div>
+      ${salaryMiniAlert}
+      ${tabbyMonthMiniAlert}
       <div class="status ${statusClass}">${statusText}</div>
     `;
 
     const resultDate = box.querySelector(".date.clickable");
     resultDate.addEventListener("click", () => {
+      const dateInput = document.getElementById("purchaseDate");
       const penInput = document.getElementById("penCount");
       const nextPens = Math.max(1, parseInt(penInput.value || String(pens), 10));
-
+      const selectedDate = inputDateValue(end);
       const history = document.getElementById("history");
+
+      // نبقي التاريخ ظاهرًا في الخانة، لكن الضغط على النتيجة يضيف النتائج الجديدة فورًا.
+      dateInput.value = selectedDate;
+
+      const sameDayMatches = Array.from(history.querySelectorAll(".entry"))
+        .filter(e => e.dataset.finalInstallment === selectedDate)
+        .map(e => e.dataset.purchaseDate)
+        .filter(Boolean);
+
       const nextEntry = buildEntry(
-        inputDateValue(end),
+        selectedDate,
         nextPens,
-        `${c.units} يونيت = ${c.mg} mg`
+        `${c.units} يونيت = ${c.mg} mg`,
+        sameDayMatches
       );
 
       const firstEntry = history.querySelector(".entry");
@@ -471,6 +598,7 @@ function buildEntry(value, pens, pickedLabel = ''){
   });
 
   entry.appendChild(head);
+  entry.appendChild(sameDayAlert);
   entry.appendChild(tabby);
   entry.appendChild(grid);
   return entry;
@@ -500,7 +628,16 @@ function addSelectedDate(){
   if(!dateInput.value) return;
 
   const history = document.getElementById("history");
-  const entry = buildEntry(dateInput.value, pens);
+  const selectedDate = dateInput.value;
+  const pickedLabel = dateInput.dataset.pickedLabel || "";
+
+  // تنبيه إذا وافق تاريخ الشراء تاريخ الدفعة الرابعة/الأخيرة لتابي لشراء سابق.
+  const sameDayMatches = Array.from(history.querySelectorAll(".entry"))
+    .filter(e => e.dataset.finalInstallment === selectedDate)
+    .map(e => e.dataset.purchaseDate)
+    .filter(Boolean);
+
+  const entry = buildEntry(selectedDate, pens, pickedLabel, sameDayMatches);
   const firstEntry = history.querySelector(".entry");
 
   if(firstEntry){
@@ -510,10 +647,16 @@ function addSelectedDate(){
   }
 
   updateEmpty();
-  dateInput.value = "";
+  // إبقاء تاريخ الشراء ظاهرًا وثابتًا بعد إضافة النتيجة، خصوصًا على iPhone.
+  // نمسح فقط وصف الاختيار الداخلي حتى لا ينتقل إلى نتيجة لاحقة بالخطأ.
+  delete dateInput.dataset.pickedLabel;
 }
 
-document.getElementById("purchaseDate").addEventListener("change", addSelectedDate);
+// الإدخال اليدوي يبقى عبر الزر، والضغط على أي تاريخ نتيجة يضيف النتائج التالية تلقائيًا.
+document.getElementById("addDateBtn").addEventListener("click", addSelectedDate);
+document.getElementById("purchaseDate").addEventListener("change", () => {
+  delete document.getElementById("purchaseDate").dataset.pickedLabel;
+});
 </script>
 </body>
 </html>
