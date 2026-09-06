@@ -3,660 +3,185 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>مونجارو | شراء الأقلام</title>
+<title>مونجارو 15 mg | الشراء + السائل</title>
 <style>
-  :root{
-    --bg:#ffffff;
-    --card:#ffffff;
-    --text:#111827;
-    --muted:#6b7280;
-    --line:#e5e7eb;
-    --primary:#7c3aed;
-    --primary2:#06b6d4;
-    --soft:#f8fafc;
-    --chip:#eef2ff;
-    --good:#059669;
-    --good-bg:#ecfdf5;
-    --warn:#b45309;
-    --warn-bg:#fffbeb;
-    --danger:#991b1b;
-    --danger-bg:#fee2e2;
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    font-family:Tahoma,Arial,sans-serif;
-    background:var(--bg);
-    color:var(--text);
-    min-height:100vh;
-  }
-  .wrap{
-    max-width:820px;
-    margin:24px auto;
-    padding:0 14px 24px;
-  }
-  .card{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:14px;
-    box-shadow:0 14px 34px rgba(15,23,42,.08);
-  }
-  .top{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:9px;
-    margin-bottom:10px;
-    flex-wrap:wrap;
-  }
-  h1{margin:0;font-size:24px}
-  .badge{
-    background:linear-gradient(135deg,var(--primary),var(--primary2));
-    color:#fff;
-    padding:9px 13px;
-    border-radius:999px;
-    font-size:13px;
-    font-weight:800;
-  }
-  .input-card{
-    background:var(--soft);
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:14px;
-  }
-  .input-grid{
-    display:grid;
-    grid-template-columns:1.5fr .7fr;
-    gap:9px;
-    align-items:end;
-  }
-  label{
-    display:block;
-    font-weight:800;
-    margin-bottom:6px;
-    font-size:13px;
-  }
-  input{
-    width:100%;
-    padding:12px 14px;
-    border:1px solid #d1d5db;
-    border-radius:15px;
-    font-size:15px;
-    background:#fff;
-    outline:none;
-  }
-  input:focus{
-    border-color:var(--primary);
-    box-shadow:0 0 0 4px rgba(124,58,237,.10);
-  }
-  button{
-    border:0;
-    border-radius:15px;
-    padding:12px 18px;
-    min-height:46px;
-    cursor:pointer;
-    font-size:16px;
-    font-weight:800;
-    color:#fff;
-    background:linear-gradient(135deg,var(--primary),var(--primary2));
-  }
-  .add-row{
-    margin-top:10px;
-    display:flex;
-    gap:8px;
-  }
-  .add-row button{
-    width:100%;
-  }
-  .same-day-alert{
-    margin:0 0 12px;
-    border:1px solid #f59e0b;
-    background:#fffbeb;
-    color:#92400e;
-    border-radius:13px;
-    padding:10px 12px;
-    font-size:12px;
-    font-weight:900;
-    line-height:1.7;
-  }
-  .salary-mini-alert{
-    display:inline-block;
-    margin-top:6px;
-    padding:3px 7px;
-    border:1px solid #fecaca;
-    background:#fef2f2;
-    color:#991b1b;
-    border-radius:999px;
-    font-size:10px;
-    font-weight:900;
-    line-height:1.2;
-    white-space:nowrap;
-  }
-  .mini{
-    margin-top:9px;
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-  }
-  .chip{
-    background:var(--chip);
-    color:#4338ca;
-    border-radius:999px;
-    padding:6px 10px;
-    font-size:11px;
-    font-weight:800;
-  }
-  #history{
-    margin-top:14px;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-  }
-  .entry{
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:14px;
-    box-shadow:0 8px 24px rgba(15,23,42,.05);
-  }
-  .entry-head{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    margin-bottom:10px;
-    flex-wrap:wrap;
-  }
-  .entry-title{font-size:17px;font-weight:900}
-  .entry-sub{font-size:13px;color:var(--muted);margin-top:4px;font-weight:700}
-  .picked-note{
-    display:inline-block;
-    margin-top:6px;
-    padding:5px 9px;
-    border-radius:999px;
-    background:#ecfeff;
-    color:#0f766e;
-    font-size:11px;
-    font-weight:900;
-  }
-  .delete{
-    background:var(--danger-bg);
-    color:var(--danger);
-    padding:9px 13px;
-    min-height:auto;
-    font-size:13px;
-  }
-  .tabby{
-    display:grid;
-    grid-template-columns:1fr;
-    gap:10px;
-    margin-bottom:12px;
-  }
-  .tabby-box{
-    border:1px solid var(--line);
-    border-radius:13px;
-    padding:10px 12px;
-    background:#fafafa;
-  }
-  .tabby-title{
-    font-size:11px;
-    color:var(--muted);
-    font-weight:800;
-    margin-bottom:5px;
-  }
+:root{
+  --bg:#f5f7fb;--card:#fff;--ink:#182033;--muted:#687086;--line:#e1e5ee;
+  --violet:#6654e8;--violet2:#f0edff;--red:#b42318;--redbg:#fff1ef;
+  --green:#087443;--greenbg:#eaf7ef;--amber:#9a5b00;--amberbg:#fff4dc;
+  --cyan:#0891b2;--soft:#f8fafc;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:Tahoma,Arial,"Segoe UI",sans-serif;color:var(--ink)}
+.app{width:min(900px,calc(100% - 16px));margin:8px auto 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px;box-shadow:0 8px 24px rgba(23,31,50,.05)}
+.card+.card{margin-top:10px}
+.section-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
+h1,h2{margin:0;font-weight:900}h1{font-size:18px}h2{font-size:17px}.hint{font-size:10px;color:var(--muted);margin-top:2px}
+.badge{background:linear-gradient(135deg,var(--violet),#06b6d4);color:#fff;padding:6px 9px;border-radius:999px;font-size:11px;font-weight:900}
+.settings{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px}
+.field{border:1px solid var(--line);border-radius:11px;padding:7px 9px;background:#fbfcff;min-height:50px}
+.field label{display:block;font-size:10px;color:var(--muted);margin-bottom:3px;font-weight:800}
+.field input{width:100%;border:0;outline:0;background:transparent;font:inherit;font-size:15px;font-weight:900;color:var(--ink);text-align:right;padding:0}
+.static{font-size:15px;font-weight:900;line-height:26px}
+.actions{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:7px}
+button{border:1px solid var(--line);background:#f7f8fb;color:#2f3952;font:inherit;font-size:12px;font-weight:900;border-radius:9px;padding:7px 10px;cursor:pointer;min-height:34px}
+button.primary{background:var(--violet);color:#fff;border-color:var(--violet)}
+button.danger{background:var(--redbg);color:var(--red);border-color:#ffd7d2}
+button.copy{background:#eef8ff;color:#0b648f;border-color:#cfeeff;margin-inline-start:auto}
+button:active{transform:translateY(1px)}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse;min-width:620px}
+th,td{padding:7px 6px;text-align:center;border-bottom:1px solid var(--line);font-size:11px;white-space:nowrap}
+th{background:#f8f9fc;color:#656d82;font-size:9.5px;font-weight:900}
+tr:last-child td{border-bottom:0}.week{font-weight:900}
+select{border:1px solid #dfe3eb;border-radius:8px;background:#fff;padding:5px 7px;font:inherit;font-size:11px;font-weight:900;min-width:100px;color:var(--ink)}
+.units{font-weight:900;color:#4235c7}.ml,.remain{font-weight:900}
+.status{display:inline-block;padding:3px 6px;border-radius:999px;font-size:9px;font-weight:900}
+.ok{background:var(--greenbg);color:var(--green)}.warn{background:var(--amberbg);color:var(--amber)}.bad{background:var(--redbg);color:var(--red)}
+.del{border:0;background:transparent;color:#98a0b2;padding:2px 5px;font-size:16px;min-height:auto}.del:hover{color:var(--red)}
+.footer{display:flex;justify-content:flex-start;gap:12px;font-size:10px;color:var(--muted);margin-top:7px;flex-wrap:wrap}.footer b{color:var(--ink)}
+.empty-row{text-align:center;color:#9ca3af;font-weight:800;padding:14px!important}
 
-  .pay-row{
-    display:flex;
-    gap:6px;
-    flex-wrap:wrap;
-    margin-top:5px;
-  }
-  .pay-chip{
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:999px;
-    padding:5px 8px;
-    font-size:11px;
-    font-weight:800;
-    white-space:nowrap;
-  }
-  .pay-chip.last{
-    background:#ecfdf5;
-    border-color:#10b981;
-    color:#047857;
-    box-shadow:0 0 0 2px rgba(16,185,129,.08);
-  }
-  .tabby-value{
-    font-size:15px;
-    font-weight:900;
-  }
-  .grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:9px;
-  }
-  .result{
-    border:1px solid var(--line);
-    background:var(--soft);
-    border-radius:16px;
-    padding:12px;
-    text-align:center;
-  }
-  .dose{
-    display:inline-block;
-    padding:6px 10px;
-    border-radius:999px;
-    background:linear-gradient(135deg,#ede9fe,#cffafe);
-    color:#312e81;
-    font-size:13px;
-    font-weight:900;
-    margin-bottom:6px;
-  }
-  .weeks{
-    color:var(--muted);
-    font-size:13px;
-    margin-bottom:6px;
-    font-weight:700;
-  }
-  .date{
-    font-size:15px;
-    font-weight:900;
-    margin-bottom:6px;
-  }
-  .date.clickable{
-    cursor:pointer;
-    display:inline-block;
-    padding:6px 10px;
-    border-radius:10px;
-    background:#ffffff;
-    border:1px solid #d8b4fe;
-    color:#6d28d9;
-    user-select:none;
-    transition:.15s ease;
-  }
-  .date.clickable:hover{
-    background:#faf5ff;
-    border-color:#a78bfa;
-  }
-  .date.clickable:active{
-    transform:scale(.98);
-  }
-  .month{
-    font-size:13px;
-    color:#374151;
-    line-height:1.55;
-    font-weight:700;
-  }
-  .status{
-    margin-top:7px;
-    border-radius:12px;
-    padding:7px 8px;
-    font-size:11px;
-    font-weight:900;
-  }
-  .status.good{background:var(--good-bg);color:var(--good)}
-  .status.warn{background:var(--warn-bg);color:var(--warn)}
-  .empty{
-    color:#9ca3af;
-    text-align:center;
-    padding:24px 10px 6px;
-    font-weight:700;
-  }
-  @media(max-width:720px){
-    .input-grid{grid-template-columns:1fr}
-    .grid{grid-template-columns:1fr}
-    .tabby{grid-template-columns:1fr}
-    button{width:100%}
-    h1{font-size:24px}
-  }
+/* Tabby */
+.tabby-input{background:var(--soft);border:1px solid var(--line);border-radius:13px;padding:9px}
+.tabby-grid-input{display:grid;grid-template-columns:1.5fr .65fr auto;gap:7px;align-items:end}
+.tabby-grid-input label{display:block;font-weight:900;margin-bottom:4px;font-size:10px;color:var(--muted)}
+.tabby-grid-input input{width:100%;padding:8px 9px;border:1px solid #d1d5db;border-radius:9px;font-size:12px;background:#fff;outline:none;font-weight:800}
+.tabby-grid-input input:focus{border-color:var(--violet);box-shadow:0 0 0 3px rgba(102,84,232,.08)}
+.tabby-add{background:linear-gradient(135deg,var(--violet),#06b6d4);color:#fff;border:0;min-height:35px;padding:7px 12px}
+.mini{margin-top:7px;display:flex;flex-wrap:wrap;gap:5px}.chip{background:#eef2ff;color:#4338ca;border-radius:999px;padding:4px 7px;font-size:9px;font-weight:900}
+#tabbyHistory{margin-top:9px;display:flex;flex-direction:column;gap:8px}
+.entry{background:#fff;border:1px solid var(--line);border-radius:13px;padding:9px}
+.entry-head{display:flex;align-items:center;justify-content:space-between;gap:7px;margin-bottom:7px;flex-wrap:wrap}.entry-title{font-size:14px;font-weight:900}.entry-sub{font-size:10px;color:var(--muted);margin-top:2px;font-weight:800}.picked-note{display:inline-block;margin-top:4px;padding:3px 6px;border-radius:999px;background:#ecfeff;color:#0f766e;font-size:9px;font-weight:900}
+.delete-entry{background:var(--redbg);color:var(--red);border-color:#ffd7d2;padding:6px 8px;min-height:auto;font-size:10px}
+.same-day-alert{margin:0 0 7px;border:1px solid #f59e0b;background:#fffbeb;color:#92400e;border-radius:9px;padding:7px 8px;font-size:9px;font-weight:900;line-height:1.6}
+.tabby-box{border:1px solid var(--line);border-radius:10px;padding:7px 8px;background:#fafafa;margin-bottom:7px}.tabby-title{font-size:9px;color:var(--muted);font-weight:900;margin-bottom:4px}.pay-row{display:flex;gap:4px;flex-wrap:wrap}.pay-chip{background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 6px;font-size:9px;font-weight:900;white-space:nowrap}.pay-chip.last{background:#ecfdf5;border-color:#10b981;color:#047857}
+.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.result{border:1px solid var(--line);background:var(--soft);border-radius:11px;padding:8px;text-align:center}.dose{display:inline-block;padding:4px 6px;border-radius:999px;background:linear-gradient(135deg,#ede9fe,#cffafe);color:#312e81;font-size:9px;font-weight:900;margin-bottom:4px}.weeks{color:var(--muted);font-size:9px;margin-bottom:4px;font-weight:800}.date{font-size:11px;font-weight:900;margin-bottom:4px}.date.clickable{cursor:pointer;display:inline-block;padding:4px 6px;border-radius:8px;background:#fff;border:1px solid #d8b4fe;color:#6d28d9;user-select:none}.salary-mini-alert{display:inline-block;margin-top:3px;padding:2px 5px;border:1px solid #fecaca;background:#fef2f2;color:#991b1b;border-radius:999px;font-size:8px;font-weight:900;line-height:1.2;white-space:nowrap}.tabby-status{margin-top:4px;border-radius:8px;padding:5px 6px;font-size:8px;font-weight:900}.tabby-status.good{background:var(--greenbg);color:var(--green)}.tabby-status.warn{background:var(--amberbg);color:var(--amber)}
+.tabby-empty{color:#9ca3af;text-align:center;padding:13px 8px 3px;font-weight:800;font-size:10px}
+.toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,10px);background:#182033;color:#fff;padding:8px 12px;border-radius:10px;font-size:12px;opacity:0;pointer-events:none;transition:.2s;z-index:10}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:680px){
+ .app{width:calc(100% - 8px);margin:4px auto}.card{padding:8px;border-radius:14px}.settings{gap:5px}.field{padding:6px 7px;min-height:46px}.static,.field input{font-size:13px}.actions{gap:4px}.actions button{padding:6px 7px;font-size:10px}.copy{margin-inline-start:0}th,td{padding:6px 5px;font-size:10px}.footer{font-size:9px;gap:7px}
+ .tabby-grid-input{grid-template-columns:1fr 82px}.tabby-add{grid-column:1/-1;width:100%}.result-grid{grid-template-columns:1fr}.section-top{margin-bottom:7px}
+}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="card">
-    <div class="top">
-      <h1>مونجارو</h1>
+<main class="app">
+  <section class="card" id="tabbySection">
+    <div class="section-top"><div><h1>جدول الشراء · تابي</h1><div class="hint">اختر تاريخ الشراء وعدد الأقلام</div></div><div class="badge">4 دفعات</div></div>
+    <div class="tabby-input">
+      <div class="tabby-grid-input">
+        <div><label for="purchaseDate">تاريخ الشراء</label><input id="purchaseDate" type="date"></div>
+        <div><label for="penCount">عدد الأقلام</label><input id="penCount" type="number" min="1" max="20" step="1" value="3"></div>
+        <button class="tabby-add" id="addDateBtn" type="button">إضافة النتيجة</button>
+      </div>
+      <div class="mini"><div class="chip">50 = 12.5 mg</div><div class="chip">45 = 11.25 mg</div><div class="chip">40 = 10 mg</div><div class="chip">الراتب: 22</div></div>
+    </div>
+    <div id="tabbyHistory"><div class="tabby-empty" id="emptyState">اختر تاريخًا</div></div>
+  </section>
+
+  <section class="card" id="weeksSection">
+    <div class="section-top">
+      <div><h2>حساب السائل المتبقي</h2><div class="hint">ابدأ بدون أسابيع، ثم أضف الجرعات عند الحاجة</div></div>
       <div class="badge">15 mg</div>
     </div>
 
-    <div class="input-card">
-      <div class="input-grid">
-        <div>
-          <label for="purchaseDate">تاريخ الشراء</label>
-          <input id="purchaseDate" type="date">
-        </div>
-        <div>
-          <label for="penCount">عدد الأقلام</label>
-          <input id="penCount" type="number" min="1" max="20" step="1" value="3">
-        </div>
-      </div>
-
-      <div class="add-row">
-        <button id="addDateBtn" type="button">إضافة النتيجة</button>
-      </div>
-
-      <div class="mini">
-        <div class="chip">50 = 12.5 mg</div>
-        <div class="chip">45 = 11.25 mg</div>
-        <div class="chip">40 = 10 mg</div>
-        <div class="chip">تابي: 4 دفعات</div>
-        <div class="chip">الراتب: يوم 22 من كل شهر</div>
-      </div>
+    <div class="settings">
+      <div class="field"><label>كمية القلم عند البداية (ml)</label><input id="startVolume" type="number" inputmode="decimal" min="0.01" step="0.01" value="2.70"></div>
+      <div class="field"><label>تركيز القلم الأساسي</label><div class="static">15 mg / 0.60 ml</div></div>
     </div>
 
-    <div id="history">
-      <div class="empty" id="emptyState">اختر تاريخًا</div>
+    <div class="actions">
+      <button class="primary" id="addWeek">+ إضافة أسبوع</button>
+      <button id="removeLast">حذف آخر أسبوع</button>
+      <button class="danger" id="resetWeeks">إعادة ضبط</button>
+      <button class="copy" id="copyPlan">نسخ الخطة</button>
     </div>
-  </div>
-</div>
 
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>الأسبوع</th><th>الجرعة</th><th>اليونيت</th><th>المستخدم</th><th>المتبقي</th><th>الحالة</th><th></th></tr></thead>
+        <tbody id="weeksBody"></tbody>
+      </table>
+    </div>
+    <div class="footer"><span>البداية: <b id="startSummary">2.70 ml</b></span><span>المستخدم: <b id="usedSummary">0.00 ml</b></span><span>المتبقي: <b id="remainSummary">2.70 ml</b></span></div>
+  </section>
+</main>
+<div class="toast" id="toast">تم النسخ</div>
 <script>
-const arabicMonths = [
-  "يناير","فبراير","مارس","أبريل","مايو","يونيو",
-  "يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"
-];
-
-const configs = [
-  {units:50, mg:12.5},
-  {units:45, mg:11.25},
-  {units:40, mg:10}
-];
-
-// تاريخ الراتب الثابت في هذه الصفحة: يوم 22 من كل شهر.
-const SALARY_DAY = 22;
-
-function parseLocalDate(value){
-  const [y,m,d] = value.split("-").map(Number);
-  return new Date(y, m-1, d, 12, 0, 0);
-}
-
-function addDays(date, days){
-  const out = new Date(date);
-  out.setDate(out.getDate() + days);
-  return out;
-}
-
-function addMonthsSafe(date, months){
-  const out = new Date(date);
-  const originalDay = out.getDate();
-  out.setDate(1);
-  out.setMonth(out.getMonth() + months);
-  const lastDay = new Date(out.getFullYear(), out.getMonth()+1, 0).getDate();
-  out.setDate(Math.min(originalDay, lastDay));
-  return out;
-}
-
-function fmt(date){
-  return `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
-}
-
-function inputDateValue(date){
-  const y = date.getFullYear();
-  const m = String(date.getMonth()+1).padStart(2,"0");
-  const d = String(date.getDate()).padStart(2,"0");
-  return `${y}-${m}-${d}`;
-}
-
-function monthName(date){
-  return `${arabicMonths[date.getMonth()]} ${date.getFullYear()}`;
-}
-
-function daysBetween(a,b){
-  return Math.round((b-a)/(1000*60*60*24));
-}
-
-function sameYearMonth(a,b){
-  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth();
-}
-
-function salaryOn22(year, monthIndex){
-  return new Date(year, monthIndex, SALARY_DAY, 12, 0, 0);
-}
-
-function previousMonthSalary(date){
-  return salaryOn22(date.getFullYear(), date.getMonth() - 1);
-}
-
-function nextMonthSalaryAfter(date){
-  return salaryOn22(date.getFullYear(), date.getMonth() + 1);
-}
-
-function buildEntry(value, pens, pickedLabel = '', sameDayMatches = []){
-  const start = parseLocalDate(value);
-  const totalUnits = pens * 270; // 2.7 ml = 270 units per pen
-
-  // Tabby: 4 payments, first payment on purchase day, final payment 3 months later.
-  const finalInstallment = addMonthsSafe(start, 3);
-
-  const entry = document.createElement("div");
-  entry.className = "entry";
-  entry.dataset.purchaseDate = inputDateValue(start);
-  entry.dataset.finalInstallment = inputDateValue(finalInstallment);
-
-  const head = document.createElement("div");
-  head.className = "entry-head";
-
-  const headText = document.createElement("div");
-  headText.innerHTML = `
-    <div class="entry-title">${fmt(start)}</div>
-    <div class="entry-sub">${pens} قلم · ${totalUnits} يونيت</div>
-    ${pickedLabel ? `<div class="picked-note">مختار من نتيجة ${pickedLabel}</div>` : ``}
-  `;
-
-  const del = document.createElement("button");
-  del.className = "delete";
-  del.textContent = "حذف";
-  del.addEventListener("click", () => {
-    entry.remove();
-    updateEmpty();
+/* ===== خطة الأسابيع ===== */
+const doses=[15,13.75,12.5,11.25,10,8.75,7.5,6.25,5,3.75,2.5,1.25];
+const mgPerUnit=.25, mlPerUnit=.01;
+let weeks=[]; // الافتراضي: بدون أي أسبوع
+const $=s=>document.querySelector(s);
+const weeksBody=$('#weeksBody');
+const n=(v,d=2)=>Number(v).toFixed(d);
+const unitsForDose=d=>Math.round(d/mgPerUnit);
+const fd=d=>String(d);
+function renderWeeks(){
+  let startMl=parseFloat($('#startVolume').value); if(!Number.isFinite(startMl)||startMl<=0) startMl=2.7;
+  const startUnits=Math.round(startMl/mlPerUnit); let used=0,html='';
+  if(!weeks.length){ html='<tr><td colspan="7" class="empty-row">لا توجد أسابيع — اضغط + إضافة أسبوع</td></tr>'; }
+  weeks.forEach((w,i)=>{
+    const u=unitsForDose(w.dose); used+=u; const remU=startUnits-used, remMl=remU*mlPerUnit;
+    let cls='ok',txt='متوفر'; if(remU<0){cls='bad';txt='غير كافٍ'} else if(remU<u){cls='warn';txt='قريب من النفاد'}
+    html+=`<tr><td class="week">${i+1}</td><td><select class="dose-select" data-index="${i}">${doses.map(d=>`<option value="${d}" ${d===w.dose?'selected':''}>${fd(d)} mg</option>`).join('')}</select></td><td class="units">${u} U</td><td class="ml">${n(u*mlPerUnit)} ml</td><td class="remain">${remU>=0?n(remMl)+' ml':'-'+n(Math.abs(remMl))+' ml'}</td><td><span class="status ${cls}">${txt}</span></td><td><button class="del" data-del="${i}" title="حذف">×</button></td></tr>`;
   });
+  weeksBody.innerHTML=html;
+  const usedMl=used*mlPerUnit, remainMl=startMl-usedMl;
+  $('#startSummary').textContent=n(startMl)+' ml'; $('#usedSummary').textContent=n(usedMl)+' ml'; $('#remainSummary').textContent=n(Math.max(0,remainMl))+' ml';
+  document.querySelectorAll('.dose-select').forEach(el=>el.onchange=e=>{weeks[+e.target.dataset.index].dose=+e.target.value;renderWeeks()});
+  document.querySelectorAll('[data-del]').forEach(el=>el.onclick=e=>{weeks.splice(+e.currentTarget.dataset.del,1);renderWeeks()});
+}
+$('#addWeek').onclick=()=>{weeks.push({dose:10});renderWeeks()};
+$('#removeLast').onclick=()=>{if(weeks.length)weeks.pop();renderWeeks()};
+$('#resetWeeks').onclick=()=>{$('#startVolume').value='2.70';weeks=[];renderWeeks()};
+$('#startVolume').oninput=renderWeeks;
+$('#copyPlan').onclick=async()=>{const startMl=parseFloat($('#startVolume').value)||2.7;let used=0;const lines=[`كمية البداية: ${n(startMl)} ml`];weeks.forEach((w,i)=>{const u=unitsForDose(w.dose);used+=u;lines.push(`الأسبوع ${i+1}: ${fd(w.dose)} mg = ${u} U = ${n(u*mlPerUnit)} ml | المتبقي ${n(startMl-used*mlPerUnit)} ml`)});try{await navigator.clipboard.writeText(lines.join('\n'));showToast('تم نسخ الخطة')}catch{showToast('تعذر النسخ')}};
+function showToast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1400)}
+renderWeeks();
 
-  head.appendChild(headText);
-  head.appendChild(del);
-
-  const paymentDates = [
-    start,
-    addMonthsSafe(start, 1),
-    addMonthsSafe(start, 2),
-    addMonthsSafe(start, 3)
-  ];
-
-  // جميع أشهر دفعات تابي النشطة: دفعات هذا الشراء + دفعات المشتريات السابقة الظاهرة.
-  // نستخدمها لتنبيه المستخدم إذا كان شراء القلم التالي سيقع في شهر توجد فيه دفعة تابي.
-  const activeTabbyPaymentDates = [...paymentDates];
-  const allTabbyFinalDates = [finalInstallment];
-  document.querySelectorAll("#history .entry").forEach(existingEntry => {
-    const purchase = existingEntry.dataset.purchaseDate;
-    if(purchase){
-      const purchaseDate = parseLocalDate(purchase);
-      for(let i = 0; i < 4; i++){
-        activeTabbyPaymentDates.push(addMonthsSafe(purchaseDate, i));
-      }
-    }
-
-    const existingFinal = existingEntry.dataset.finalInstallment;
-    if(existingFinal){
-      allTabbyFinalDates.push(parseLocalDate(existingFinal));
-    }
-  });
-
-  const sameDayAlert = document.createElement("div");
-  sameDayAlert.className = "same-day-alert";
-  if(sameDayMatches.length){
-    const origins = sameDayMatches.map(d => fmt(parseLocalDate(d))).join("، ");
-    sameDayAlert.innerHTML = `⚠️ تنبيه: تاريخ شراء هذا القلم <strong>${fmt(start)}</strong> يوافق تاريخ دفعة تابي الأخيرة لشراء سابق بتاريخ ${origins}.`;
-  } else {
-    sameDayAlert.style.display = "none";
-  }
-
-  const tabby = document.createElement("div");
-  tabby.className = "tabby";
-  tabby.innerHTML = `
-    <div class="tabby-box">
-      <div class="tabby-title">تابي · 4 دفعات</div>
-      <div class="pay-row">
-        <span class="pay-chip">${fmt(paymentDates[0])}</span>
-        <span class="pay-chip">${fmt(paymentDates[1])}</span>
-        <span class="pay-chip">${fmt(paymentDates[2])}</span>
-        <span class="pay-chip last">الأخيرة ${fmt(paymentDates[3])}</span>
-      </div>
-    </div>
-  `;
-
-  const grid = document.createElement("div");
-  grid.className = "grid";
-
-  configs.forEach(c => {
-    // نحسب فقط الجرعات الأسبوعية الكاملة التي يمكن سحبها من الأقلام.
-    // تاريخ النتيجة هو موعد الجرعة التالية التي لن تكفي لها الكمية المتبقية.
-    const exactDoses = totalUnits / c.units;
-    const fullDoses = Math.floor(exactDoses);
-    const remainingUnits = totalUnits - (fullDoses * c.units);
-    const end = addDays(start, fullDoses * 7);
-    const diff = daysBetween(finalInstallment, end);
-
-    let statusText, statusClass;
-    if(diff >= 0){
-      statusText = `تابي ينتهي قبل الأقلام بـ ${diff} يوم`;
-      statusClass = "good";
-    } else {
-      statusText = `الأقلام تنتهي قبل تابي بـ ${Math.abs(diff)} يوم`;
-      statusClass = "warn";
-    }
-
-    // قاعدة الراتب:
-    // إذا كان موعد الحاجة للقلم يوم 17 أو قبله، يكون الشراء المقترح من راتب 22 للشهر السابق.
-    // إذا أغلقت كل دفعات تابي، ووصل/طاف راتب 22 للشهر التالي بعد آخر دفعة، لا نظهر أي تنبيه شراء.
-    const latestTabbyFinal = allTabbyFinalDates.reduce((latest, d) => d > latest ? d : latest, allTabbyFinalDates[0]);
-    const salaryAfterLastTabby = nextMonthSalaryAfter(latestTabbyFinal);
-    const allTabbyClosed = allTabbyFinalDates.every(d => end > d);
-    const tabbyFullyClearedAndNextSalaryPassed = allTabbyClosed && end >= salaryAfterLastTabby;
-
-    let suggestedPurchaseDate = null;
-    let salaryMiniAlert = ``;
-
-    if(!tabbyFullyClearedAndNextSalaryPassed && end.getDate() <= 17){
-      suggestedPurchaseDate = previousMonthSalary(end);
-      salaryMiniAlert = `<div class="salary-mini-alert">⚠️ اشترِ ${fmt(suggestedPurchaseDate)}</div>`;
-    }
-
-    // تنبيه تابي يُحسب على شهر الشراء المقترح إن وُجد، وإلا على شهر موعد القلم نفسه.
-    const monthToCheck = suggestedPurchaseDate || end;
-    const hasTabbyPaymentSameMonth = !tabbyFullyClearedAndNextSalaryPassed &&
-      activeTabbyPaymentDates.some(d => sameYearMonth(d, monthToCheck));
-    const tabbyMonthMiniAlert = hasTabbyPaymentSameMonth
-      ? `<div class="salary-mini-alert">⚠️ شهر فيه دفعة تابي</div>`
-      : ``;
-
-    const box = document.createElement("div");
-    box.className = "result";
-    box.innerHTML = `
-      <div class="dose">${c.units} يونيت = ${c.mg} mg</div>
-      <div class="weeks">${fullDoses} جرعة كاملة${remainingUnits > 0 ? ` · متبقي ${remainingUnits} يونيت` : ``}</div>
-      <div class="date clickable" title="موعد الجرعة التالية التي تحتاج قلمًا جديدًا — اضغط لإضافة النتائج الجديدة تلقائيًا">${fmt(end)}</div>
-      ${salaryMiniAlert}
-      ${tabbyMonthMiniAlert}
-      <div class="status ${statusClass}">${statusText}</div>
-    `;
-
-    const resultDate = box.querySelector(".date.clickable");
-    resultDate.addEventListener("click", () => {
-      const dateInput = document.getElementById("purchaseDate");
-      const penInput = document.getElementById("penCount");
-      const nextPens = Math.max(1, parseInt(penInput.value || String(pens), 10));
-      const selectedDate = inputDateValue(end);
-      const history = document.getElementById("history");
-
-      // نبقي التاريخ ظاهرًا في الخانة، لكن الضغط على النتيجة يضيف النتائج الجديدة فورًا.
-      dateInput.value = selectedDate;
-
-      const sameDayMatches = Array.from(history.querySelectorAll(".entry"))
-        .filter(e => e.dataset.finalInstallment === selectedDate)
-        .map(e => e.dataset.purchaseDate)
-        .filter(Boolean);
-
-      const nextEntry = buildEntry(
-        selectedDate,
-        nextPens,
-        `${c.units} يونيت = ${c.mg} mg`,
-        sameDayMatches
-      );
-
-      const firstEntry = history.querySelector(".entry");
-      if(firstEntry){
-        history.insertBefore(nextEntry, firstEntry);
-      } else {
-        history.appendChild(nextEntry);
-      }
-
-      updateEmpty();
-      nextEntry.scrollIntoView({behavior:"smooth", block:"start"});
-    });
-
+/* ===== تابي القديم ===== */
+const arabicMonths=["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+const configs=[{units:50,mg:12.5},{units:45,mg:11.25},{units:40,mg:10}];
+const SALARY_DAY=22;
+function parseLocalDate(value){const [y,m,d]=value.split('-').map(Number);return new Date(y,m-1,d,12,0,0)}
+function addDays(date,days){const out=new Date(date);out.setDate(out.getDate()+days);return out}
+function addMonthsSafe(date,months){const out=new Date(date);const originalDay=out.getDate();out.setDate(1);out.setMonth(out.getMonth()+months);const lastDay=new Date(out.getFullYear(),out.getMonth()+1,0).getDate();out.setDate(Math.min(originalDay,lastDay));return out}
+function fmt(date){return `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`}
+function inputDateValue(date){const y=date.getFullYear(),m=String(date.getMonth()+1).padStart(2,'0'),d=String(date.getDate()).padStart(2,'0');return `${y}-${m}-${d}`}
+function daysBetween(a,b){return Math.round((b-a)/(1000*60*60*24))}
+function sameYearMonth(a,b){return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()}
+function salaryOn22(year,monthIndex){return new Date(year,monthIndex,SALARY_DAY,12,0,0)}
+function previousMonthSalary(date){return salaryOn22(date.getFullYear(),date.getMonth()-1)}
+function nextMonthSalaryAfter(date){return salaryOn22(date.getFullYear(),date.getMonth()+1)}
+function buildEntry(value,pens,pickedLabel='',sameDayMatches=[]){
+  const start=parseLocalDate(value), totalUnits=pens*270, finalInstallment=addMonthsSafe(start,3);
+  const entry=document.createElement('div');entry.className='entry';entry.dataset.purchaseDate=inputDateValue(start);entry.dataset.finalInstallment=inputDateValue(finalInstallment);
+  const head=document.createElement('div');head.className='entry-head';const headText=document.createElement('div');headText.innerHTML=`<div class="entry-title">${fmt(start)}</div><div class="entry-sub">${pens} قلم · ${totalUnits} يونيت</div>${pickedLabel?`<div class="picked-note">مختار من نتيجة ${pickedLabel}</div>`:''}`;
+  const del=document.createElement('button');del.className='delete-entry';del.textContent='حذف';del.onclick=()=>{entry.remove();updateEmpty()};head.append(headText,del);
+  const paymentDates=[start,addMonthsSafe(start,1),addMonthsSafe(start,2),addMonthsSafe(start,3)];
+  const activeTabbyPaymentDates=[...paymentDates],allTabbyFinalDates=[finalInstallment];
+  document.querySelectorAll('#tabbyHistory .entry').forEach(existingEntry=>{const purchase=existingEntry.dataset.purchaseDate;if(purchase){const purchaseDate=parseLocalDate(purchase);for(let i=0;i<4;i++)activeTabbyPaymentDates.push(addMonthsSafe(purchaseDate,i))}const existingFinal=existingEntry.dataset.finalInstallment;if(existingFinal)allTabbyFinalDates.push(parseLocalDate(existingFinal))});
+  const sameDayAlert=document.createElement('div');sameDayAlert.className='same-day-alert';if(sameDayMatches.length){const origins=sameDayMatches.map(d=>fmt(parseLocalDate(d))).join('، ');sameDayAlert.innerHTML=`⚠️ تاريخ الشراء <strong>${fmt(start)}</strong> يوافق دفعة تابي الأخيرة لشراء سابق بتاريخ ${origins}.`}else sameDayAlert.style.display='none';
+  const tabby=document.createElement('div');tabby.className='tabby-box';tabby.innerHTML=`<div class="tabby-title">تابي · 4 دفعات</div><div class="pay-row"><span class="pay-chip">${fmt(paymentDates[0])}</span><span class="pay-chip">${fmt(paymentDates[1])}</span><span class="pay-chip">${fmt(paymentDates[2])}</span><span class="pay-chip last">الأخيرة ${fmt(paymentDates[3])}</span></div>`;
+  const grid=document.createElement('div');grid.className='result-grid';
+  configs.forEach(c=>{
+    const exactDoses=totalUnits/c.units,fullDoses=Math.floor(exactDoses),remainingUnits=totalUnits-(fullDoses*c.units),end=addDays(start,fullDoses*7),diff=daysBetween(finalInstallment,end);
+    let statusText,statusClass;if(diff>=0){statusText=`تابي ينتهي قبل الأقلام بـ ${diff} يوم`;statusClass='good'}else{statusText=`الأقلام تنتهي قبل تابي بـ ${Math.abs(diff)} يوم`;statusClass='warn'}
+    const latestTabbyFinal=allTabbyFinalDates.reduce((latest,d)=>d>latest?d:latest,allTabbyFinalDates[0]);const salaryAfterLastTabby=nextMonthSalaryAfter(latestTabbyFinal);const allTabbyClosed=allTabbyFinalDates.every(d=>end>d);const cleared=allTabbyClosed&&end>=salaryAfterLastTabby;
+    let suggestedPurchaseDate=null,salaryMiniAlert='';if(!cleared&&end.getDate()<=17){suggestedPurchaseDate=previousMonthSalary(end);salaryMiniAlert=`<div class="salary-mini-alert">⚠️ اشترِ ${fmt(suggestedPurchaseDate)}</div>`}
+    const monthToCheck=suggestedPurchaseDate||end;const hasTabbyPaymentSameMonth=!cleared&&activeTabbyPaymentDates.some(d=>sameYearMonth(d,monthToCheck));const tabbyMonthMiniAlert=hasTabbyPaymentSameMonth?`<div class="salary-mini-alert">⚠️ شهر فيه دفعة تابي</div>`:'';
+    const box=document.createElement('div');box.className='result';box.innerHTML=`<div class="dose">${c.units} يونيت = ${c.mg} mg</div><div class="weeks">${fullDoses} جرعة كاملة${remainingUnits>0?` · متبقي ${remainingUnits} يونيت`:''}</div><div class="date clickable" title="اضغط لإضافة النتيجة التالية">${fmt(end)}</div>${salaryMiniAlert}${tabbyMonthMiniAlert}<div class="tabby-status ${statusClass}">${statusText}</div>`;
+    box.querySelector('.date.clickable').onclick=()=>{const dateInput=$('#purchaseDate'),penInput=$('#penCount'),nextPens=Math.max(1,parseInt(penInput.value||String(pens),10)),selectedDate=inputDateValue(end),history=$('#tabbyHistory');dateInput.value=selectedDate;const sameDayMatches=Array.from(history.querySelectorAll('.entry')).filter(e=>e.dataset.finalInstallment===selectedDate).map(e=>e.dataset.purchaseDate).filter(Boolean);const nextEntry=buildEntry(selectedDate,nextPens,`${c.units} يونيت = ${c.mg} mg`,sameDayMatches);const firstEntry=history.querySelector('.entry');firstEntry?history.insertBefore(nextEntry,firstEntry):history.appendChild(nextEntry);updateEmpty();nextEntry.scrollIntoView({behavior:'smooth',block:'start'})};
     grid.appendChild(box);
   });
-
-  entry.appendChild(head);
-  entry.appendChild(sameDayAlert);
-  entry.appendChild(tabby);
-  entry.appendChild(grid);
-  return entry;
+  entry.append(head,sameDayAlert,tabby,grid);return entry;
 }
-
-function updateEmpty(){
-  const history = document.getElementById("history");
-  const hasEntry = history.querySelector(".entry");
-  let empty = document.getElementById("emptyState");
-
-  if(hasEntry && empty){
-    empty.remove();
-  } else if(!hasEntry && !empty){
-    empty = document.createElement("div");
-    empty.id = "emptyState";
-    empty.className = "empty";
-    empty.textContent = "اختر تاريخًا";
-    history.appendChild(empty);
-  }
-}
-
-function addSelectedDate(){
-  const dateInput = document.getElementById("purchaseDate");
-  const penInput = document.getElementById("penCount");
-  const pens = Math.max(1, parseInt(penInput.value || "3", 10));
-
-  if(!dateInput.value) return;
-
-  const history = document.getElementById("history");
-  const selectedDate = dateInput.value;
-  const pickedLabel = dateInput.dataset.pickedLabel || "";
-
-  // تنبيه إذا وافق تاريخ الشراء تاريخ الدفعة الرابعة/الأخيرة لتابي لشراء سابق.
-  const sameDayMatches = Array.from(history.querySelectorAll(".entry"))
-    .filter(e => e.dataset.finalInstallment === selectedDate)
-    .map(e => e.dataset.purchaseDate)
-    .filter(Boolean);
-
-  const entry = buildEntry(selectedDate, pens, pickedLabel, sameDayMatches);
-  const firstEntry = history.querySelector(".entry");
-
-  if(firstEntry){
-    history.insertBefore(entry, firstEntry);
-  } else {
-    history.appendChild(entry);
-  }
-
-  updateEmpty();
-  // إبقاء تاريخ الشراء ظاهرًا وثابتًا بعد إضافة النتيجة، خصوصًا على iPhone.
-  // نمسح فقط وصف الاختيار الداخلي حتى لا ينتقل إلى نتيجة لاحقة بالخطأ.
-  delete dateInput.dataset.pickedLabel;
-}
-
-// الإدخال اليدوي يبقى عبر الزر، والضغط على أي تاريخ نتيجة يضيف النتائج التالية تلقائيًا.
-document.getElementById("addDateBtn").addEventListener("click", addSelectedDate);
-document.getElementById("purchaseDate").addEventListener("change", () => {
-  delete document.getElementById("purchaseDate").dataset.pickedLabel;
-});
+function updateEmpty(){const history=$('#tabbyHistory'),hasEntry=history.querySelector('.entry');let empty=$('#emptyState');if(hasEntry&&empty)empty.remove();else if(!hasEntry&&!empty){empty=document.createElement('div');empty.id='emptyState';empty.className='tabby-empty';empty.textContent='اختر تاريخًا';history.appendChild(empty)}}
+function addSelectedDate(){const dateInput=$('#purchaseDate'),penInput=$('#penCount'),pens=Math.max(1,parseInt(penInput.value||'3',10));if(!dateInput.value)return;const history=$('#tabbyHistory'),selectedDate=dateInput.value,pickedLabel=dateInput.dataset.pickedLabel||'';const sameDayMatches=Array.from(history.querySelectorAll('.entry')).filter(e=>e.dataset.finalInstallment===selectedDate).map(e=>e.dataset.purchaseDate).filter(Boolean);const entry=buildEntry(selectedDate,pens,pickedLabel,sameDayMatches),firstEntry=history.querySelector('.entry');firstEntry?history.insertBefore(entry,firstEntry):history.appendChild(entry);updateEmpty();delete dateInput.dataset.pickedLabel}
+$('#addDateBtn').addEventListener('click',addSelectedDate);$('#purchaseDate').addEventListener('change',()=>{delete $('#purchaseDate').dataset.pickedLabel});
 </script>
 </body>
 </html>
