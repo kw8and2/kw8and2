@@ -2,8 +2,13 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=ai-legible&utm_source=comment&utm_medium=referral&utm_id=e94eccd1-7f39-45f7-9c10-3a632cfad6b6
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+<meta name="hosting-provider" content="Netlify">
+<meta name="netlify-deploy" content="https://netlify.new/?utm_campaign=ai-legible&amp;utm_source=meta&amp;utm_medium=referral&amp;utm_id=e94eccd1-7f39-45f7-9c10-3a632cfad6b6">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>مونجارو | شراء الأقلام</title>
+<title>Mounjaro</title>
 <style>
   :root{
     --bg:#ffffff;
@@ -51,6 +56,11 @@
     flex-wrap:wrap;
   }
   h1{margin:0;font-size:24px}
+  .brand-links{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+  .brand-title-link{color:var(--text);text-decoration:none;font-weight:900}
+  .brand-title-link:hover{text-decoration:underline}
+  .dose-table-link{font-size:11px;font-weight:800;color:var(--muted);text-decoration:none}
+  .dose-table-link:hover{color:var(--primary);text-decoration:underline}
   .badge{
     background:linear-gradient(135deg,var(--primary),var(--primary2));
     color:#fff;
@@ -360,6 +370,46 @@
     flex-wrap:wrap;
     justify-content:flex-end;
   }
+  .top-options{
+    width:100%;
+    justify-content:flex-start;
+    margin:0 2px 8px;
+  }
+  .dose-options{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    flex-wrap:wrap;
+    margin:0 2px 10px;
+  }
+  .dose-options-title{
+    font-size:12px;
+    font-weight:900;
+    color:#374151;
+    margin-inline-end:2px;
+  }
+  .dose-check{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    padding:5px 8px;
+    border:1px solid #dbeafe;
+    background:#f8fafc;
+    border-radius:999px;
+    font-size:11px;
+    font-weight:900;
+    color:#312e81;
+    cursor:pointer;
+    user-select:none;
+    white-space:nowrap;
+  }
+  .dose-check input{
+    width:16px;
+    height:16px;
+    margin:0;
+    cursor:pointer;
+    accent-color:#7c3aed;
+  }
   .auto-toggle input{accent-color:#7c3aed}
   .clear-all-btn{
     border:1px solid #fecaca;
@@ -544,11 +594,34 @@
 <div class="wrap">
   <div class="card">
     <div class="top">
-      <h1>مونجارو</h1>
+      <div class="brand-links">
+        <h1><a class="brand-title-link" href="https://gulf.lilly.com/mealabels/ar/mounjaro-kwikpen" target="_blank" rel="noopener noreferrer">Mounjaro</a></h1>
+        <a class="dose-table-link" href="https://www.mediafire.com/convkey/9208/innr7372gxagg5c9g.jpg" target="_blank" rel="noopener noreferrer">جدول الجرعات</a>
+      </div>
       <div class="head-actions">
         <div class="badge">15 mg</div>
         <button class="clear-all-btn" id="clearDateBtn" type="button">مسح الكل</button>
       </div>
+    </div>
+
+    <div class="option-toggles top-options">
+      <label class="tabby-toggle" for="tabbyToggle">
+        <input id="tabbyToggle" type="checkbox" checked>
+        <span>تابي</span>
+      </label>
+      <label class="tabby-toggle auto-toggle" for="autoResultToggle">
+        <input id="autoResultToggle" type="checkbox" checked>
+        <span>تفعيل النتيجة تلقائي</span>
+      </label>
+    </div>
+
+    <div class="dose-options" id="doseOptions">
+      <span class="dose-options-title">الجرعات المعروضة:</span>
+      <label class="dose-check"><input class="dose-toggle" type="checkbox" value="50" checked><span>12.5 mg</span></label>
+      <label class="dose-check"><input class="dose-toggle" type="checkbox" value="45" checked><span>11.25 mg</span></label>
+      <label class="dose-check"><input class="dose-toggle" type="checkbox" value="40" checked><span>10 mg</span></label>
+      <label class="dose-check"><input class="dose-toggle" type="checkbox" value="35"><span>8.75 mg</span></label>
+      <label class="dose-check"><input class="dose-toggle" type="checkbox" value="30"><span>7.5 mg</span></label>
     </div>
 
     <div class="input-card">
@@ -558,19 +631,7 @@
           <input id="purchaseDate" type="date">
         </div>
         <div>
-          <div class="field-head">
-            <label for="penCount">عدد الأقلام</label>
-            <div class="option-toggles">
-              <label class="tabby-toggle" for="tabbyToggle">
-                <input id="tabbyToggle" type="checkbox" checked>
-                <span>تابي</span>
-              </label>
-              <label class="tabby-toggle auto-toggle" for="autoResultToggle">
-                <input id="autoResultToggle" type="checkbox" checked>
-                <span>تفعيل النتيجة تلقائي</span>
-              </label>
-            </div>
-          </div>
+          <label for="penCount">عدد الأقلام</label>
           <input id="penCount" type="number" min="1" max="20" step="1" value="3">
         </div>
       </div>
@@ -583,6 +644,8 @@
         <div class="chip">50 = 12.5 mg</div>
         <div class="chip">45 = 11.25 mg</div>
         <div class="chip">40 = 10 mg</div>
+        <div class="chip">35 = 8.75 mg</div>
+        <div class="chip">30 = 7.5 mg</div>
         <div class="chip tabby-only">تابي: 4 دفعات</div>
         <div class="chip">الراتب: يوم 22 من كل شهر</div>
       </div>
@@ -779,8 +842,17 @@ const arabicMonths = [
 const configs = [
   {units:50, mg:12.5},
   {units:45, mg:11.25},
-  {units:40, mg:10}
+  {units:40, mg:10},
+  {units:35, mg:8.75},
+  {units:30, mg:7.5}
 ];
+
+function getEnabledConfigs(){
+  const enabledUnits = new Set(
+    Array.from(document.querySelectorAll('.dose-toggle:checked')).map(input => Number(input.value))
+  );
+  return configs.filter(c => enabledUnits.has(c.units));
+}
 
 // تاريخ الراتب الثابت في هذه الصفحة: يوم 22 من كل شهر.
 const SALARY_DAY = 22;
@@ -852,6 +924,8 @@ function buildEntry(value, pens, pickedLabel = '', sameDayMatches = []){
   entry.className = "entry";
   entry.dataset.purchaseDate = inputDateValue(start);
   entry.dataset.finalInstallment = inputDateValue(finalInstallment);
+  entry.dataset.pens = String(pens);
+  entry.dataset.pickedLabel = pickedLabel || '';
 
   const head = document.createElement("div");
   head.className = "entry-head";
@@ -926,7 +1000,12 @@ function buildEntry(value, pens, pickedLabel = '', sameDayMatches = []){
   const grid = document.createElement("div");
   grid.className = "grid";
 
-  configs.forEach(c => {
+  const enabledConfigs = getEnabledConfigs();
+  if(!enabledConfigs.length){
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1;padding:14px 8px">اختر جرعة واحدة على الأقل</div>';
+  }
+
+  enabledConfigs.forEach(c => {
     // نحسب فقط الجرعات الأسبوعية الكاملة التي يمكن سحبها من الأقلام.
     // تاريخ النتيجة هو موعد الجرعة التالية التي لن تكفي لها الكمية المتبقية.
     const exactDoses = totalUnits / c.units;
@@ -944,26 +1023,24 @@ function buildEntry(value, pens, pickedLabel = '', sameDayMatches = []){
       statusClass = "warn";
     }
 
-    // قاعدة الراتب:
-    // إذا كان موعد الحاجة للقلم يوم 17 أو قبله، يكون الشراء المقترح من راتب 22 للشهر السابق.
-    // إذا أغلقت كل دفعات تابي، ووصل/طاف راتب 22 للشهر التالي بعد آخر دفعة، لا نظهر أي تنبيه شراء.
+    // قاعدة تاريخ الشراء:
+    // إذا كان موعد الحاجة للقلم بين يوم 1 و17، يتحول تاريخ الشراء تلقائيًا
+    // إلى راتب يوم 22 من الشهر السابق. من يوم 18 إلى نهاية الشهر يبقى التاريخ كما هو.
+    // مثال: 1/6/2027 يصبح 22/5/2027.
+    const purchaseResultDate = (end.getDate() >= 1 && end.getDate() <= 17)
+      ? previousMonthSalary(end)
+      : end;
+
+    // نبقي حساب حالة انتهاء تابي مقابل مدة الأقلام على تاريخ نفاد الأقلام الفعلي (end)،
+    // لكن التاريخ الظاهر والقابل للنقر هو تاريخ الشراء المعدّل.
     const latestTabbyFinal = allTabbyFinalDates.reduce((latest, d) => d > latest ? d : latest, allTabbyFinalDates[0]);
     const salaryAfterLastTabby = nextMonthSalaryAfter(latestTabbyFinal);
     const allTabbyClosed = allTabbyFinalDates.every(d => end > d);
     const tabbyFullyClearedAndNextSalaryPassed = allTabbyClosed && end >= salaryAfterLastTabby;
 
-    let suggestedPurchaseDate = null;
-    let salaryMiniAlert = ``;
-
-    if(!tabbyFullyClearedAndNextSalaryPassed && end.getDate() <= 17){
-      suggestedPurchaseDate = previousMonthSalary(end);
-      salaryMiniAlert = `<div class="salary-mini-alert tabby-only">⚠️ اشترِ ${fmt(suggestedPurchaseDate)}</div>`;
-    }
-
-    // تنبيه تابي لهذه العملية فقط: يظهر فقط إذا كان شهر شراء القلم التالي
+    // تنبيه تابي لهذه العملية فقط: يظهر إذا كان شهر تاريخ الشراء المعدّل
     // يحتوي فعلًا على إحدى دفعات تابي الأربع الخاصة بهذا الشراء.
-    // مثال: شراء 22/8/2026 دفعاته تنتهي 22/11/2026، لذلك نتيجة 26/12/2026 لا تُظهر التنبيه.
-    const monthToCheck = suggestedPurchaseDate || end;
+    const monthToCheck = purchaseResultDate;
     const hasTabbyPaymentSameMonth = !tabbyFullyClearedAndNextSalaryPassed &&
       paymentDates.some(d => sameYearMonth(d, monthToCheck));
     const tabbyMonthMiniAlert = hasTabbyPaymentSameMonth
@@ -978,8 +1055,7 @@ function buildEntry(value, pens, pickedLabel = '', sameDayMatches = []){
         <span class="full-dose-count">${fullDoses} جرعة كاملة</span>
         ${remainingUnits > 0 ? `<span class="remaining-units">متبقي ${remainingUnits} يونيت</span>` : ``}
       </div>
-      <div class="date clickable" title="موعد الجرعة التالية التي تحتاج قلمًا جديدًا — اضغط لإضافة النتائج الجديدة تلقائيًا">${fmt(end)}</div>
-      ${salaryMiniAlert}
+      <div class="date clickable" title="تاريخ الشراء المقترح — إذا كان الموعد من 1 إلى 17 يتحول تلقائيًا إلى 22 من الشهر السابق">${fmt(purchaseResultDate)}</div>
       ${tabbyMonthMiniAlert}
       <div class="status ${statusClass} tabby-only">${statusText}</div>
     `;
@@ -989,7 +1065,7 @@ function buildEntry(value, pens, pickedLabel = '', sameDayMatches = []){
       const dateInput = document.getElementById("purchaseDate");
       const penInput = document.getElementById("penCount");
       const nextPens = Math.max(1, parseInt(penInput.value || String(pens), 10));
-      const selectedDate = inputDateValue(end);
+      const selectedDate = inputDateValue(purchaseResultDate);
       const history = document.getElementById("history");
 
       // نبقي التاريخ ظاهرًا في الخانة، لكن الضغط على النتيجة يضيف النتائج الجديدة فورًا.
@@ -1140,6 +1216,26 @@ document.getElementById("purchaseDate").addEventListener("change", () => {
 });
 document.getElementById("penCount").addEventListener("input", () => {
   renderAutoResult();
+});
+
+// اختيار الجرعات التي تظهر في نتائج حساب تاريخ الشراء.
+// كل الجرعات مفعّلة افتراضيًا، ويمكن إخفاء أو إظهار أي جرعة فورًا.
+document.querySelectorAll('.dose-toggle').forEach(input => {
+  input.addEventListener('change', () => {
+    if(document.getElementById('autoResultToggle').checked){
+      renderAutoResult();
+    } else {
+      // في الوضع اليدوي تؤثر الاختيارات على النتيجة التالية التي تتم إضافتها.
+      document.querySelectorAll('#history .entry').forEach(entry => {
+        const purchase = entry.dataset.purchaseDate;
+        const pens = Number(entry.dataset.pens || document.getElementById('penCount').value || 3);
+        if(!purchase) return;
+        const replacement = buildEntry(purchase, pens, entry.dataset.pickedLabel || '', []);
+        entry.replaceWith(replacement);
+      });
+      updateEmpty();
+    }
+  });
 });
 </script>
 </body>
