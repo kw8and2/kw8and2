@@ -100,6 +100,12 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
   <div class="flex justify-center mt-2">
     <input id="dose-input-2" type="text" placeholder="او اكتب الجرعة المطلوبة هنا" class="dose-input" inputmode="decimal" maxlength="5">
   </div>
+
+  <div id="microdose-toggle" class="mt-2 text-center cursor-pointer">
+    <span class="text-[#5D0096] underline font-semibold text-sm sm:text-base">
+      اعرض جرعات الميكرو دوز
+    </span>
+  </div>
 </div>
 
 <div id="result" class="w-full max-w-4xl p-3 text-center font-bold"></div>
@@ -130,6 +136,17 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
   </div>
 
   <div id="buy-result" class="w-full max-w-4xl mx-auto"></div>
+</div>
+
+
+<div id="microdose-modal" class="fixed inset-0 bg-black/60 hidden z-50 flex items-center justify-center p-3">
+  <div class="relative max-w-[95vw] max-h-[95vh]">
+    <img
+      src="https://www.mediafire.com/convkey/9208/innr7372gxagg5c9g.jpg"
+      alt="جرعات الميكرو دوز"
+      class="max-w-[95vw] max-h-[90vh] rounded-xl shadow-2xl bg-white"
+    >
+  </div>
 </div>
 
 <script>
@@ -376,6 +393,17 @@ doseEveryDays.addEventListener('input',()=>{
   updateBuyPlan();
 });
 setActiveChipByDays(7);
+const microToggle = document.getElementById('microdose-toggle');
+const microModal  = document.getElementById('microdose-modal');
+if(microToggle && microModal){
+  microToggle.addEventListener('click', () => microModal.classList.remove('hidden'));
+  microModal.addEventListener('click', () => microModal.classList.add('hidden'));
+}
+
 </script>
+<div class="w-full max-w-4xl text-center mt-4 mb-4">
+  <a href="https://mjq8.netlify.app/" target="_blank" class="text-blue-700 underline font-extrabold text-sm sm:text-base">صفحة الحسبة</a>
+</div>
+
 </body>
 </html>
