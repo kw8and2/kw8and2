@@ -8,7 +8,7 @@
 <meta name="hosting-provider" content="Netlify">
 <meta name="netlify-deploy" content="https://netlify.new/?utm_campaign=ai-legible&amp;utm_source=meta&amp;utm_medium=referral&amp;utm_id=e94eccd1-7f39-45f7-9c10-3a632cfad6b6">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Mounjaro</title>
+<title>Mounjaro (2.7ml) | شراء الأقلام</title>
 <style>
   :root{
     --bg:#ffffff;
@@ -595,7 +595,8 @@
   <div class="card">
     <div class="top">
       <div class="brand-links">
-        <h1><a class="brand-title-link" href="https://gulf.lilly.com/mealabels/ar/mounjaro-kwikpen" target="_blank" rel="noopener noreferrer">Mounjaro</a></h1>
+        <h1><a class="brand-title-link" href="https://gulf.lilly.com/mealabels/ar/mounjaro-kwikpen" target="_blank" rel="noopener noreferrer">Mounjaro (2.7ml)</a></h1>
+        <a class="dose-table-link" href="https://mjq8.netlify.app/mj">صفحة MJ</a>
         <a class="dose-table-link" href="https://www.mediafire.com/convkey/9208/innr7372gxagg5c9g.jpg" target="_blank" rel="noopener noreferrer">جدول الجرعات</a>
       </div>
       <div class="head-actions">
@@ -607,7 +608,7 @@
     <div class="option-toggles top-options">
       <label class="tabby-toggle" for="tabbyToggle">
         <input id="tabbyToggle" type="checkbox" checked>
-        <span>تابي</span>
+        <span>دفعات</span>
       </label>
       <label class="tabby-toggle auto-toggle" for="autoResultToggle">
         <input id="autoResultToggle" type="checkbox" checked>
@@ -617,9 +618,9 @@
 
     <div class="dose-options" id="doseOptions">
       <span class="dose-options-title">الجرعات المعروضة:</span>
-      <label class="dose-check"><input class="dose-toggle" type="checkbox" value="50" checked><span>12.5 mg</span></label>
+      <label class="dose-check"><input class="dose-toggle" type="checkbox" value="50"><span>12.5 mg</span></label>
       <label class="dose-check"><input class="dose-toggle" type="checkbox" value="45" checked><span>11.25 mg</span></label>
-      <label class="dose-check"><input class="dose-toggle" type="checkbox" value="40" checked><span>10 mg</span></label>
+      <label class="dose-check"><input class="dose-toggle" type="checkbox" value="40"><span>10 mg</span></label>
       <label class="dose-check"><input class="dose-toggle" type="checkbox" value="35"><span>8.75 mg</span></label>
       <label class="dose-check"><input class="dose-toggle" type="checkbox" value="30"><span>7.5 mg</span></label>
     </div>
@@ -640,15 +641,6 @@
         <button id="addDateBtn" type="button">إضافة النتيجة</button>
       </div>
 
-      <div class="mini">
-        <div class="chip">50 = 12.5 mg</div>
-        <div class="chip">45 = 11.25 mg</div>
-        <div class="chip">40 = 10 mg</div>
-        <div class="chip">35 = 8.75 mg</div>
-        <div class="chip">30 = 7.5 mg</div>
-        <div class="chip tabby-only">تابي: 4 دفعات</div>
-        <div class="chip">الراتب: يوم 22 من كل شهر</div>
-      </div>
     </div>
 
 
@@ -955,8 +947,8 @@ function buildEntry(value, pens, pickedLabel = '', sameDayMatches = []){
     addMonthsSafe(start, 3)
   ];
 
-  // جميع أشهر دفعات تابي النشطة: دفعات هذا الشراء + دفعات المشتريات السابقة الظاهرة.
-  // نستخدمها لتنبيه المستخدم إذا كان شراء القلم التالي سيقع في شهر توجد فيه دفعة تابي.
+  // جميع أشهر الدفعات النشطة: دفعات هذا الشراء + دفعات المشتريات السابقة الظاهرة.
+  // نستخدمها لتنبيه المستخدم إذا كان شراء القلم التالي سيقع في شهر توجد فيه دفعة.
   const activeTabbyPaymentDates = [...paymentDates];
   const allTabbyFinalDates = [finalInstallment];
   document.querySelectorAll("#history .entry").forEach(existingEntry => {
@@ -978,7 +970,7 @@ function buildEntry(value, pens, pickedLabel = '', sameDayMatches = []){
   sameDayAlert.className = "same-day-alert tabby-only";
   if(sameDayMatches.length){
     const origins = sameDayMatches.map(d => fmt(parseLocalDate(d))).join("، ");
-    sameDayAlert.innerHTML = `⚠️ تنبيه: تاريخ شراء هذا القلم <strong>${fmt(start)}</strong> يوافق تاريخ دفعة تابي الأخيرة لشراء سابق بتاريخ ${origins}.`;
+    sameDayAlert.innerHTML = `⚠️ تنبيه: تاريخ شراء هذا القلم <strong>${fmt(start)}</strong> يوافق تاريخ الدفعة الأخيرة لشراء سابق بتاريخ ${origins}.`;
   } else {
     sameDayAlert.style.display = "none";
   }
@@ -987,7 +979,7 @@ function buildEntry(value, pens, pickedLabel = '', sameDayMatches = []){
   tabby.className = "tabby tabby-only";
   tabby.innerHTML = `
     <div class="tabby-box">
-      <div class="tabby-title">تابي · 4 دفعات</div>
+      <div class="tabby-title">4 دفعات</div>
       <div class="pay-row">
         <span class="pay-chip">${fmt(paymentDates[0])}</span>
         <span class="pay-chip">${fmt(paymentDates[1])}</span>
@@ -1016,10 +1008,10 @@ function buildEntry(value, pens, pickedLabel = '', sameDayMatches = []){
 
     let statusText, statusClass;
     if(diff >= 0){
-      statusText = `تابي ينتهي قبل الأقلام بـ ${diff} يوم`;
+      statusText = `الدفعات تنتهي قبل الأقلام بـ ${diff} يوم`;
       statusClass = "good";
     } else {
-      statusText = `الأقلام تنتهي قبل تابي بـ ${Math.abs(diff)} يوم`;
+      statusText = `الأقلام تنتهي قبل انتهاء الدفعات بـ ${Math.abs(diff)} يوم`;
       statusClass = "warn";
     }
 
@@ -1031,20 +1023,20 @@ function buildEntry(value, pens, pickedLabel = '', sameDayMatches = []){
       ? previousMonthSalary(end)
       : end;
 
-    // نبقي حساب حالة انتهاء تابي مقابل مدة الأقلام على تاريخ نفاد الأقلام الفعلي (end)،
+    // نبقي حساب حالة انتهاء الدفعات مقابل مدة الأقلام على تاريخ نفاد الأقلام الفعلي (end)،
     // لكن التاريخ الظاهر والقابل للنقر هو تاريخ الشراء المعدّل.
     const latestTabbyFinal = allTabbyFinalDates.reduce((latest, d) => d > latest ? d : latest, allTabbyFinalDates[0]);
     const salaryAfterLastTabby = nextMonthSalaryAfter(latestTabbyFinal);
     const allTabbyClosed = allTabbyFinalDates.every(d => end > d);
     const tabbyFullyClearedAndNextSalaryPassed = allTabbyClosed && end >= salaryAfterLastTabby;
 
-    // تنبيه تابي لهذه العملية فقط: يظهر إذا كان شهر تاريخ الشراء المعدّل
-    // يحتوي فعلًا على إحدى دفعات تابي الأربع الخاصة بهذا الشراء.
+    // تنبيه الدفعات لهذه العملية فقط: يظهر إذا كان شهر تاريخ الشراء المعدّل
+    // يحتوي فعلًا على إحدى الدفعات الأربع الخاصة بهذا الشراء.
     const monthToCheck = purchaseResultDate;
     const hasTabbyPaymentSameMonth = !tabbyFullyClearedAndNextSalaryPassed &&
       paymentDates.some(d => sameYearMonth(d, monthToCheck));
     const tabbyMonthMiniAlert = hasTabbyPaymentSameMonth
-      ? `<div class="salary-mini-alert tabby-only">⚠️ شهر فيه دفعة تابي</div>`
+      ? `<div class="salary-mini-alert tabby-only">⚠️ شهر فيه دفعة</div>`
       : ``;
 
     const box = document.createElement("div");
@@ -1169,7 +1161,7 @@ function addSelectedDate(){
   const selectedDate = dateInput.value;
   const pickedLabel = dateInput.dataset.pickedLabel || "";
 
-  // تنبيه إذا وافق تاريخ الشراء تاريخ الدفعة الرابعة/الأخيرة لتابي لشراء سابق.
+  // تنبيه إذا وافق تاريخ الشراء تاريخ الدفعة الرابعة/الأخيرة للدفعات لشراء سابق.
   const sameDayMatches = Array.from(history.querySelectorAll(".entry"))
     .filter(e => e.dataset.finalInstallment === selectedDate)
     .map(e => e.dataset.purchaseDate)
@@ -1190,8 +1182,8 @@ function addSelectedDate(){
   delete dateInput.dataset.pickedLabel;
 }
 
-// تفعيل/إخفاء كل ما يخص تابي من الصفحة.
-// الخيار مفعّل افتراضيًا، وإزالة الصح تخفي دفعات تابي والتنبيهات والحالة الخاصة به فورًا.
+// تفعيل/إخفاء كل ما يخص الدفعات من الصفحة.
+// الخيار مفعّل افتراضيًا، وإزالة الصح تخفي الدفعات والتنبيهات والحالة الخاصة به فورًا.
 const tabbyToggle = document.getElementById("tabbyToggle");
 function applyTabbyVisibility(){
   document.body.classList.toggle("tabby-off", !tabbyToggle.checked);
