@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>جدول 5 وجبات - الكويت</title>
+<style>
+:root{
+  --bg:#f7f7f7;
+  --card:#ffffff;
+  --text:#111111;
+  --muted:#6b6b6b;
+  --line:#dddddd;
+  --green:#0f766e;
+  --blue:#3451b2;
+  --red:#c1121f;
+  --redbg:#fff5f5;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Tahoma,Arial,"Segoe UI",sans-serif;
+}
+.wrap{
+  max-width:680px;
+  margin:auto;
+  padding:12px 9px 36px;
+}
+h1{
+  margin:0 0 5px;
+  font-size:23px;
+  font-weight:800;
+}
+.sub{
+  font-size:14px;
+  color:var(--muted);
+  line-height:1.6;
+  margin-bottom:9px;
+}
+.step,.final-card,.reminder-panel{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:10px;
+}
+.step-head,.final-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  margin-bottom:8px;
+}
+.step-title,.final-name{
+  font-size:17px;
+  font-weight:800;
+}
+.time,.final-time{
+  font-size:13px;
+  color:var(--muted);
+  background:#f1f1f1;
+  padding:4px 7px;
+  border-radius:7px;
+  white-space:nowrap;
+}
+.options{
+  display:grid;
+  gap:5px;
+}
+.option{
+  width:100%;
+  text-align:right;
+  border:1px solid var(--line);
+  background:#fff;
+  color:#111;
+  padding:11px 10px;
+  border-radius:8px;
+  font-size:15px;
+  line-height:1.55;
+  font-weight:600;
+  cursor:pointer;
+}
+.option:hover{background:#fafafa}
+.final{
+  display:none;
+}
+.final.show{display:block}
+.final-title{
+  font-size:21px;
+  font-weight:800;
+  margin-bottom:7px;
+}
+.final-list{
+  display:grid;
+  gap:5px;
+}
+.final-card{
+  padding:10px;
+}
+.final-text{
+  font-size:15px;
+  line-height:1.6;
+  font-weight:600;
+}
+.notes{
+  margin-top:9px;
+  background:var(--redbg);
+  border:1px solid #efb1b6;
+  color:var(--red);
+  border-radius:9px;
+  padding:10px;
+  font-size:14px;
+  line-height:1.85;
+  font-weight:700;
+}
+.notes-title{
+  font-size:16px;
+  font-weight:900;
+  margin-bottom:3px;
+}
+.actions,.reminder-actions{
+  margin-top:9px;
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+}
+.btn{
+  border:0;
+  color:#fff;
+  padding:10px 12px;
+  border-radius:8px;
+  font-weight:700;
+  font-size:14px;
+  cursor:pointer;
+}
+.reminder-main{background:var(--green)}
+.copy-btn{background:var(--green)}
+.shortcut-btn{background:var(--blue)}
+.reset{background:#111}
+.reminder-panel{
+  display:none;
+  margin-top:9px;
+}
+.reminder-panel.show{display:block}
+.reminder-panel-title{
+  font-size:16px;
+  font-weight:900;
+  margin-bottom:7px;
+}
+.reminder-preview{
+  display:grid;
+  gap:5px;
+}
+.reminder-row{
+  border:1px solid #e5e5e5;
+  border-radius:8px;
+  padding:8px 9px;
+  background:#fafafa;
+  font-size:14px;
+  line-height:1.6;
+}
+.reminder-help{
+  margin-top:9px;
+  padding:9px;
+  border-radius:8px;
+  background:#f5f7ff;
+  border:1px solid #d9def8;
+  font-size:13px;
+  line-height:1.75;
+}
+@media(max-width:560px){
+  .wrap{padding:9px 7px 28px}
+  h1{font-size:21px}
+  .step-title{font-size:16px}
+  .option{font-size:15px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>اختَر جدولك اليومي — 5 وجبات</h1>
+  <div class="sub">اختر وجبة واحدة كل مرة. بعد الاختيار تختفي وتظهر لك الوجبة التالية.</div>
+
+  <div id="stepArea"></div>
+
+  <div id="final" class="final">
+    <div class="final-title">جدولك اليومي النهائي ✓</div>
+    <div id="finalList" class="final-list"></div>
+
+    <div class="notes">
+      <div class="notes-title">ملاحظات مهمة</div>
+      <div>• مع مونجارو: لا تجبر نفسك على إكمال الوجبة إذا شبعت.</div>
+      <div>• تجنب الوجبات الدسمة جدًا والمقليات، خصوصًا في المساء.</div>
+      <div>• قلل السكريات والعصائر والمشروبات المحلاة.</div>
+      <div>• لا تعمل صيامًا طويلًا جدًا ثم تتناول وجبة كبيرة وثقيلة.</div>
+      <div>• العشاء الأفضل يكون خفيفًا وينتهي قبل الساعة 9 مساءً.</div>
+      <div>• الماء: بوزن 86 كغ، هدف مناسب تقريبًا 2.6–3.0 لتر يوميًا، ومع حر الكويت أو الرياضة قد تحتاج أكثر قليلًا.</div>
+      <div>• إذا ظهر ألم شديد ومستمر بالبطن أو قيء متكرر، اطلب تقييمًا طبيًا.</div>
+    </div>
+
+    <div class="actions">
+      <button id="remindersBtn" class="btn reminder-main">🔔 إعداد تنبيهات الآيفون</button>
+      <button id="resetBtn" class="btn reset">ابدأ من جديد</button>
+    </div>
+
+    <div id="reminderPanel" class="reminder-panel">
+      <div class="reminder-panel-title">تنبيهات الوجبات اليومية</div>
+      <div id="reminderPreview" class="reminder-preview"></div>
+
+      <div class="reminder-help">
+        اضغط «نسخ التنبيهات»، ثم افتح تطبيق Shortcuts.  
+        إعداد Reminders مباشرة من صفحة ويب غير مسموح به في iOS بدون اختصار/صلاحية، لذلك نستخدم Shortcuts كحل وسيط.
+      </div>
+
+      <div class="reminder-actions">
+        <button id="copyBtn" class="btn copy-btn">نسخ التنبيهات</button>
+        <button id="shortcutsBtn" class="btn shortcut-btn">فتح Shortcuts</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const meals = [
+  {
+    key:"breakfast", title:"الفطور", time:"9:00 صباحًا",
+    options:[
+      "2 بيض مسلوق + نصف رغيف شعير أو خبز عربي أسمر + خيار وطماطم",
+      "أومليت 2 بيض بالخضار + نصف رغيف شعير أو خبز عربي أسمر",
+      "زبادي يوناني سادة قليل الدسم 160–170 غ + شوفان كويكر 30 غ + فراولة",
+      "2 بيض + نصف خبزة عربية أسمر + خضار",
+      "لبنة لايت 2–3 ملاعق + نصف رغيف شعير + خيار",
+      "فول ½–¾ كوب + نصف خبزة أسمر + خضار",
+      "شوفان كويكر 40 غ + حليب قليل الدسم 150–200 مل + قرفة",
+      "ساندويتش تونة بالماء 80–100 غ + خبز أسمر + خس",
+      "فيتا لايت 30–40 غ + نصف رغيف شعير + خيار وطماطم",
+      "2 بيض + بطاطا مسلوقة صغيرة + سلطة خفيفة"
+    ]
+  },
+  {
+    key:"snack1", title:"السناك الأول", time:"12:00 ظهرًا",
+    options:[
+      "زبادي يوناني سادة قليل الدسم 150–170 غ",
+      "تفاحة صغيرة + 5–7 حبات لوز",
+      "برتقالة + قطعة جبن لايت",
+      "بيضة مسلوقة + خيار",
+      "كمثرى صغيرة + 5 حبات لوز أو جوز",
+      "زبادي قليل الدسم 125–150 غ",
+      "لبن قليل الدسم 150–200 مل",
+      "نصف موزة + زبادي صغير غير محلى",
+      "خيار وجزر + ملعقتان لبنة لايت",
+      "فيتا لايت 30 غ + خيار"
+    ]
+  },
+  {
+    key:"lunch", title:"الغداء", time:"3:00 عصرًا",
+    options:[
+      "دجاج مشوي 150–180 غ + نصف كوب رز بسمتي + سلطة",
+      "دجاج بالفرن 150–180 غ + نصف خبزة أسمر + سلطة",
+      "دجاج 170 غ + برغل ½–¾ كوب + سلطة",
+      "تونة بالماء 150 غ + بطاطا مسلوقة صغيرة + سلطة كبيرة",
+      "فاصوليا معلبة مصفاة + دجاج + سلطة",
+      "حمص معلب مغسول ½ كوب + دجاج + سلطة",
+      "فول معلب مغسول ½–¾ كوب + بيض + سلطة",
+      "Baked Beans نصف كوب + بيضتين + سلطة",
+      "دجاج 150 غ + بطاطا مشوية صغيرة + خضار",
+      "تونة بالماء 120–150 غ + نصف كوب رز بسمتي + خضار"
+    ]
+  },
+  {
+    key:"snack2", title:"السناك الثاني", time:"6:00 مساءً",
+    options:[
+      "تفاحة صغيرة + قطعة جبن لايت",
+      "برتقالة + زبادي غير محلى",
+      "كمثرى + 5–7 حبات لوز",
+      "نصف موزة + زبادي يوناني صغير",
+      "زبادي بروتين قليل الدسم 150 غ + قرفة",
+      "بيضة مسلوقة + خيار وطماطم",
+      "لبن قليل الدسم 150–200 مل",
+      "حبتان تمر + 5 حبات لوز",
+      "فراولة 100–150 غ + زبادي يوناني",
+      "فيتا لايت 30 غ + خيار"
+    ]
+  },
+  {
+    key:"dinner", title:"العشاء", time:"8:15 مساءً",
+    options:[
+      "دجاج مشوي 120–150 غ + سلطة",
+      "تونة بالماء 100–150 غ + سلطة",
+      "2 بيض + 1–2 بياض بيض + خضار",
+      "لبنة لايت 2–3 ملاعق + خيار وطماطم + نصف رغيف شعير",
+      "دجاج 120 غ + نصف خبزة أسمر + خضار",
+      "أومليت 2 بيض + خضار + نصف رغيف شعير",
+      "زبادي يوناني 170 غ + خيار + نصف خبزة أسمر صغيرة",
+      "فول معلب مغسول ½ كوب + بيضة + خضار",
+      "حمص معلب مغسول ½ كوب + سلطة + بيضة",
+      "فيتا لايت 30–40 غ + خيار وطماطم + نصف رغيف شعير"
+    ]
+  }
+];
+
+const reminderTimes = ["9:00 ص","12:00 م","3:00 م","6:00 م","8:15 م"];
+let picks = {};
+
+try{
+  picks = JSON.parse(localStorage.getItem("mealPlannerKuwaitV2") || "{}");
+}catch(e){
+  picks = {};
+}
+
+const stepArea = document.getElementById("stepArea");
+const finalBox = document.getElementById("final");
+const finalList = document.getElementById("finalList");
+const resetBtn = document.getElementById("resetBtn");
+const remindersBtn = document.getElementById("remindersBtn");
+const reminderPanel = document.getElementById("reminderPanel");
+const reminderPreview = document.getElementById("reminderPreview");
+const copyBtn = document.getElementById("copyBtn");
+const shortcutsBtn = document.getElementById("shortcutsBtn");
+
+function savePicks(){
+  localStorage.setItem("mealPlannerKuwaitV2", JSON.stringify(picks));
+}
+
+function render(){
+  stepArea.innerHTML = "";
+  finalList.innerHTML = "";
+  reminderPanel.classList.remove("show");
+
+  const currentIndex = meals.findIndex(m => !picks[m.key]);
+
+  if(currentIndex === -1){
+    finalBox.classList.add("show");
+
+    meals.forEach(m => {
+      const card = document.createElement("div");
+      card.className = "final-card";
+      card.innerHTML = `
+        <div class="final-head">
+          <div class="final-name">${m.title}</div>
+          <div class="final-time">${m.time}</div>
+        </div>
+        <div class="final-text">${picks[m.key]}</div>
+      `;
+      finalList.appendChild(card);
+    });
+    return;
+  }
+
+  finalBox.classList.remove("show");
+
+  const meal = meals[currentIndex];
+  const section = document.createElement("section");
+  section.className = "step";
+
+  const head = document.createElement("div");
+  head.className = "step-head";
+  head.innerHTML = `
+    <div class="step-title">${currentIndex + 1}. ${meal.title}</div>
+    <div class="time">${meal.time}</div>
+  `;
+  section.appendChild(head);
+
+  const options = document.createElement("div");
+  options.className = "options";
+
+  meal.options.forEach(optionText => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "option";
+    btn.textContent = optionText;
+
+    btn.addEventListener("click", () => {
+      picks[meal.key] = optionText;
+      savePicks();
+      render();
+      window.scrollTo({top:0, behavior:"smooth"});
+    });
+
+    options.appendChild(btn);
+  });
+
+  section.appendChild(options);
+  stepArea.appendChild(section);
+}
+
+function buildReminderText(){
+  return meals.map((m, i) =>
+    `${reminderTimes[i]} — ${m.title}: ${picks[m.key]}`
+  ).join("\n");
+}
+
+remindersBtn.addEventListener("click", () => {
+  reminderPreview.innerHTML = "";
+
+  meals.forEach((m, i) => {
+    const row = document.createElement("div");
+    row.className = "reminder-row";
+    row.innerHTML = `<b>${reminderTimes[i]} — ${m.title}</b><br>${picks[m.key]}`;
+    reminderPreview.appendChild(row);
+  });
+
+  reminderPanel.classList.add("show");
+  reminderPanel.scrollIntoView({behavior:"smooth", block:"start"});
+});
+
+copyBtn.addEventListener("click", async () => {
+  const text = buildReminderText();
+
+  try{
+    await navigator.clipboard.writeText(text);
+  }catch(e){
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+  }
+
+  copyBtn.textContent = "تم النسخ ✓";
+  setTimeout(() => copyBtn.textContent = "نسخ التنبيهات", 1500);
+});
+
+shortcutsBtn.addEventListener("click", () => {
+  window.location.href = "shortcuts://";
+});
+
+resetBtn.addEventListener("click", () => {
+  picks = {};
+  localStorage.removeItem("mealPlannerKuwaitV2");
+  render();
+  window.scrollTo({top:0, behavior:"smooth"});
+});
+
+render();
+</script>
+</body>
+</html>
