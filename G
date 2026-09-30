@@ -1,5 +1,3 @@
-from pathlib import Path
-
 html = r'''<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -440,8 +438,3 @@ render();
 </script>
 </body>
 </html>
-'''
-
-out = Path("/mnt/data/meal-planner-kuwait-reminders-fixed.html")
-out.write_text(html, encoding="utf-8")
-print(out)
