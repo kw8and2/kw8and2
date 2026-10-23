@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="light" name="color-scheme"/>
+<title>60</title>
+<style>
+:root{
+  --bg:#f4f7fb;
+  --card:#ffffff;
+  --ink:#1f2b3d;
+  --muted:#64748b;
+  --line:#dce5f0;
+  --shadow:0 10px 35px rgba(18,41,75,.07);
+  --blue:#2563eb;
+  --blue-soft:#eef5ff;
+  --pink:#c02f73;
+  --pink-soft:#fff0f7;
+  --green:#0d8a63;
+  --green-soft:#e9fbf4;
+  --amber:#af6f16;
+  --amber-soft:#fff6e8;
+  --red:#b74141;
+  --red-soft:#fff0f0;
+  --radius:18px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:linear-gradient(180deg,#f7fafe 0%, #f4f7fb 180px, #f4f7fb 100%);
+  color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;
+  font-size:14px;
+  line-height:1.6;
+}
+.wrap{max-width:1380px;margin:0 auto;padding:18px 16px 30px}
+.hero{
+  background:linear-gradient(135deg,#ffffff 0%, #f8fbff 100%);
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
+  border-radius:24px;
+  padding:20px;
+  margin-bottom:16px;
+}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
+h1{margin:0;font-size:31px;line-height:1.2;font-weight:950;letter-spacing:-.5px}
+.hero p{margin:8px 0 0;color:var(--muted);max-width:950px}
+.hero-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.tag{background:#edf3fb;border:1px solid #d8e3f1;color:#42536d;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:850}
+.layout{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;align-items:start}
+.main-column,.side-column{display:grid;gap:16px}
+.panel{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:18px;
+}
+.panel-title-row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.panel h2{margin:0;font-size:19px;font-weight:900}
+.subtle{color:var(--muted);font-size:12px}
+.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.choice-panel{border:1px solid #e7edf5;border-radius:16px;padding:16px;background:#fcfdff}
+.choice-panel.split{border-top:4px solid var(--pink)}
+.choice-panel.full{border-top:4px solid var(--blue)}
+.choice-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.choice-head h3{margin:0;font-size:18px;font-weight:950}
+.badge{border-radius:999px;padding:6px 10px;font-size:11px;font-weight:900}
+.badge.split{background:var(--pink-soft);color:var(--pink)}
+.badge.full{background:var(--blue-soft);color:var(--blue)}
+.field-title{font-size:12px;font-weight:900;color:#3d4b63;margin:14px 0 8px}
+.options{display:flex;flex-wrap:wrap;gap:8px}
+.pick{
+  border:1px solid #cad8ea;
+  background:#f2f7ff;
+  color:#224678;
+  padding:10px 13px;
+  border-radius:12px;
+  font:inherit;
+  font-size:13px;
+  font-weight:900;
+  min-width:74px;
+  cursor:pointer;
+  transition:.15s ease;
+}
+.pick:hover{transform:translateY(-1px)}
+.pick[aria-pressed="true"]{border:2px solid var(--blue);background:#dbe9ff;padding:9px 12px;box-shadow:inset 0 0 0 1px white}
+.split .dose-pick[aria-pressed="true"]{border-color:var(--pink);background:#ffdfee;color:#812154}
+.pick:focus-visible,.secondary-btn:focus-visible,input:focus-visible,.mini-card button:focus-visible,.table-btn:focus-visible,.quick-card button:focus-visible{outline:3px solid #9cc1ff;outline-offset:2px}
+.fixed-pill{display:inline-flex;align-items:center;gap:8px;background:var(--blue-soft);border:1px solid #d7e5ff;color:#194b9a;border-radius:12px;padding:11px 14px;font-size:16px;font-weight:950}
+.date-row{display:flex;gap:10px;align-items:end;justify-content:space-between;flex-wrap:wrap;margin-top:16px}
+.date-box label{display:block;font-size:12px;font-weight:900;color:#42516a;margin-bottom:7px}
+input[type=date]{height:42px;min-width:180px;padding:8px 10px;border:1px solid #cbd7e8;border-radius:11px;background:#fff;font:inherit;color:var(--ink);direction:ltr;text-align:center}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.secondary-btn{height:42px;border-radius:11px;border:1px solid #d7e0ec;background:#f3f6fa;color:#3a4a60;font:inherit;font-weight:900;padding:0 14px;cursor:pointer}
+.summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.quick-card{border:1px solid #e6edf6;background:linear-gradient(180deg,#fff,#fcfdff);border-radius:16px;padding:14px;min-width:0}
+.quick-card .label{font-size:11px;font-weight:900;color:#516178;margin-bottom:8px}
+.quick-card .value{font-size:27px;font-weight:950;line-height:1.2;letter-spacing:-.4px}
+.quick-card .value.small{font-size:22px}
+.quick-card .hint{font-size:12px;color:var(--muted);margin-top:6px}
+.quick-card .value.pink{color:var(--pink)}
+.quick-card .value.blue{color:var(--blue)}
+.quick-card .value.green{color:var(--green)}
+.quick-card .value.amber{color:var(--amber)}
+.status-box{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;padding:16px;border-radius:18px;border:1px solid #dce7f8;background:linear-gradient(135deg,#f7fbff,#eef5ff)}
+.status-box.exact{background:linear-gradient(135deg,#f0fff8,#e7fbf2);border-color:#ccefe0}
+.status-box.close{background:linear-gradient(135deg,#fffaf0,#fff4e3);border-color:#f0dfbd}
+.status-box.far{background:linear-gradient(135deg,#fff7f7,#fff0f0);border-color:#f4d0d0}
+.status-text{font-size:15px;font-weight:850;line-height:1.8}
+.status-text strong{font-size:18px}
+.status-note{font-size:12px;color:var(--muted);margin-top:4px}
+.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.metric-card{border:1px solid #e7edf5;border-radius:16px;padding:14px;background:#fff}
+.metric-card h3{margin:0 0 10px;font-size:16px;font-weight:900}
+.metric-top{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:10px}
+.metric-big{font-size:31px;font-weight:950;line-height:1.15;letter-spacing:-.4px}
+.metric-big.pink{color:var(--pink)}
+.metric-big.blue{color:var(--blue)}
+.weeks{font-size:12px;color:var(--muted);text-align:left}
+.detail-list{display:grid;gap:8px;margin-top:10px}
+.detail{display:flex;justify-content:space-between;gap:10px;border-top:1px solid #eef2f7;padding-top:8px;font-size:12.5px}
+.detail span{color:#66758b}
+.detail strong{font-variant-numeric:tabular-nums;white-space:nowrap;text-align:left}
+.mini-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.mini-card{border:1px solid #e8eef6;border-radius:16px;padding:14px;background:#fff}
+.mini-card h3{margin:0 0 6px;font-size:15px}
+.mini-card p{margin:0 0 10px;color:var(--muted);font-size:12px;line-height:1.8}
+.mini-card button{width:100%;border:1px solid #d2dff0;background:#f7fbff;color:#214879;border-radius:11px;padding:10px;font:inherit;font-weight:900;cursor:pointer}
+.mini-card button:hover{background:#eef6ff}
+.table-wrap{overflow:auto;border:1px solid #dfe7f2;border-radius:16px}
+table{width:100%;border-collapse:collapse;min-width:760px;background:#fff}
+th,td{padding:12px 10px;text-align:center;border-bottom:1px solid #edf2f7;font-variant-numeric:tabular-nums}
+th{background:#f4f7fb;color:#45556f;font-size:12px;font-weight:950;position:sticky;top:0;z-index:1}
+td:first-child,th:first-child{position:sticky;right:0;background:inherit;z-index:1}
+tr:hover td{background:#fafcff}
+tr.selected-row td{background:#fff8fb}
+.name-col{font-weight:950}
+.name-col.baseline{background:#edf4ff!important;color:#184f9f}
+.table-btn{width:100%;border:1px solid transparent;background:#fff;color:var(--ink);padding:8px;border-radius:12px;font:inherit;cursor:pointer}
+.table-btn:hover{border-color:#cfe0f8;background:#f6faff}
+.table-btn.active{border:2px solid var(--blue);background:#ebf3ff;padding:7px}
+.table-btn .main{display:block;font-weight:900}
+.table-btn .sub{display:block;font-size:10px;color:var(--muted);margin-top:3px}
+.table-btn.pink.active{border-color:var(--pink);background:#fff1f8;color:#8b1f58}
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.legend .item{display:flex;align-items:center;gap:7px;background:#f7fafc;border:1px solid #e4ebf4;color:#495970;padding:8px 10px;border-radius:999px;font-size:11px;font-weight:850}
+.dot{width:12px;height:12px;border-radius:50%}
+.dot.exact{background:var(--green)}
+.dot.close{background:var(--amber)}
+.dot.far{background:var(--red)}
+.info-box{background:#fffbf2;border:1px solid #f5dfaf;color:#6d5423;border-radius:16px;padding:14px;font-size:12.5px;line-height:1.9}
+.info-box strong{color:#5f4308}
+.footer-note{font-size:11px;color:var(--muted);line-height:1.9}
+@media (max-width:1100px){.layout{grid-template-columns:1fr}.summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.controls{grid-template-columns:1fr}.metrics{grid-template-columns:1fr}.mini-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:700px){.wrap{padding:10px 10px 24px}h1{font-size:24px}.hero{padding:16px}.summary-grid{grid-template-columns:1fr 1fr}.mini-grid{grid-template-columns:1fr}.quick-card .value{font-size:23px}.metric-big{font-size:26px}}
+@media (max-width:520px){.summary-grid{grid-template-columns:1fr}.tag{font-size:11px}.pick{min-width:66px;padding:9px 11px}.pick[aria-pressed="true"]{padding:8px 10px}.status-text{font-size:14px}}
+
+/* 60-day goal / comparison-first layout */
+.wrap{max-width:1460px}
+.hero{padding:16px 20px;margin-bottom:12px}
+.hero h1{font-size:27px}
+.hero p{margin-top:6px}
+.hero-tags{margin-top:9px}
+.top-comparison{display:grid;gap:12px}
+.top-comparison>.panel{padding:16px 18px}
+.top-comparison>.panel:first-child{border:2px solid #cedef5;box-shadow:0 12px 32px rgba(37,99,235,.09)}
+.top-comparison .controls{grid-template-columns:1fr 1fr}
+.top-comparison .summary-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+.top-comparison .metrics{grid-template-columns:1fr 1fr}
+.top-comparison .choice-panel{padding:15px}
+.top-comparison .choice-head h3{font-size:18px}
+.lower-heading{margin:22px 1px 11px}
+.lower-heading h2{font-size:21px;margin:0 0 2px}
+.lower-heading p{font-size:12px;color:var(--muted);margin:0}
+.layout{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)}
+.main-column,.side-column,.panel,.table-wrap{min-width:0}
+.table-wrap{max-width:100%}
+.goal-section{border-color:#cde5da;background:#fcfffd}
+.goal-section .panel-title-row{margin-bottom:5px}
+.goal-note{font-weight:900;color:#0b7957;background:#e5f8ef;border-radius:999px;padding:6px 12px;font-size:12px}
+.goal-explainer{color:#607488;font-size:12px;margin:0 0 12px}
+.goal-split-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.goal-meter-box{border-radius:13px;border:1px solid #e2eaf0;background:white;padding:12px 14px}
+.goal-label{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px;margin-bottom:9px}
+.goal-label span{font-weight:900}
+.goal-label .reached{color:#00835c}
+.goal-label .remaining{color:#a46c18}
+.goal-meter{height:12px;background:#eaf0f5;border-radius:99px;overflow:hidden}
+.goal-meter-fill{height:100%;border-radius:99px;width:0;transition:width .2s ease}
+.goal-meter-fill.pink{background:linear-gradient(90deg,#ee9fc4,#c02f73)}
+.goal-meter-fill.blue{background:linear-gradient(90deg,#9fc9fc,#2563eb)}
+.goal-caption{color:#69788c;font-size:12px;margin-top:7px}
+.goal-actions{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:14px;border-top:1px solid #e6efe9;padding-top:13px}
+.goal-actions strong{font-size:13px}
+.goal-actions p{font-size:11px;color:#64748b;margin:3px 0 0}
+.target-picks{display:flex;flex-wrap:wrap;gap:7px}
+.target-pick{font:inherit;font-size:12px;font-weight:850;background:#e8f8ef;color:#116c50;border:1px solid #b9e6d3;padding:9px 11px;border-radius:10px;cursor:pointer}
+.target-pick:hover{background:#d6f5e4}
+.target-pick.active{border:2px solid #15835f;padding:8px 10px}
+.target-pick small{display:block;font-size:10px;font-weight:600;color:#4f7668}
+.filter-check{display:flex;align-items:center;gap:8px;color:#496079;font-size:12px;font-weight:800;margin:0 0 12px;cursor:pointer}
+.filter-check input{accent-color:#15835f;width:15px;height:15px}
+.goal-cell{box-shadow:inset 0 0 0 1px #b7e9d5;background:#f3fff8!important}
+.reached-mark{color:#11835f;font-size:10px;font-weight:850;display:block}
+@media(max-width:1040px){.layout{grid-template-columns:minmax(0,1fr)}.top-comparison .summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.top-comparison .controls,.top-comparison .metrics,.goal-split-row{grid-template-columns:1fr}.top-comparison>.panel{padding:13px}.hero h1{font-size:23px}}
+@media(max-width:540px){.top-comparison .summary-grid{grid-template-columns:1fr 1fr}.quick-card{padding:11px}.quick-card .value{font-size:21px}.goal-actions{align-items:stretch}.target-picks{width:100%}.target-pick{flex:1 1 45%}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<section class="hero">
+<div class="hero-top">
+<div>
+<h1>💉 مقارنة مدة تقسيم قلم 15 والجرعة الكاملة</h1>
+<p>اختر الجرعة والتباعد لكل طريقة، وستظهر <strong>نتيجة المقارنة مباشرة</strong>. الهدف الأساسي: <strong>60 يومًا أو أكثر</strong> في الحساب النظري فقط. بقية الجداول تحت المقارنة.</p>
+</div>
+<div class="hero-tags">
+<span class="tag">قلم 15 mg / 0.6 mL</span>
+<span class="tag">حجم افتراضي 2.70 mL</span>
+<span class="tag">7 جرعات تقسيم</span>
+<span class="tag">3 فواصل زمنية</span>
+<span class="tag" style="background:#e5f8ef;color:#0f7455">🎯 الهدف النظري 60+ يوم</span></div>
+</div>
+</section><div class="top-comparison"><section class="panel">
+<div class="panel-title-row">
+<h2>الاختيارات الأساسية</h2>
+<span class="subtle">اختر جرعة التقسيم وتباعدها، ثم اختر تباعد جرعة 15 الكاملة</span>
+</div>
+<div class="controls">
+<article class="choice-panel split">
+<div class="choice-head">
+<h3>① تقسيم قلم 15</h3>
+<span class="badge split">جرعة متغيرة</span>
+</div>
+<div class="field-title">🎯 جرعة التقسيم</div>
+<div class="options" id="splitDoses"></div>
+<div class="field-title">🗓️ تباعد جرعة التقسيم</div>
+<div class="options" id="splitIntervals"></div>
+</article>
+<article class="choice-panel full">
+<div class="choice-head">
+<h3>② قلم 15 الكامل</h3>
+<span class="badge full">جرعة ثابتة</span>
+</div>
+<div class="field-title">🎯 الجرعة الأساسية</div>
+<div class="fixed-pill"><span dir="ltr">15 mg</span><span aria-hidden="true">✓</span></div>
+<div class="field-title">🗓️ تباعد جرعة 15 الكاملة</div>
+<div class="options" id="fullIntervals"></div>
+</article>
+</div>
+<div class="date-row">
+<div class="date-box">
+<label for="start">تاريخ أول جرعة (اختياري)</label>
+<input id="start" type="date"/>
+</div>
+<div class="btns">
+<button class="secondary-btn" id="reset" type="button">إعادة ضبط</button>
+<button class="secondary-btn" id="smartSelect" type="button">اختيار أقرب تطابق تلقائي</button>
+</div>
+</div>
+</section><section class="panel">
+<div class="panel-title-row">
+<h2>ملخص المقارنة الحالية</h2>
+<span class="subtle">أهم الأرقام في لقطة واحدة</span>
+</div>
+<div class="summary-grid">
+<div class="quick-card">
+<div class="label">مدة جرعة التقسيم</div>
+<div class="value pink" id="splitDurationCard">42 يوم</div>
+<div class="hint" id="splitDurationHint">11.25 mg كل 7 أيام</div>
+</div>
+<div class="quick-card">
+<div class="label">مدة جرعة 15 الكاملة</div>
+<div class="value blue" id="fullDurationCard">45 يوم</div>
+<div class="hint" id="fullDurationHint">15 mg كل 10 أيام</div>
+</div>
+<div class="quick-card">
+<div class="label">فرق الأيام</div>
+<div class="value amber" id="diffCard">3 أيام</div>
+<div class="hint" id="diffHint">كلما قلّ الفرق كانت المقارنة أقرب</div>
+</div>
+<div class="quick-card">
+<div class="label">نسبة التقارب</div>
+<div class="value green" id="closenessCard">93.3%</div>
+<div class="hint" id="closenessHint">حساب تقريبي يعتمد على الفرق بين المدتين</div>
+</div>
+</div>
+</section><section class="panel goal-section" id="targetPanel">
+<div class="panel-title-row"><h2>🎯 الهدف: 60 يومًا أو أكثر</h2><span class="goal-note">60 يوم ≈ شهرين حسابيًا</span></div>
+<p class="goal-explainer">هذا هدف لمقارنة <strong>المدة النظرية فقط</strong>، ولا يعني صلاحية القلم مفتوحًا لمدة شهرين أو السماح بتقسيمه.</p>
+<div class="goal-split-row">
+<div class="goal-meter-box"><div class="goal-label"><strong>تقسيم القلم</strong><span id="splitGoalLabel"></span></div><div class="goal-meter"><div class="goal-meter-fill pink" id="splitGoalBar"></div></div><div class="goal-caption" id="splitGoalCaption"></div></div>
+<div class="goal-meter-box"><div class="goal-label"><strong>15 mg كاملة</strong><span id="fullGoalLabel"></span></div><div class="goal-meter"><div class="goal-meter-fill blue" id="fullGoalBar"></div></div><div class="goal-caption" id="fullGoalCaption"></div></div>
+</div>
+<div class="goal-actions"><div><strong>أقرب اختيارات التقسيم إلى 60 يومًا من الأعلى</strong><p>اضغط أي خيار لتطبيقه ومقارنته بجرعة 15 كاملة ذات أقرب مدة.</p></div><div class="target-picks" id="targetPicks"></div></div>
+</section><section class="panel" id="statusPanel">
+<div class="status-box close" id="statusBox">
+<div>
+<div class="status-text" id="statusText"></div>
+<div class="status-note" id="statusNote"></div>
+</div>
+<div class="subtle" id="statusSideNote"></div>
+</div>
+</section><section class="panel">
+<div class="panel-title-row">
+<h2>تفاصيل كل خيار</h2>
+<span class="subtle">النتائج الكاملة للبطاقتين المختارتين</span>
+</div>
+<div class="metrics">
+<article class="metric-card">
+<h3>تقسيم قلم 15</h3>
+<div id="splitResult"></div>
+</article>
+<article class="metric-card">
+<h3>قلم 15 الكامل</h3>
+<div id="fullResult"></div>
+</article>
+</div>
+</section></div><div class="lower-heading"><h2>الجداول والتفاصيل الإضافية</h2><p>أفضل المطابقات لجميع الجرعات والخيارات، موضوعة هنا بعد المقارنة الرئيسية.</p></div>
+<div class="layout">
+<div class="main-column">
+
+
+
+
+
+<section class="panel">
+<div class="panel-title-row">
+<h2>أفضل مطابقة حسب كل جرعة (مع علامة الوصول للهدف)</h2>
+<span class="subtle">اضغط أي خانة لتطبيقها فوق</span>
+</div>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>جرعة التقسيم</th>
+<th>الأقرب إلى 15 mg كل 7 أيام<br/><small>31.5 يوم</small></th>
+<th>الأقرب إلى 15 mg كل 10 أيام<br/><small>45 يومًا</small></th>
+<th>الأقرب إلى 15 mg كل 14 يومًا<br/><small>63 يومًا</small></th>
+</tr>
+</thead>
+<tbody id="closestMatches"></tbody>
+</table>
+</div>
+<div class="legend">
+<div class="item"><span class="dot exact"></span>متطابق حسابيًا</div>
+<div class="item"><span class="dot close"></span>قريب في المدة (≤ 5 أيام)</div>
+<div class="item"><span class="dot far"></span>فرق أكبر من 5 أيام</div>
+</div>
+</section>
+<section class="panel">
+<div class="panel-title-row">
+<h2>مطابقات سريعة مع جرعات تقسيم أقل من 15 mg</h2>
+<span class="subtle">اقتراحات جاهزة حسب التباعد الكامل 7 / 10 / 14 يوم</span>
+</div>
+<div class="mini-grid" id="bestMatches"></div>
+</section></div>
+<div class="side-column">
+<section class="panel">
+<div class="panel-title-row">
+<h2>جدول جميع المدد</h2>
+<span class="subtle">اضغط أي مدة لاختيارها</span>
+</div><label class="filter-check"><input id="only60" type="checkbox"/> إظهار نتائج 60 يومًا فأكثر فقط في الجدول</label>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>الجرعة</th>
+<th>كل 7 أيام</th>
+<th>كل 10 أيام</th>
+<th>كل 14 يومًا</th>
+</tr>
+</thead>
+<tbody id="allDoses"></tbody>
+</table>
+</div>
+<p class="footer-note" style="margin-top:10px">
+          المعادلة المستخدمة: <strong>67.5 mg ÷ الجرعة × عدد أيام التباعد</strong>. هذا يعطي <strong>المكافئ الكسري بالأيام</strong>، وقد يشمل جزءًا من جرعة لا يمكن إعطاؤها كجرعة كاملة.
+        </p>
+</section>
+<section class="panel">
+<div class="panel-title-row">
+<h2>كيف نفهم النتيجة؟</h2>
+<span class="subtle">تفسير سريع ومختصر</span>
+</div>
+<div class="info-box">
+<strong>معنى “قريب” هنا:</strong> إذا كان الفرق بين المدتين <strong>5 أيام أو أقل</strong> نعتبرهما متقاربتين حسابيًا.<br/>
+<strong>معنى “متطابق”:</strong> إذا كان الفرق <strong>0</strong> يوم.<br/>
+<strong>المقارنة ليست طبية:</strong> تقارب المدة لا يعني تساوي التأثير أو الشهية أو النزول أو الأمان.
+        </div>
+</section>
+<section class="panel">
+<div class="panel-title-row">
+<h2>تنبيه مهم</h2>
+<span class="subtle">لمنع سوء الفهم</span>
+</div>
+<div class="info-box">
+الأرقام <strong>نظرية بحتة</strong> مبنية على افتراض استهلاك كامل 2.70 mL. <strong>ليست مدة استخدام صالحة أو مسموحة</strong>.<br/>
+قلم Mounjaro KwikPen مُخصص لأربع جرعات أسبوعية ثابتة، ويجب التخلص منه بعد 4 جرعات أو 30 يومًا من أول استعمال، أيهما يأتي أولًا، حتى لو بقي سائل. لا تعتمد الشركة استخدام السائل المتبقي أو تقسيم الجرعات. <a href="https://pi.lilly.com/us/mounjaro-uspi.pdf" rel="noopener noreferrer" target="_blank">التعليمات الرسمية</a>.
+</div>
+</section>
+</div>
+</div>
+</main>
+<script>
+'use strict';
+const TOTAL_Q = 270; // 67.5 mg in quarter-mg units
+const DOSES_Q = [60,55,50,45,40,35,30]; // 15, 13.75, 12.5, 11.25, 10, 8.75, 7.5
+const INTERVALS = [7,10,14];
+const state = { splitQ:40, splitDays:7, fullDays:10, only60:false };
+const $ = id => document.getElementById(id);
+const f2 = v => Number(v.toFixed(2)).toLocaleString('en-US',{maximumFractionDigits:2});
+const doseText = q => f2(q/4) + ' mg';
+
+function stats(q, step) {
+  const complete = Math.floor(TOTAL_Q / q);
+  const remainder = (TOTAL_Q % q) / 4;
+  const equivalentCount = TOTAL_Q / q;
+  const fractionalDays = equivalentCount * step;
+  const nextComplete = complete * step;
+  const lastComplete = (complete - 1) * step;
+  return { complete, remainder, equivalentCount, fractionalDays, nextComplete, lastComplete };
+}
+function futureDate(after) {
+  const str = $('start').value;
+  if (!str) return '—';
+  const [y,m,d] = str.split('-').map(Number);
+  const t = new Date(Date.UTC(y,m-1,d));
+  t.setUTCDate(t.getUTCDate() + after);
+  return `${String(t.getUTCDate()).padStart(2,'0')}/${String(t.getUTCMonth()+1).padStart(2,'0')}/${t.getUTCFullYear()}`;
+}
+function weekText(value) {
+  let weeks = Math.floor(value/7);
+  let days = value - (weeks*7);
+  if (Math.abs(days - 7) < 1e-10) { weeks += 1; days = 0; }
+  return days < 1e-10 ? `${weeks} أسبوع` : `${weeks} أسبوع و${f2(days)} يوم`;
+}
+function closenessPercent(a,b) {
+  const mx = Math.max(a,b);
+  if (mx === 0) return 100;
+  return Math.max(0, 100 - (Math.abs(a-b) / mx * 100));
+}
+function statusType(diff) {
+  if (diff < 1e-8) return 'exact';
+  if (diff <= 5 + 1e-8) return 'close';
+  return 'far';
+}
+function statusLabel(diff) {
+  const type = statusType(diff);
+  if (type === 'exact') return 'متطابق حسابيًا';
+  if (type === 'close') return 'قريب في المدة';
+  return 'بعيد نسبيًا';
+}
+function closestToBaseline(q, fullStep) {
+  const baselineDays = stats(60, fullStep).fractionalDays;
+  const options = INTERVALS.map(step => ({
+    step,
+    value: stats(q,step).fractionalDays,
+    difference: Math.abs(stats(q,step).fractionalDays - baselineDays)
+  }));
+  const min = Math.min(...options.map(o=>o.difference));
+  return {
+    baselineDays,
+    difference: min,
+    options: options.filter(o => Math.abs(o.difference - min) < 1e-8)
+  };
+}
+function closestBaselineForSplit(q, splitStep) {
+  const value = stats(q, splitStep).fractionalDays;
+  const scored = INTERVALS.map(step => ({ step, difference: Math.abs(value - stats(60, step).fractionalDays) }));
+  const min = Math.min(...scored.map(x=>x.difference));
+  return scored.filter(x => Math.abs(x.difference - min) < 1e-8)[0].step;
+}
+function makeButtons(id, numbers, selected, onChoose, formatter, extraClass='') {
+  const parent = $(id);
+  parent.replaceChildren();
+  numbers.forEach(n => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'pick ' + extraClass;
+    button.textContent = formatter(n);
+    button.setAttribute('aria-pressed', n === selected ? 'true' : 'false');
+    button.addEventListener('click', () => { onChoose(n); render(); });
+    parent.appendChild(button);
+  });
+}
+function renderMetricCard(id, q, interval, colorClass) {
+  const s = stats(q, interval);
+  $(id).innerHTML = `
+    <div class="metric-top">
+      <div>
+        <div class="metric-big ${colorClass}" dir="ltr">${f2(s.fractionalDays)} <span style="font-size:16px;font-weight:900">يوم</span></div>
+        <div class="subtle">المكافئ الكسري بالأيام</div>
+      </div>
+      <div class="weeks">${weekText(s.fractionalDays)}</div>
+    </div>
+    <div class="detail-list">
+      <div class="detail"><span>المكافئ الكسري للجرعات</span><strong>${f2(s.equivalentCount)} جرعة</strong></div>
+      <div class="detail"><span>الجرعات الكاملة حسابيًا</span><strong>${s.complete} جرعات</strong></div>
+      <div class="detail"><span>المتبقي الكسري</span><strong>${f2(s.remainder)} mg</strong></div>
+      <div class="detail"><span>حتى موعد الجرعة التالية بعد آخر جرعة كاملة</span><strong>${s.nextComplete} يوم</strong></div>
+      <div class="detail"><span>آخر جرعة كاملة بعد</span><strong>${s.lastComplete} يوم</strong></div>
+      <div class="detail"><span>تاريخ آخر جرعة كاملة</span><strong dir="ltr">${futureDate(s.lastComplete)}</strong></div>
+    </div>`;
+}
+function makeAllDosesTable() {
+  const tbody = $('allDoses');
+  tbody.replaceChildren();
+  DOSES_Q.forEach(q => {
+    if(state.only60 && !INTERVALS.some(d=>stats(q,d).fractionalDays>=60-1e-8)) return;
+    const tr = document.createElement('tr');
+    if (q === state.splitQ) tr.className = 'selected-row';
+    const name = document.createElement('td');
+    name.className = 'name-col' + (q === 60 ? ' baseline' : '');
+    name.textContent = doseText(q);
+    tr.appendChild(name);
+    INTERVALS.forEach(days => {
+      const td = document.createElement('td');
+      const button = document.createElement('button');
+      const active = q === state.splitQ && days === state.splitDays;
+      button.type = 'button';
+      button.className = 'table-btn pink' + (active ? ' active' : '');
+      const duration = stats(q,days).fractionalDays;
+      if(state.only60 && duration < 60-1e-8){ button.disabled=true; button.style.opacity='.3';}
+      if(duration>=60-1e-8) td.classList.add('goal-cell');
+      button.innerHTML = `<span class="main">${f2(duration)} يوم</span><span class="sub">${weekText(duration)}</span>${duration>=60-1e-8?'<span class="reached-mark">✓ 60 يومًا أو أكثر</span>':''}`;
+      button.addEventListener('click', () => {
+        state.splitQ = q;
+        state.splitDays = days;
+        state.fullDays = closestBaselineForSplit(q, days);
+        render();
+      });
+      td.appendChild(button);
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+}
+function makeClosestMatches() {
+  const tbody = $('closestMatches');
+  tbody.replaceChildren();
+  DOSES_Q.forEach(q => {
+    const tr = document.createElement('tr');
+    const name = document.createElement('td');
+    name.className = 'name-col' + (q === 60 ? ' baseline' : '');
+    name.textContent = doseText(q);
+    tr.appendChild(name);
+
+    INTERVALS.forEach(fullStep => {
+      const ans = closestToBaseline(q, fullStep);
+      const td = document.createElement('td');
+      const button = document.createElement('button');
+      button.type = 'button';
+      const picked = state.splitQ === q && state.fullDays === fullStep && ans.options.some(o=>o.step===state.splitDays);
+      button.className = 'table-btn' + (picked ? ' active' : '');
+      const type = statusType(ans.difference);
+      const stepText = ans.options.map(o => `${o.step}`).join(' أو ');
+      const dayText = ans.options.map(o => f2(o.value)).join(' / ');
+      const hitTarget = ans.baselineDays>=60-1e-8 && ans.options.some(o=>o.value>=60-1e-8);
+      if(hitTarget) td.classList.add('goal-cell');
+      button.innerHTML = `<span class="main">كل ${stepText} أيام</span><span class="sub">${dayText} يوم · فرق ${f2(ans.difference)}</span><span class="sub">${statusLabel(ans.difference)}</span>${hitTarget?'<span class="reached-mark">✓ كلاهما 60+</span>':''}`;
+      button.addEventListener('click', () => {
+        state.splitQ = q;
+        state.splitDays = ans.options[0].step;
+        state.fullDays = fullStep;
+        render();
+      });
+      if (type === 'exact') button.style.borderColor = '#bfead8';
+      if (type === 'close') button.style.borderColor = '#f1dcaf';
+      if (type === 'far') button.style.borderColor = '#f1c8c8';
+      td.appendChild(button);
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+}
+function makeBestMatchesCards() {
+  const target = $('bestMatches');
+  target.replaceChildren();
+  INTERVALS.forEach(fullStep => {
+    const candidates = DOSES_Q.filter(q => q < 60).flatMap(q => INTERVALS.map(splitStep => ({
+      q, splitStep,
+      fullStep,
+      splitValue: stats(q,splitStep).fractionalDays,
+      fullValue: stats(60,fullStep).fractionalDays,
+      diff: Math.abs(stats(q,splitStep).fractionalDays - stats(60,fullStep).fractionalDays)
+    })));
+    candidates.sort((a,b) => a.diff - b.diff || a.q - b.q || a.splitStep - b.splitStep);
+    const best = candidates[0];
+    const card = document.createElement('article');
+    card.className = 'mini-card';
+    card.innerHTML = `
+      <h3>مقابل 15 mg كل ${fullStep} أيام</h3>
+      <p>
+        أفضل مطابقة حاليًا: <strong>${doseText(best.q)} كل ${best.splitStep} أيام</strong><br>
+        مدة التقسيم: <strong>${f2(best.splitValue)} يوم</strong> — مدة 15 الكاملة: <strong>${f2(best.fullValue)} يوم</strong><br>
+        الفرق: <strong>${f2(best.diff)} يوم</strong> · ${statusLabel(best.diff)}
+      </p>`;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = 'تطبيق هذه المطابقة';
+    btn.addEventListener('click', () => {
+      state.splitQ = best.q;
+      state.splitDays = best.splitStep;
+      state.fullDays = fullStep;
+      render();
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+    card.appendChild(btn);
+    target.appendChild(card);
+  });
+}
+function renderSummary() {
+  const split = stats(state.splitQ, state.splitDays).fractionalDays;
+  const full = stats(60, state.fullDays).fractionalDays;
+  const diff = Math.abs(split - full);
+  const close = closenessPercent(split, full);
+  $('splitDurationCard').textContent = `${f2(split)} يوم`;
+  $('splitDurationHint').textContent = `${doseText(state.splitQ)} كل ${state.splitDays} أيام`;
+  $('fullDurationCard').textContent = `${f2(full)} يوم`;
+  $('fullDurationHint').textContent = `15 mg كل ${state.fullDays} أيام`;
+  $('diffCard').textContent = `${f2(diff)} يوم`;
+  $('closenessCard').textContent = `${f2(close)}%`;
+  $('closenessHint').textContent = close >= 95 ? 'تقارب حسابي قوي جدًا' : close >= 85 ? 'تقارب حسابي جيد' : 'تقارب حسابي محدود';
+}
+function renderStatus() {
+  const split = stats(state.splitQ, state.splitDays).fractionalDays;
+  const full = stats(60, state.fullDays).fractionalDays;
+  const diff = Math.abs(split - full);
+  const type = statusType(diff);
+  const box = $('statusBox');
+  box.className = 'status-box ' + type;
+  let lead;
+  if (type === 'exact') lead = `✅ <strong>المدتان متطابقتان حسابيًا</strong>`;
+  else if (type === 'close') lead = `🟡 <strong>المدتان متقاربتان حسابيًا</strong>`;
+  else lead = `🔴 <strong>الفرق واضح بين المدتين</strong>`;
+  $('statusText').innerHTML = `${lead}<br>${doseText(state.splitQ)} كل ${state.splitDays} أيام = <strong>${f2(split)} يوم</strong> مقابل 15 mg كل ${state.fullDays} أيام = <strong>${f2(full)} يوم</strong>.`;
+  $('statusNote').textContent = `الفارق الحالي = ${f2(diff)} يوم. هذا تشابه في مدة استهلاك الكمية المفترضة فقط، وليس تشابهًا طبيًا في الفعالية.`;
+  $('statusSideNote').textContent = `الحالة: ${statusLabel(diff)}`;
+}
+function smartSelect() {
+  let best = null;
+  DOSES_Q.forEach(q => {
+    INTERVALS.forEach(splitStep => {
+      INTERVALS.forEach(fullStep => {
+        const splitValue = stats(q,splitStep).fractionalDays;
+        const fullValue = stats(60,fullStep).fractionalDays;
+        const diff = Math.abs(splitValue - fullValue);
+        if (!best || diff < best.diff) best = {q, splitStep, fullStep, diff};
+      });
+    });
+  });
+  state.splitQ = best.q;
+  state.splitDays = best.splitStep;
+  state.fullDays = best.fullStep;
+  render();
+}
+
+function renderTarget() {
+  const target = 60;
+  function paint(prefix, s) {
+    const days = s.fractionalDays;
+    const reached = days>=target-1e-8;
+    const label = $(prefix+'GoalLabel');
+    label.textContent = reached ? '✓ وصل للهدف النظري' : 'لم يصل بعد';
+    label.className = reached ? 'reached' : 'remaining';
+    $(prefix+'GoalBar').style.width=Math.min(100,(days/target)*100).toFixed(2)+'%';
+    $(prefix+'GoalCaption').textContent = reached ? `${f2(days)} يومًا — فوق 60 بـ ${f2(days-target)} يوم` : `${f2(days)} يومًا — ينقصه ${f2(target-days)} يوم`;
+  }
+  paint('split',stats(state.splitQ,state.splitDays));
+  paint('full',stats(60,state.fullDays));
+  const candidates=DOSES_Q.flatMap(q=>INTERVALS.map(step=>({q,step,days:stats(q,step).fractionalDays})))
+    .filter(o=>o.days>=60-1e-8)
+    .sort((a,b)=>(a.days-b.days)||(a.q-b.q)||(a.step-b.step))
+    .slice(0,4);
+  const holder=$('targetPicks');holder.replaceChildren();
+  candidates.forEach(o=>{
+    const b=document.createElement('button');b.type='button';
+    b.className='target-pick'+(state.splitQ===o.q && state.splitDays===o.step?' active':'');
+    b.innerHTML=`${doseText(o.q)} · كل ${o.step} أيام<small>${f2(o.days)} يوم</small>`;
+    b.addEventListener('click',()=>{
+      state.splitQ=o.q;state.splitDays=o.step;state.fullDays=closestBaselineForSplit(o.q,o.step);render();
+    });
+    holder.appendChild(b);
+  });
+}
+
+function render() {
+  makeButtons('splitDoses', DOSES_Q, state.splitQ, n => state.splitQ = n, doseText, 'dose-pick');
+  makeButtons('splitIntervals', INTERVALS, state.splitDays, n => state.splitDays = n, n => `${n} أيام`);
+  makeButtons('fullIntervals', INTERVALS, state.fullDays, n => state.fullDays = n, n => `${n} أيام`);
+  renderMetricCard('splitResult', state.splitQ, state.splitDays, 'pink');
+  renderMetricCard('fullResult', 60, state.fullDays, 'blue');
+  renderSummary();
+  renderStatus();
+  renderTarget();
+  makeBestMatchesCards();
+  makeClosestMatches();
+  makeAllDosesTable();
+}
+$('reset').addEventListener('click', () => {
+  state.splitQ = 40;
+  state.splitDays = 7;
+  state.fullDays = 10;
+  $('start').value = '';
+  render();
+});
+$('smartSelect').addEventListener('click', smartSelect);
+$('start').addEventListener('change', render);
+$('only60').addEventListener('change',e=>{state.only60=e.target.checked;render()});
+render();
+</script>
+</body>
+</html>
