@@ -173,17 +173,17 @@
 
  let dose1=null,dose2=null;
  let lastWeeks=null,lastMonths=null,lastTicks=null,lastDose1=null,lastDose2=null;
- let lastRemainingUnits=0;
- // السعة النظرية للقلم كاملة: 2.70 مل = 270 يونيت، دون إسقاط أي سائل من الحساب.
+ // تعتمد الحاسبة على السعة النظرية الكاملة للقلم: 2.70 مل.
+ // 0.01 مل = يونيت حسابي واحد، ومن ثم 2.70 مل = 270 يونيت.
  const PEN_TOTAL_ML = 2.70;
- const PEN_TOTAL_UNITS = 270;
  const FULL_DOSE_ML = 0.60;
  const FULL_DOSE_UNITS = 60;
+ const PEN_TOTAL_UNITS = Math.round(PEN_TOTAL_ML * (FULL_DOSE_UNITS / FULL_DOSE_ML));
 
  function formatTicksFromML(ml){
    return Math.round((Number(ml)||0) * 100);
  }
- function formatNumber(n){return Number.isInteger(n)?n.toString():parseFloat(n.toFixed(1)).toString();}
+ function formatNumber(n){return Number.isInteger(n)?n.toString():parseFloat(n.toFixed(2)).toString();}
  function formatDateISOToDMY(iso){
    if(!iso) return '';
    const [y,m,d]=iso.split('-');
@@ -323,15 +323,13 @@ function toMonthsDays(totalDays){
    const penDoseDatesISO = buildPenDoseDates(start, intervalDays, lastWeeks);
    const penDoseDatesDMY = formatDateListLTR(penDoseDatesISO);
    const penCountText = Math.floor(Number(lastWeeks)||0);
-  const totalDoseCount = penCountText * pensCount;
-  const totalPenUnits = PEN_TOTAL_UNITS * pensCount;
-  const penStartDatesISO = Array.from({length:pensCount}, (_,i)=>addDaysISO(start,i*penCountText*intervalDays));
+  const totalDoseCount = lastWeeks * pensCount;
+  const penStartDatesISO = Array.from({length:pensCount}, (_,i)=>addDaysISO(start,i*lastWeeks*intervalDays));
   const penStartDatesDMY = formatDateListLTR(penStartDatesISO);
 
    buyResult.innerHTML =
      `🧾 بناءً على الإعدادات الحالية: (الأساسي <u style="color:#5D0096">${formatNumber(lastDose1)}</u> → المطلوب <u style="color:#5D0096">${formatNumber(lastDose2)}</u>)<br><br>`+
-    `💉 عدد الأقلام: <u style="color:green">${pensCount}</u> — إجمالي الجرعات الكاملة: <u style="color:green">${totalDoseCount}</u><br>`+
-    `💧 السعة المحسوبة: <u style="color:green">${PEN_TOTAL_UNITS}</u> يونيت للقلم الواحد × ${pensCount} = <u style="color:green">${totalPenUnits}</u> يونيت، والمتبقي <u style="color:green">${lastRemainingUnits}</u> يونيت في كل قلم<br><br>`+
+    `💉 عدد الأقلام: <u style="color:green">${pensCount}</u> — إجمالي الجرعات: <u style="color:green">${formatNumber(totalDoseCount)}</u><br><br>`+
 
      `📌 عدد الجرعات : <u style="color:green">${formatNumber(lastWeeks)}</u> جرعات للقلم الواحد (كل <u style="color:green">${intervalDays}</u> يوم) = <u style="color:green">${daysTotal}</u> يوم للأقلام كلها (<u style="color:purple">${md.text}</u>)<br><br>`+
      `🗓️ تواريخ أخذ جرعات نفس القلم (${penCountText} جرعات)<br><span style="color:#222">${penDoseDatesDMY}</span><br><br>`+
@@ -357,12 +355,11 @@ function toMonthsDays(totalDays){
        lastWeeks=null;
        return;
      }
-     // لا تُحتسب بقايا أقل من جرعة كاملة جرعةً إضافية.
-     const dosesCount = Math.floor(PEN_TOTAL_UNITS / f);
-     const remainingUnits = PEN_TOTAL_UNITS - (dosesCount * f);
+     // عدد الجرعات النظري = 270 يونيت ÷ يونيت الجرعة؛ مثال 270 ÷ 60 = 4.5
+     // 4.5 تعني أربع جرعات كاملة، ونصف جرعة نظريًا (30 يونيت).
+     const dosesCount = PEN_TOTAL_UNITS / f;
      const m = dosesCount / 4;
 
-     lastRemainingUnits=remainingUnits;
      lastWeeks=dosesCount;
      lastMonths=m;
      lastTicks=f;
@@ -373,7 +370,7 @@ function toMonthsDays(totalDays){
      const durationDays = Math.round(dosesCount * intervalDays);
      const duration = toMonthsDays(durationDays);
 
-     result.innerHTML=`️ النتيجة: <u style="color:red">${f}</u> تكة أو يونيت ✅ ( عدد الجرعات <u style="color:green">${formatNumber(dosesCount)}</u> 💉) (المتبقي <u style="color:green">${remainingUnits}</u> يونيت) (المدة <u style="color:#5D0096">${duration.text}</u> 📅)`;
+     result.innerHTML=`️ النتيجة: <u style="color:red">${f}</u> تكة أو يونيت ✅ ( عدد الجرعات <u style="color:green">${formatNumber(dosesCount)}</u> 💉) (المدة <u style="color:#5D0096">${duration.text}</u> 📅)`;
      updateBuyPlan();
    }else{
      result.innerHTML="";
