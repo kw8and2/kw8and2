@@ -1,7 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=loops&utm_source=ai-legible&utm_medium=owned&utm_content=comment&utm_id=e94eccd1-7f39-45f7-9c10-3a632cfad6b6
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>Mounjaro</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
@@ -56,6 +60,11 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
 .dose-10{background:#C4007C;}
 .dose-12-5{background:#0A6AE3;}
 .dose-15{background:#FC3230;}
+
+/* اتجاه التواريخ داخل نتائج الشراء فقط — دون تغيير التصميم الأصلي */
+#buy-date {direction:ltr;}
+#buy-result .date-ltr {direction:ltr;unicode-bidi:isolate;display:inline-block;white-space:nowrap;}
+#buy-result .date-list-ltr {direction:ltr;unicode-bidi:isolate;text-align:center;}
 </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-start p-2 sm:p-4 gap-2">
@@ -119,9 +128,12 @@ body {font-family:var(--font-main);font-size:var(--font-size-base);background:#f
     <div class="buy-label">ضع تاريخ شراء القلم الحالي ( يوم اخذ اول جرعة )</div>
     <input id="buy-date" type="date" class="buy-input">
 
+   <div class="buy-label" style="color:#009DFF;">عدد الأقلام</div>
+   <input id="pen-count" type="number" min="1" max="24" step="1" value="1" class="buy-input" inputmode="numeric">
+
     <div class="buy-label" style="color:#009DFF;">يوم تاريخ الراتب (اختياري)</div>
     <input id="salary-day" type="text" class="buy-input" inputmode="numeric" maxlength="2" placeholder="مثال: 22">
-    
+
 
     <div class="buy-label" style="color:#009DFF;">الجرعة كل كم أسبوع ؟</div>
 
@@ -171,6 +183,17 @@ function formatDateISOToDMY(iso){
   if(!iso) return '';
   const [y,m,d]=iso.split('-');
   return `${d}/${m}/${y}`;
+}
+function formatDateLTR(iso){
+ return `<span class="date-ltr" dir="ltr">${formatDateISOToDMY(iso)}</span>`;
+}
+function formatDateListLTR(datesISO){
+ return `<span class="date-list-ltr" dir="ltr">${datesISO.map(formatDateLTR).join(' — ')}</span>`;
+}
+function getPenCount(){
+ const raw = document.getElementById('pen-count')?.value || '1';
+ const count = parseInt(raw, 10);
+ return Number.isInteger(count) ? Math.min(24, Math.max(1, count)) : 1;
 }
 function toMonthsDays(totalDays){
   let d = Math.max(0, Math.round(Number(totalDays)||0));
@@ -225,7 +248,7 @@ function getSalaryPurchaseISO(needISO){
 function buildPenDoseDates(startISO, intervalDays, dosesCount){
   let count = Math.floor(Number(dosesCount) || 0);
   if(count <= 0) return [];
-  count = Math.min(count, 60);
+  count = Math.min(count, 270);
   const out = [];
   for(let i=0;i<count;i++){
     out.push(addDaysISO(startISO, i * intervalDays));
@@ -248,7 +271,7 @@ function setActiveChipByDays(days){
     ch.classList.toggle('active', d === Number(days));
   });
 }
-function computePurchasesInNext12Months(startISO, intervalDays){
+function computePurchasesInNext12Months(startISO, intervalDays, pensPerPurchase){
   const startDateObj = new Date(startISO + "T00:00:00");
   const endDateObj = new Date(startDateObj);
   endDateObj.setFullYear(startDateObj.getFullYear() + 1);
@@ -264,7 +287,7 @@ function computePurchasesInNext12Months(startISO, intervalDays){
     const dd = String(cur.getDate()).padStart(2,'0');
     purchaseDatesISO.push(`${yyyy}-${mm}-${dd}`);
 
-    const daysToNext = Math.round((lastWeeks||0) * intervalDays);
+    const daysToNext = Math.round((lastWeeks||0) * Math.max(1,pensPerPurchase||1) * intervalDays);
     if(!daysToNext || daysToNext<=0) break;
     cur.setDate(cur.getDate() + daysToNext);
   }
@@ -279,31 +302,40 @@ function updateBuyPlan(){
   if(lastWeeks==null){ buyResult.innerHTML=''; return; }
 
   const intervalDays = getEveryDays();
-  const daysTotal = Math.round(lastWeeks * intervalDays);
+ const pensCount = getPenCount();
+  const daysPerPen = Math.round(lastWeeks * intervalDays);
+ const daysTotal = daysPerPen * pensCount;
   const md = toMonthsDays(daysTotal);
 
   const nextISO = addDaysISO(start, daysTotal);
   const buyNextISO = getSalaryPurchaseISO(nextISO);
 
-  const yearly = computePurchasesInNext12Months(start, intervalDays);
+  const yearly = computePurchasesInNext12Months(start, intervalDays, pensCount);
   const adjustedPurchaseDatesISO = yearly.purchaseDatesISO.map(getSalaryPurchaseISO);
-  const listDMY = adjustedPurchaseDatesISO.map(formatDateISOToDMY).join(' — ');
+  const listDMY = formatDateListLTR(adjustedPurchaseDatesISO);
 
   const penDoseDatesISO = buildPenDoseDates(start, intervalDays, lastWeeks);
-  const penDoseDatesDMY = penDoseDatesISO.map(formatDateISOToDMY).join(' — ');
+  const penDoseDatesDMY = formatDateListLTR(penDoseDatesISO);
   const penCountText = Math.floor(Number(lastWeeks)||0);
+ const totalDoseCount = penCountText * pensCount;
+ const penStartDatesISO = Array.from({length:pensCount}, (_,i)=>addDaysISO(start,i*penCountText*intervalDays));
+ const penStartDatesDMY = formatDateListLTR(penStartDatesISO);
 
   buyResult.innerHTML =
     `🧾 بناءً على الإعدادات الحالية: (الأساسي <u style="color:#5D0096">${formatNumber(lastDose1)}</u> → المطلوب <u style="color:#5D0096">${formatNumber(lastDose2)}</u>)<br><br>`+
-    `📌 عدد الجرعات : <u style="color:green">${formatNumber(lastWeeks)}</u> جرعات (كل <u style="color:green">${intervalDays}</u> يوم) = <u style="color:green">${daysTotal}</u> يوم (<u style="color:purple">${md.text}</u>)<br><br>`+
+   `💉 عدد الأقلام: <u style="color:green">${pensCount}</u> — إجمالي الجرعات الكاملة: <u style="color:green">${totalDoseCount}</u><br><br>`+
+
+    `📌 عدد الجرعات : <u style="color:green">${formatNumber(lastWeeks)}</u> جرعات للقلم الواحد (كل <u style="color:green">${intervalDays}</u> يوم) = <u style="color:green">${daysTotal}</u> يوم للأقلام كلها (<u style="color:purple">${md.text}</u>)<br><br>`+
     `🗓️ تواريخ أخذ جرعات نفس القلم (${penCountText} جرعات)<br><span style="color:#222">${penDoseDatesDMY}</span><br><br>`+
-    `🗓️ تاريخ شراء القلم الحالي ( يوم اخذ اول جرعة ): <u style="color:red">${formatDateISOToDMY(start)}</u><br><br>`+
-    `✅ تاريخ احتياج القلم القادم: <u style="color:red">${formatDateISOToDMY(nextISO)}</u><br>`+
+   (pensCount>1 ? `🗓️ تاريخ بدء كل قلم (${pensCount} أقلام)<br><span style="color:#222">${penStartDatesDMY}</span><br><br>` : '')+
+
+    `🗓️ تاريخ شراء القلم الحالي ( يوم اخذ اول جرعة ): <u style="color:red">${formatDateLTR(start)}</u><br><br>`+
+    `✅ تاريخ احتياج القلم القادم: <u style="color:red">${formatDateLTR(nextISO)}</u><br>`+
     (getSalaryDay()
-      ? `💵 تاريخ الشراء حسب الراتب: <u style="color:green">${formatDateISOToDMY(buyNextISO)}</u> (راتب يوم <u style="color:green">${getSalaryDay()}</u>)<br><br>`
+      ? `💵 تاريخ الشراء حسب الراتب: <u style="color:green">${formatDateLTR(buyNextISO)}</u> (راتب يوم <u style="color:green">${getSalaryDay()}</u>)<br><br>`
       : `💵 تاريخ الشراء حسب الراتب: <span style="color:#555">لم يتم إدخال تاريخ راتب</span><br><br>`
     )+
-    `📦 خــلال ســـنة تحـــتاج تشتــري الـقـلـم <u style="color:red">${yearly.purchases}</u> مرة/رات <br><br>`+
+    `📦 خــلال ســـنة تحـــتاج تشتــري ${pensCount>1 ? `${pensCount} أقلام` : `الـقـلـم`} <u style="color:red">${yearly.purchases}</u> مرة/رات <br><br>`+
     `🗓️ تواريخ شراء القلم حسب الراتب ( خــلال ســنة )<br><span style="color:#222">${listDMY}</span>`;
 }
 function calculateResult(){
@@ -313,7 +345,14 @@ function calculateResult(){
 
     const c = (dose2/dose1) * baseDoseML;
     const f = formatTicksFromML(c);
-    const w = totalPenML / c;
+    // اعتماد عدد التكات الصحيح في حساب الاستهلاك، ولا تُحسب الجرعة الجزئية جرعةً كاملة.
+   if(f < 1 || f > 60){
+     result.innerHTML='تعذر الحساب: الجرعة المطلوبة خارج نطاق 1 إلى 60 تكة للقلم المختار.';
+     buyResult.innerHTML='';
+     lastWeeks=null;
+     return;
+   }
+   const w = Math.floor(Math.round(totalPenML*100 + 1e-8) / f);
 
     const m = w/4;
     const dosesCount = w;
@@ -367,6 +406,12 @@ function setBuyDateToToday(){
 setBuyDateToToday();
 buySection.style.display = 'block';
 buyDate.addEventListener('change',updateBuyPlan);
+const penCountInput = document.getElementById('pen-count');
+penCountInput.addEventListener('input',updateBuyPlan);
+penCountInput.addEventListener('change',()=>{
+ penCountInput.value = String(getPenCount());
+ updateBuyPlan();
+});
 if(salaryDay){
   salaryDay.addEventListener('input',()=>{
     salaryDay.value = (salaryDay.value || '').toString().replace(/[^0-9]/g,'').slice(0,2);
@@ -381,7 +426,7 @@ if(daysChipsWrap){
       const d = parseInt(ch.dataset.days, 10);
       doseEveryDays.value = String(d);
       setActiveChipByDays(d);
-      updateBuyPlan();
+      calculateResult();
     });
   });
 }
@@ -390,7 +435,7 @@ doseEveryDays.addEventListener('input',()=>{
   if(doseEveryDays.value !== ''){
     setActiveChipByDays(parseInt(doseEveryDays.value,10));
   }
-  updateBuyPlan();
+  calculateResult();
 });
 setActiveChipByDays(7);
 const microToggle = document.getElementById('microdose-toggle');
